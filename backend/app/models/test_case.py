@@ -1,8 +1,15 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, JSON
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, mapped_column
 from sqlalchemy.sql import func
 from typing import Optional, List
 from app.database import Base
+
+# Import Vector type from pgvector
+try:
+    from pgvector.sqlalchemy import Vector
+except ImportError:
+    # Fallback for testing environments without pgvector
+    Vector = JSON
 
 
 class TestCase(Base):
@@ -20,7 +27,11 @@ class TestCase(Base):
     case_type = Column(String(50), default="功能测试")
     stage = Column(String(50), default="功能测试阶段")
     status = Column(String(50), default="pending")
-    embedding = Column(JSON, nullable=True)
+    # Use VECTOR(384) type from pgvector, with JSON fallback for SQLite
+    if Vector != JSON:
+        embedding = mapped_column(Vector(384), nullable=True)
+    else:
+        embedding = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # 关系
