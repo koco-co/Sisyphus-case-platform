@@ -1,6 +1,7 @@
 """Alibaba (DashScope) provider implementation."""
 
 import httpx
+from typing import AsyncIterator
 
 from app.llm.base import LLMProvider, LLMResponse, Message
 
@@ -60,7 +61,7 @@ class AlibabaProvider(LLMProvider):
         model: str | None = None,
         temperature: float = 0.7,
         max_tokens: int = 1000,
-    ):
+    ) -> AsyncIterator[str]:
         """Generate text from a prompt with streaming.
 
         Args:
