@@ -2,6 +2,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from app.main import app
 
+
 @pytest.mark.asyncio
 async def test_api_root():
     """测试 API 根路径"""
@@ -10,6 +11,7 @@ async def test_api_root():
         response = await ac.get("/")
         assert response.status_code == 200
         assert "Sisyphus" in response.json()["message"]
+
 
 @pytest.mark.asyncio
 async def test_health_check():
