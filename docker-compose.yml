@@ -2,10 +2,11 @@ services:
   postgres:
     image: pgvector/pgvector:pg16
     container_name: sisyphus-db
+    restart: unless-stopped
     environment:
       POSTGRES_DB: sisyphus
       POSTGRES_USER: sisyphus
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -21,18 +22,25 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: sisyphus-backend
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql+asyncpg://sisyphus:password@postgres:5432/sisyphus
+      DATABASE_URL: postgresql+asyncpg://sisyphus:${POSTGRES_PASSWORD:-changeme}@postgres:5432/sisyphus
       API_HOST: 0.0.0.0
       API_PORT: 8000
-      DEBUG: "True"
+      DEBUG: ${DEBUG:-False}
     ports:
       - "8000:8000"
     volumes:
       - ./backend/skills:/app/skills
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 volumes:
   postgres_data:
