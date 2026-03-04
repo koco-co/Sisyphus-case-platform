@@ -144,6 +144,7 @@ async def test_get_test_case_not_found(test_client_with_db):
     """测试获取不存在的测试用例"""
     response = await test_client_with_db.get("/api/cases/99999")
     assert response.status_code == 404
+    assert response.json()["detail"] == "测试用例不存在"
 
 
 @pytest.mark.asyncio
@@ -197,6 +198,7 @@ async def test_update_test_case_not_found(test_client_with_db):
         }
     )
     assert response.status_code == 404
+    assert response.json()["detail"] == "测试用例不存在"
 
 
 @pytest.mark.asyncio
@@ -255,6 +257,7 @@ async def test_update_case_status_invalid(test_client_with_db):
         f"/api/cases/{case_id}/status?status=invalid_status"
     )
     assert response.status_code == 400
+    assert response.json()["detail"] == "无效的状态值"
 
 
 @pytest.mark.asyncio
@@ -264,3 +267,4 @@ async def test_update_case_status_not_found(test_client_with_db):
         "/api/cases/99999/status?status=approved"
     )
     assert response.status_code == 404
+    assert response.json()["detail"] == "测试用例不存在"

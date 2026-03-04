@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional
+from typing import Optional, Literal
 from datetime import datetime
 
 from app.database import get_db
@@ -21,9 +21,9 @@ class TestCaseCreate(BaseModel):
     steps: str = Field(..., max_length=5000)
     expected_results: str = Field(..., max_length=5000)
     keywords: Optional[str] = Field(None, max_length=500)
-    priority: str = "2"
-    case_type: str = "功能测试"
-    stage: str = "功能测试阶段"
+    priority: Literal["1", "2", "3", "4"] = "2"
+    case_type: Literal["功能测试", "集成测试", "性能测试", "安全测试"] = "功能测试"
+    stage: Literal["功能测试阶段", "集成测试阶段", "性能测试阶段", "安全测试阶段"] = "功能测试阶段"
 
 
 class TestCaseResponse(BaseModel):
