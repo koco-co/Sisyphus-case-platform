@@ -54,6 +54,7 @@ class MiniMaxProvider(LLMProvider):
         Returns:
             LLMResponse containing the generated text and metadata
         """
+        model = model or self.default_model
         messages = [{"role": "user", "content": prompt}]
         return await self._make_request(messages, model, temperature, max_tokens)
 
@@ -98,6 +99,7 @@ class MiniMaxProvider(LLMProvider):
         Returns:
             LLMResponse containing the assistant's response and metadata
         """
+        model = model or self.default_model
         # Convert Message objects to dicts using msg.dict()
         message_dicts = [msg.dict() for msg in messages]
         return await self._make_request(message_dicts, model, temperature, max_tokens)
