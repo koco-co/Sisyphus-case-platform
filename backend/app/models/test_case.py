@@ -8,7 +8,7 @@ class TestCase(Base):
     __tablename__ = "test_cases"
 
     id = Column(Integer, primary_key=True, index=True)
-    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False, index=True)
     module = Column(String(255), nullable=True)
     title = Column(String(500), nullable=False)
     prerequisites = Column(Text, nullable=True)
