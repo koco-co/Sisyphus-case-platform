@@ -13,7 +13,7 @@ async def test_create_project(test_client_with_db):
             "parent_id": None
         }
     )
-    assert response.status_code == 200
+    assert response.status_code == 201
     data = response.json()
     assert data["name"] == "登录模块"
     assert "id" in data

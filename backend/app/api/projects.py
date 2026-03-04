@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 from datetime import datetime
 
@@ -12,9 +12,9 @@ router = APIRouter(prefix="/api/projects", tags=["projects"])
 
 
 class ProjectCreate(BaseModel):
-    name: str
-    description: Optional[str] = None
-    parent_id: Optional[int] = None
+    name: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = Field(None, max_length=5000)
+    parent_id: Optional[int] = Field(None, gt=0)
 
 
 class ProjectResponse(BaseModel):
@@ -27,7 +27,7 @@ class ProjectResponse(BaseModel):
     created_at: datetime
 
 
-@router.post("/", response_model=ProjectResponse)
+@router.post("/", response_model=ProjectResponse, status_code=201)
 async def create_project(
     project: ProjectCreate,
     db: AsyncSession = Depends(get_db)
