@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from typing import Optional, List
 from app.database import Base
 
 
@@ -19,6 +20,7 @@ class TestCase(Base):
     case_type = Column(String(50), default="功能测试")
     stage = Column(String(50), default="功能测试阶段")
     status = Column(String(50), default="pending")
+    embedding = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # 关系
