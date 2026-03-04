@@ -61,7 +61,7 @@ class VectorRetriever:
         # 计算余弦相似度（Python 实现，兼容 SQLite）
         cases_with_similarity = []
         for case in all_cases:
-            if case.embedding:
+            if case.embedding is not None and len(case.embedding) > 0:
                 similarity = self._cosine_similarity(query_vector, case.embedding)
                 if similarity >= min_similarity:
                     case.similarity = similarity
@@ -116,7 +116,7 @@ class VectorRetriever:
         case.embedding = embedding
 
         if db:
-            db.add(case)
+            # case 已经在 session 中，不需要 add
             await db.commit()
         else:
             async with async_session() as session:
@@ -146,8 +146,7 @@ class VectorRetriever:
             case.embedding = embedding
 
         if db:
-            for case in cases:
-                db.add(case)
+            # cases 已经在 session 中，不需要 add
             await db.commit()
         else:
             async with async_session() as session:
