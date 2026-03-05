@@ -2,8 +2,9 @@
 
 import shutil
 from abc import ABC, abstractmethod
+from io import BytesIO
 from pathlib import Path
-from typing import BinaryIO, Optional
+from typing import BinaryIO, Optional, Union
 from uuid import UUID
 
 
@@ -11,7 +12,9 @@ class StorageBackend(ABC):
     """存储后端抽象基类"""
 
     @abstractmethod
-    async def save(self, file_id: UUID, file_data: BinaryIO, filename: str) -> str:
+    async def save(
+        self, file_id: UUID, file_data: Union[BinaryIO, bytes], filename: str
+    ) -> str:
         """保存文件，返回存储路径"""
         pass
 
@@ -38,14 +41,19 @@ class LocalStorage(StorageBackend):
         self.base_path = Path(base_path)
         self.base_path.mkdir(parents=True, exist_ok=True)
 
-    async def save(self, file_id: UUID, file_data: BinaryIO, filename: str) -> str:
+    async def save(
+        self, file_id: UUID, file_data: Union[BinaryIO, bytes], filename: str
+    ) -> str:
         # 按前两位 hash 组织目录
         subdir = self.base_path / file_id.hex[:2]
         subdir.mkdir(parents=True, exist_ok=True)
 
         storage_path = subdir / f"{file_id.hex}_{filename}"
         with open(storage_path, "wb") as f:
-            shutil.copyfileobj(file_data, f)
+            if isinstance(file_data, bytes):
+                f.write(file_data)
+            else:
+                shutil.copyfileobj(file_data, f)
 
         return str(storage_path)
 
@@ -86,8 +94,14 @@ class MinioStorage(StorageBackend):
         if not self.client.bucket_exists(self.bucket):
             self.client.make_bucket(self.bucket)
 
-    async def save(self, file_id: UUID, file_data: BinaryIO, filename: str) -> str:
+    async def save(
+        self, file_id: UUID, file_data: Union[BinaryIO, bytes], filename: str
+    ) -> str:
         object_name = f"{file_id.hex}/{filename}"
+
+        if isinstance(file_data, bytes):
+            file_data = BytesIO(file_data)
+
         file_data.seek(0, 2)
         size = file_data.tell()
         file_data.seek(0)
