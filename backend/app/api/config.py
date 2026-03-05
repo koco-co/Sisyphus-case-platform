@@ -1,124 +1,132 @@
 """
-User configuration management API.
+LLM configuration management API.
 """
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
-from typing import List, Optional
+from sqlalchemy import select
+from typing import Optional
 from datetime import datetime
 
 from app.database import get_db
-from app.models.user_config import UserConfig
+from app.models.llm_config import LLMConfig
 
 
-router = APIRouter(prefix="/api/configs", tags=["configs"])
+router = APIRouter(prefix="/api/config", tags=["config"])
 
 
 # Pydantic models
-class ConfigCreate(BaseModel):
+class LLMConfigSchema(BaseModel):
+    """Schema for LLM configuration input/output."""
+    provider: str = "openai"
+    api_key: str = ""
+    model: str = "gpt-4"
+
+
+class LLMConfigResponse(BaseModel):
+    """Response schema for LLM configuration."""
     provider: str
-    api_key_encrypted: str
-    generator_model: Optional[str] = None
-    reviewer_model: Optional[str] = None
+    api_key: str
+    model: str
 
 
-class ConfigResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+# Valid providers and their models
+PROVIDERS = {
+    "openai": {
+        "name": "OpenAI",
+        "models": ["gpt-4", "gpt-4-turbo", "gpt-3.5-turbo"]
+    },
+    "zhipu": {
+        "name": "智谱 AI (GLM)",
+        "models": ["glm-4", "glm-4-plus", "glm-3-turbo"]
+    },
+    "alibaba": {
+        "name": "阿里百炼",
+        "models": ["qwen-turbo", "qwen-plus", "qwen-max"]
+    },
+    "minimax": {
+        "name": "MiniMax",
+        "models": ["abab5.5-chat", "abab5.5s-chat"]
+    }
+}
 
-    id: int
-    provider: str
-    api_key_encrypted: str
-    generator_model: Optional[str]
-    reviewer_model: Optional[str]
-    is_active: bool
-    created_at: datetime
+
+@router.get("/llm", response_model=LLMConfigResponse)
+async def get_llm_config(db: AsyncSession = Depends(get_db)):
+    """Get the active LLM configuration."""
+    result = await db.execute(
+        select(LLMConfig).where(LLMConfig.is_active == True).limit(1)
+    )
+    config = result.scalar_one_or_none()
+
+    if not config:
+        # Create default configuration
+        config = LLMConfig(
+            provider="openai",
+            model="gpt-4",
+            is_active=True,
+        )
+        db.add(config)
+        await db.commit()
+        await db.refresh(config)
+
+    return {
+        "provider": config.provider,
+        "api_key": "",  # Don't return actual API key
+        "model": config.model,
+    }
 
 
-class ActivateResponse(BaseModel):
-    message: str
-
-
-# Valid providers
-VALID_PROVIDERS = {"glm", "minimax", "alibaba"}
-
-
-@router.post("/", response_model=ConfigResponse, status_code=201)
-async def create_config(
-    config: ConfigCreate,
-    db: AsyncSession = Depends(get_db)
+@router.put("/llm", response_model=LLMConfigResponse)
+async def update_llm_config(
+    data: LLMConfigSchema,
+    db: AsyncSession = Depends(get_db),
 ):
-    """Create a new configuration."""
+    """Update the active LLM configuration."""
     # Validate provider
-    if config.provider not in VALID_PROVIDERS:
+    if data.provider not in PROVIDERS:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid provider. Must be one of: {', '.join(VALID_PROVIDERS)}"
+            detail=f"Invalid provider. Must be one of: {', '.join(PROVIDERS.keys())}"
         )
 
-    # Create new config
-    db_config = UserConfig(
-        provider=config.provider,
-        api_key_encrypted=config.api_key_encrypted,
-        generator_model=config.generator_model,
-        reviewer_model=config.reviewer_model,
-        is_active=False  # New configs are inactive by default
-    )
-    db.add(db_config)
-    await db.commit()
-    await db.refresh(db_config)
+    # Validate model for the provider
+    if data.model not in PROVIDERS[data.provider]["models"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid model for {data.provider}. Must be one of: {', '.join(PROVIDERS[data.provider]['models'])}"
+        )
 
-    return db_config
-
-
-@router.get("/", response_model=List[ConfigResponse])
-async def list_configs(db: AsyncSession = Depends(get_db)):
-    """Get all configurations."""
-    result = await db.execute(select(UserConfig))
-    configs = result.scalars().all()
-    return configs
-
-
-@router.get("/active", response_model=ConfigResponse)
-async def get_active_config(db: AsyncSession = Depends(get_db)):
-    """Get the currently active configuration."""
     result = await db.execute(
-        select(UserConfig).where(UserConfig.is_active == True)
+        select(LLMConfig).where(LLMConfig.is_active == True).limit(1)
     )
     config = result.scalar_one_or_none()
 
     if not config:
-        raise HTTPException(
-            status_code=404,
-            detail="No active configuration found"
+        config = LLMConfig(
+            provider=data.provider,
+            model=data.model,
+            is_active=True,
         )
+        db.add(config)
+    else:
+        config.provider = data.provider
+        config.model = data.model
+        # Only update API key if a new one is provided
+        if data.api_key:
+            config.api_key_encrypted = data.api_key  # TODO: Implement actual encryption
 
-    return config
-
-
-@router.patch("/{config_id}/activate", response_model=ActivateResponse)
-async def activate_config(
-    config_id: int,
-    db: AsyncSession = Depends(get_db)
-):
-    """Activate a specific configuration (deactivates all others)."""
-    # Check if config exists
-    result = await db.execute(select(UserConfig).where(UserConfig.id == config_id))
-    config = result.scalar_one_or_none()
-
-    if not config:
-        raise HTTPException(
-            status_code=404,
-            detail="Configuration not found"
-        )
-
-    # Deactivate all configs
-    await db.execute(
-        update(UserConfig).values(is_active=False)
-    )
-
-    # Activate the specified config
-    config.is_active = True
     await db.commit()
+    await db.refresh(config)
 
-    return ActivateResponse(message="Configuration activated")
+    return {
+        "provider": config.provider,
+        "api_key": "",
+        "model": config.model,
+    }
+
+
+@router.get("/providers")
+async def get_providers():
+    """Get available LLM providers and their models."""
+    return PROVIDERS
