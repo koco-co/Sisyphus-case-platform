@@ -1,6 +1,8 @@
+import asyncio
 import os
 import pytest
 import pytest_asyncio
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from typing import AsyncGenerator
 
@@ -14,7 +16,12 @@ TEST_DATABASE_URL = os.getenv(
     "postgresql+asyncpg://sisyphus:sisyphus123@localhost:5433/sisyphus_test"
 )
 
-test_engine = create_async_engine(TEST_DATABASE_URL, echo=False, pool_pre_ping=True)
+test_engine = create_async_engine(
+    TEST_DATABASE_URL,
+    echo=False,
+    pool_pre_ping=True,
+    pool_recycle=300,
+)
 TestSessionLocal = async_sessionmaker(
     test_engine,
     class_=AsyncSession,
@@ -23,19 +30,26 @@ TestSessionLocal = async_sessionmaker(
 )
 
 
+@pytest.fixture(scope="session")
+def event_loop():
+    """创建会话级别的事件循环"""
+    policy = asyncio.get_event_loop_policy()
+    loop = policy.new_event_loop()
+    yield loop
+    loop.close()
+
+
 @pytest_asyncio.fixture(scope="function")
-async def db_session() -> AsyncGenerator[AsyncSession, None]:
+async def db_session(event_loop) -> AsyncGenerator[AsyncSession, None]:
     """创建测试数据库会话"""
-    # 创建所有表
+    # 清理所有表数据
     async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        # 按依赖顺序删除数据
+        for table in reversed(Base.metadata.sorted_tables):
+            await conn.execute(table.delete())
 
     async with TestSessionLocal() as session:
         yield session
-
-    # 清理：删除所有表
-    async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
 
 
 @pytest_asyncio.fixture(scope="function")
