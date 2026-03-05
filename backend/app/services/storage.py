@@ -3,7 +3,7 @@
 import shutil
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import BinaryIO
+from typing import BinaryIO, Optional
 from uuid import UUID
 
 
@@ -131,7 +131,7 @@ def get_storage_backend() -> StorageBackend:
 
 
 # 全局存储实例（延迟初始化）
-_storage: StorageBackend | None = None
+_storage: Optional[StorageBackend] = None
 
 
 def get_storage() -> StorageBackend:
