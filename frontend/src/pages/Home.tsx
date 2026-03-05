@@ -1,11 +1,11 @@
 import { useState, useCallback } from 'react';
-import { message, Button } from 'antd';
+import { message, Button, Modal, Select } from 'antd';
 
 import ChatInput from '../components/Chat/ChatInput';
 import StreamingMessage from '../components/Chat/StreamingMessage';
 import FilePreview from '../components/Chat/FilePreview';
 import ExportDialog from '../components/Export/ExportDialog';
-import { useGeneration, useFileUpload } from '../hooks';
+import { useGeneration, useFileUpload, useCreateTestCases, useRequirement } from '../hooks';
 import type { UploadedFile } from '../components/Chat/ChatInput';
 import type { TestCase, UploadedFileInfo } from '../hooks';
 
@@ -20,9 +20,13 @@ export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<FileWithContent[]>([]);
   const [generatedCases, setGeneratedCases] = useState<TestCase[]>([]);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [selectedRequirementId, setSelectedRequirementId] = useState<string | null>(null);
 
   const { progress, result, isGenerating, generate, cancel, reset } = useGeneration();
-  const { uploadFile } = useFileUpload();
+  const { uploadFile } = use useFileUpload();
+  const createTestCases = useCreateTestCases();
+  const { data: requirements } = useRequirement(selectedRequirementId || null);
 
   const handleSend = useCallback(
     (msg: string, _files: UploadedFile[]) => {
@@ -58,7 +62,7 @@ export default function Home() {
 
   const handleFileUpload = useCallback(
     async (file: UploadedFile) => {
-      // 添加到列表（显示加载状态）
+      // 添加到列表（显示加载状态)
       const fileWithContent: FileWithContent = {
         ...file,
         uploadProgress: 0,
@@ -66,17 +70,17 @@ export default function Home() {
       setUploadedFiles((prev) => [...prev, fileWithContent]);
 
       // 上传到服务器
-      const result = await uploadFile(file.file);
+      const uploadResult = await uploadFile(file.file);
 
-      if (result) {
+      if (uploadResult) {
         // 更新文件信息
         setUploadedFiles((prev) =>
           prev.map((f) =>
             f.uid === file.uid
               ? {
                   ...f,
-                  serverInfo: result,
-                  parsedContent: result.parsedContent,
+                  serverInfo: uploadResult,
+                  parsedContent: uploadResult.parsedContent,
                   uploadProgress: 100,
                 }
               : f
@@ -88,10 +92,10 @@ export default function Home() {
           prev.map((f) =>
             f.uid === file.uid
               ? {
-                  ...f,
-                  uploadProgress: 0,
-                  uploadError: '上传失败',
-                }
+                ...f,
+                uploadProgress: 0,
+                uploadError: '上传失败',
+              }
               : f
           )
         );
@@ -104,12 +108,46 @@ export default function Home() {
     setUploadedFiles((prev) => prev.filter((f) => f.uid !== uid));
   }, []);
 
-  const handleSaveCases = useCallback(() => {
-    if (result?.testCases && result.testCases.length > 0) {
-      // TODO: 保存到数据库
-      message.success(`已保存 ${result.testCases.length} 个测试用例`);
+  const handleSaveCases = useCallback(async () => {
+    if (!result?.testCases || result.testCases.length === 0) {
+      return;
     }
-  }, [result]);
+
+    // 如果 no selected requirementId) {
+      // Show requirement selection dialog
+      setSaveDialogOpen(true);
+      return;
+    }
+
+    // Check if requirement exists
+    const requirement = requirements?.find((r) => r.id === selectedRequirementId);
+    if (!requirement) {
+      message.error('选择的需求不存在');
+      return;
+    }
+
+    // Prepare test cases data
+    const testCasesToSave = result.testCases.map((tc) => ({
+      title: tc.title,
+      priority: tc.priority,
+      preconditions: tc.preconditions || '',
+      steps: tc.steps || [],
+      tags: tc.tags || [],
+    }));
+
+    // Save to database
+    try {
+      const savedCases = await createTestCases({
+        requirementId: selectedRequirementId,
+        testCases: testCasesToSave,
+      });
+      message.success(`已保存 ${savedCases.length} 个测试用例到需求: ${requirement.title}`);
+      setSaveDialogOpen(false);
+    } catch (error) {
+      message.error('保存失败，请重试');
+      console.error('Save error:', error);
+    }
+  }, [result, selectedRequirementId, createTestCases, requirements]);
 
   const handleExportCases = useCallback(() => {
     if (result?.testCases && result.testCases.length > 0) {
@@ -218,6 +256,37 @@ export default function Home() {
         testCaseIds={getTestCaseIds()}
         onClose={() => setExportDialogOpen(false)}
       />
+
+      {/* 保存对话框 */}
+      <Modal
+        title="选择需求"
+        open={saveDialogOpen}
+        onCancel={() => setSaveDialogOpen(false)}
+        onOk={() => {
+          if (selectedRequirementId) {
+            // Trigger save by setting requirement ID
+            handleSaveCases();
+          }
+        }}
+        okText="保存"
+      >
+        <div className="p-4">
+          <p className="mb-4 text-gray-600">选择要保存到的需求：</p>
+          <Select
+            placeholder="选择需求"
+            value={selectedRequirementId}
+            onChange={setSelectedRequirementId}
+            style={{ width: '100%' }}
+            loading={requirements === undefined}
+          >
+            {requirements?.map((req) => (
+              <Select.Option key={req.id} value={req.id}>
+                {req.title}
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
+      </Modal>
     </div>
   );
 }

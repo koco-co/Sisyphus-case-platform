@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 const api = axios.create({ baseURL: '/api' });
@@ -21,6 +21,19 @@ export interface TestCase {
   updatedAt: string;
 }
 
+export interface TestCaseCreateInput {
+  title: string;
+  priority: string;
+  preconditions?: string;
+  steps: TestStep[];
+  tags?: string[];
+}
+
+export interface TestCaseBatchCreateInput {
+  requirementId: string;
+  testCases: TestCaseCreateInput[];
+}
+
 export function useTestCase(id: string) {
   return useQuery({
     queryKey: ['testcase', id],
@@ -40,5 +53,25 @@ export function useTestCases(requirementId: string) {
       return response.data;
     },
     enabled: !!requirementId,
+  });
+}
+
+export function useCreateTestCases() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: TestCaseBatchCreateInput) => {
+      const response = await api.post<TestCase[]>('/testcases/', {
+        requirement_id: data.requirementId,
+        test_cases: data.testCases,
+      });
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      // Invalidate the testcases query for this requirement
+      queryClient.invalidateQueries({
+        queryKey: ['testcases', variables.requirementId]
+      });
+    },
   });
 }

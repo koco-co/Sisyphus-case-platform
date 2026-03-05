@@ -4,11 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
+from uuid import UUID
 
 from app.database import get_db
-from app.models.test_case_new import TestCaseNew
+from app.models import TestCaseNew
 
 router = APIRouter(prefix="/api/testcases", tags=["testcases"])
 
@@ -20,14 +21,29 @@ class TestStep(BaseModel):
     expected: str
 
 
+class TestCaseCreate(BaseModel):
+    """创建测试用例请求"""
+    title: str
+    priority: str = "P2"
+    preconditions: Optional[str] = None
+    steps: List[TestStep] = []
+    tags: List[str] = []
+
+
+class TestCaseBatchCreate(BaseModel):
+    """批量创建测试用例请求"""
+    requirement_id: str
+    test_cases: List[TestCaseCreate]
+
+
 class TestCaseResponse(BaseModel):
     id: str
     requirement_id: str
     title: str
     priority: str
     preconditions: Optional[str]
-    steps: list[TestStep]
-    tags: list[str]
+    steps: List[TestStep]
+    tags: List[str]
     created_at: datetime
     updated_at: datetime
 
@@ -62,7 +78,7 @@ async def get_testcase(
     return testcase
 
 
-@router.get("/requirement/{requirement_id}", response_model=list[TestCaseBrief])
+@router.get("/requirement/{requirement_id}", response_model=List[TestCaseBrief])
 async def list_testcases_by_requirement(
     requirement_id: str,
     db: AsyncSession = Depends(get_db),
@@ -76,3 +92,39 @@ async def list_testcases_by_requirement(
     testcases = result.scalars().all()
 
     return [TestCaseBrief.model_validate(tc) for tc in testcases]
+
+
+@router.post("/", response_model=List[TestCaseResponse], status_code=201)
+async def create_testcases(
+    data: TestCaseBatchCreate,
+    db: AsyncSession = Depends(get_db),
+):
+    """批量创建测试用例"""
+    try:
+        requirement_uuid = UUID(data.requirement_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="无效的需求 ID 格式")
+
+    created_cases = []
+    for tc_data in data.test_cases:
+        # 转换步骤格式
+        steps = [step.model_dump() for step in tc_data.steps]
+
+        testcase = TestCaseNew(
+            requirement_id=requirement_uuid,
+            title=tc_data.title,
+            priority=tc_data.priority,
+            preconditions=tc_data.preconditions,
+            steps=steps,
+            tags=tc_data.tags or [],
+        )
+        db.add(testcase)
+        created_cases.append(testcase)
+
+    await db.commit()
+
+    # Refresh to get generated IDs
+    for tc in created_cases:
+        await db.refresh(tc)
+
+    return [TestCaseResponse.model_validate(tc) for tc in created_cases]
