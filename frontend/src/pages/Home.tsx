@@ -24,8 +24,8 @@ export default function Home() {
   const [selectedRequirementId, setSelectedRequirementId] = useState<string | null>(null);
 
   const { progress, result, isGenerating, generate, cancel, reset } = useGeneration();
-  const { uploadFile } = use useFileUpload();
-  const createTestCases = useCreateTestCases();
+  const { uploadFile } = useFileUpload();
+  const { mutateAsync: createTestCases } = useCreateTestCases();
   const { data: requirements } = useRequirement(selectedRequirementId || null);
 
   const handleSend = useCallback(
