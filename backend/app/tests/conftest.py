@@ -1,5 +1,6 @@
 import pytest
 import pytest_asyncio
+from sqlalchemy import JSON
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from typing import AsyncGenerator
@@ -22,6 +23,19 @@ TestSessionLocal = sessionmaker(
 @pytest_asyncio.fixture(scope="function")
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     """创建测试数据库会话"""
+    # 为 SQLite 替换 JSONB 类型为 JSON
+    from sqlalchemy.dialects.postgresql import JSONB
+    from app.models.requirement import Requirement
+    from app.models.test_case_new import TestCaseNew
+
+    # 临时替换类型
+    original_types = {}
+    for table in [Requirement, TestCaseNew]:
+        for column in table.__table__.columns:
+            if isinstance(column.type, JSONB):
+                original_types[column] = column.type
+                column.type = JSON()
+
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
@@ -30,6 +44,10 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
 
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+
+    # 恢复原始类型
+    for column, original_type in original_types.items():
+        column.type = original_type
 
 
 @pytest_asyncio.fixture(scope="function")
