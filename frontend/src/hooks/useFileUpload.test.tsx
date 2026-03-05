@@ -1,22 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook } from '@testing-library/react'
+import { renderHook, act, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
 import { useFileUpload } from './useFileUpload'
-
-// Mock axios
-vi.mock('axios', () => {
-  const mockPost = vi.fn()
-  return {
-    default: {
-      create: () => ({
-        post: mockPost,
-        get: vi.fn(),
-      }),
-      _mockPost: mockPost,
-    },
-  }
-})
 
 // 创建 wrapper
 function createWrapper() {
@@ -36,6 +22,23 @@ function createWrapper() {
     )
   }
 }
+
+// Mock axios - 定义在 mock 工厂内部
+vi.mock('axios', () => {
+  const mockPost = vi.fn()
+  const mockGet = vi.fn()
+
+  return {
+    default: {
+      create: () => ({
+        post: mockPost,
+        get: mockGet,
+      }),
+      _mockPost: mockPost,
+      _mockGet: mockGet,
+    },
+  }
+})
 
 describe('useFileUpload', () => {
   beforeEach(() => {
@@ -57,5 +60,31 @@ describe('useFileUpload', () => {
     })
 
     expect(result.current.uploadProgress).toBeDefined()
+    expect(result.current.uploadProgress.loading).toBe(false)
+    expect(result.current.uploadProgress.progress).toBe(0)
+    expect(result.current.uploadProgress.error).toBeNull()
+  })
+
+  it('should have reset function', () => {
+    const { result } = renderHook(() => useFileUpload(), {
+      wrapper: createWrapper(),
+    })
+
+    expect(result.current.reset).toBeDefined()
+    expect(typeof result.current.reset).toBe('function')
+  })
+
+  it('should reset upload progress', () => {
+    const { result } = renderHook(() => useFileUpload(), {
+      wrapper: createWrapper(),
+    })
+
+    act(() => {
+      result.current.reset()
+    })
+
+    expect(result.current.uploadProgress.loading).toBe(false)
+    expect(result.current.uploadProgress.progress).toBe(0)
+    expect(result.current.uploadProgress.error).toBeNull()
   })
 })
