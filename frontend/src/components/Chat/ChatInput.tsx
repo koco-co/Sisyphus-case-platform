@@ -29,7 +29,7 @@ export default function ChatInput({
 }: ChatInputProps) {
   const [message, setMessage] = useState('');
   const [files, setFiles] = useState<UploadedFile[]>([]);
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const textAreaRef = useRef(null);
 
   const handleSend = () => {
     if (!message.trim() && files.length === 0) return;

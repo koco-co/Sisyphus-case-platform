@@ -1,5 +1,7 @@
 services:
   postgres:
+    env_file:
+      - .env
     image: pgvector/pgvector:pg16
     container_name: sisyphus-db
     restart: unless-stopped
@@ -10,7 +12,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sisyphus"]
       interval: 10s
@@ -23,14 +25,21 @@ services:
       dockerfile: Dockerfile
     container_name: sisyphus-backend
     restart: unless-stopped
+    env_file:
+      - .env
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql+asyncpg://sisyphus:${POSTGRES_PASSWORD:-changeme}@postgres:5432/sisyphus
+      DATABASE_URL: postgresql+asyncpg://sisyphus:${POSTGRES_PASSWORD}@postgres:5432/sisyphus
       API_HOST: 0.0.0.0
       API_PORT: 8000
       DEBUG: ${DEBUG:-False}
+      # LLM Configuration
+      GLM_API_KEY: ${GLM_API_KEY}
+      GLM_BASE_URL: ${GLM_BASE_URL:-https://open.bigmodel.cn/api/paas/v4}
+      GLM_MODEL: ${GLM_MODEL:-glm-4}
+      DEFAULT_LLM_PROVIDER: ${DEFAULT_LLM_PROVIDER:-glm}
     ports:
       - "8000:8000"
     volumes:

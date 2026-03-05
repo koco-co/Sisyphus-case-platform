@@ -1,2 +1,5 @@
 # Sisyphus-case-platform
-测试用例生成平台
+
+功能测试用例生成平台
+
+为了再保证用例质量，要严格参考superpowers的设计模式，在需求澄清完成后，也可以利用这个superpowers的writing-plans的skill去构建测试用例生成的计划文档
