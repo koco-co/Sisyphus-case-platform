@@ -1,53 +1,41 @@
+import os
 import pytest
 import pytest_asyncio
-from sqlalchemy import JSON
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from typing import AsyncGenerator
 
 from app.database import Base, get_db
 from app.main import app
 
 
-# 使用 SQLite 内存数据库进行测试
-TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
+# 使用测试数据库 (PostgreSQL)
+TEST_DATABASE_URL = os.getenv(
+    "TEST_DATABASE_URL",
+    "postgresql+asyncpg://sisyphus:sisyphus123@localhost:5433/sisyphus_test"
+)
 
-test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
-TestSessionLocal = sessionmaker(
+test_engine = create_async_engine(TEST_DATABASE_URL, echo=False, pool_pre_ping=True)
+TestSessionLocal = async_sessionmaker(
     test_engine,
     class_=AsyncSession,
     expire_on_commit=False,
+    autoflush=False,
 )
 
 
 @pytest_asyncio.fixture(scope="function")
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     """创建测试数据库会话"""
-    # 为 SQLite 替换 JSONB 类型为 JSON
-    from sqlalchemy.dialects.postgresql import JSONB
-    from app.models.requirement import Requirement
-    from app.models.test_case_new import TestCaseNew
-
-    # 临时替换类型
-    original_types = {}
-    for table in [Requirement, TestCaseNew]:
-        for column in table.__table__.columns:
-            if isinstance(column.type, JSONB):
-                original_types[column] = column.type
-                column.type = JSON()
-
+    # 创建所有表
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
     async with TestSessionLocal() as session:
         yield session
 
+    # 清理：删除所有表
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-
-    # 恢复原始类型
-    for column, original_type in original_types.items():
-        column.type = original_type
 
 
 @pytest_asyncio.fixture(scope="function")

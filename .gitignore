@@ -1,5 +1,4 @@
 
 # Temporary files
 logs/
-*.csv
 .env

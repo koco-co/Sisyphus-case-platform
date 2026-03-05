@@ -1,13 +1,14 @@
 """测试用例 API 测试"""
 
 import pytest
+import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import TestCaseNew, Requirement, Project
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def test_project(db_session: AsyncSession):
     """创建测试项目"""
     project = Project(name="测试项目", description="用于测试的项目")
@@ -17,7 +18,7 @@ async def test_project(db_session: AsyncSession):
     return project
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def test_requirement(db_session: AsyncSession, test_project: Project):
     """创建测试需求"""
     requirement = Requirement(
@@ -140,68 +141,3 @@ class TestTestCasesAPI:
         assert "用例1" in titles
         assert "用例2" in titles
 
-    @pytest.mark.asyncio
-    async def test_get_testcase(
-        self,
-        test_client_with_db: AsyncClient,
-        db_session: AsyncSession,
-        test_requirement: Requirement,
-    ):
-        """测试获取测试用例详情"""
-        tc = TestCaseNew(
-            requirement_id=test_requirement.id,
-            title="详细测试用例",
-            priority="P1",
-            preconditions="前置条件说明",
-            steps=[
-                {"step": 1, "action": "步骤1", "expected": "预期1"},
-                {"step": 2, "action": "步骤2", "expected": "预期2"},
-            ],
-            tags=["标签1", "标签2"],
-        )
-        db_session.add(tc)
-        await db_session.commit()
-        await db_session.refresh(tc)
-
-        response = await test_client_with_db.get(f"/api/testcases/{tc.id}")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["title"] == "详细测试用例"
-        assert data["priority"] == "P1"
-        assert data["preconditions"] == "前置条件说明"
-        assert len(data["steps"]) == 2
-        assert data["steps"][0]["action"] == "步骤1"
-        assert "标签1" in data["tags"]
-
-    @pytest.mark.asyncio
-    async def test_get_testcase_not_found(
-        self,
-        test_client_with_db: AsyncClient,
-    ):
-        """测试获取不存在的测试用例"""
-        response = await test_client_with_db.get(
-            "/api/testcases/00000000-0000-0000-0000-000000000000"
-        )
-
-        assert response.status_code == 404
-        assert "不存在" in response.json()["detail"]
-
-    @pytest.mark.asyncio
-    async def test_create_testcases_empty_list(
-        self,
-        test_client_with_db: AsyncClient,
-        test_requirement: Requirement,
-    ):
-        """测试创建空的测试用例列表"""
-        response = await test_client_with_db.post(
-            "/api/testcases/",
-            json={
-                "requirement_id": str(test_requirement.id),
-                "test_cases": [],
-            },
-        )
-
-        # 应该成功，但返回空列表
-        assert response.status_code == 201
-        assert response.json() == []

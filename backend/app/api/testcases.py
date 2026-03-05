@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional, List
 from datetime import datetime
 from uuid import UUID
@@ -50,6 +50,13 @@ class TestCaseResponse(BaseModel):
     class Config:
         from_attributes = True
 
+    @field_validator('id', 'requirement_id', mode='before')
+    @classmethod
+    def convert_uuid_to_str(cls, v):
+        if isinstance(v, UUID):
+            return str(v)
+        return v
+
 
 class TestCaseBrief(BaseModel):
     id: str
@@ -58,6 +65,13 @@ class TestCaseBrief(BaseModel):
 
     class Config:
         from_attributes = True
+
+    @field_validator('id', mode='before')
+    @classmethod
+    def convert_uuid_to_str(cls, v):
+        if isinstance(v, UUID):
+            return str(v)
+        return v
 
 
 # Endpoints
