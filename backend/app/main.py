@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import projects, cases, config, vectors, generation, documents, files
+from app.api import projects, cases, config, vectors, generation, documents, files, requirements, export, testcases
 
 app = FastAPI(
     title="Sisyphus API",
@@ -25,6 +25,9 @@ app.include_router(vectors.router)
 app.include_router(generation.router)
 app.include_router(documents.router)
 app.include_router(files.router)
+app.include_router(requirements.router)
+app.include_router(export.router)
+app.include_router(testcases.router)
 
 
 @app.get("/")

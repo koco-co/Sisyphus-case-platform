@@ -1,40 +1,29 @@
-import { Layout } from 'antd';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AppHeader from './components/Layout/AppHeader';
-import AppSidebar from './components/Layout/AppSidebar';
-import Dashboard from './pages/Dashboard';
-import ProjectList from './pages/ProjectList';
-import ProjectDetail from './pages/ProjectDetail';
-import TestCaseList from './pages/TestCaseList';
-import TestCaseDetail from './pages/TestCaseDetail';
-import DocumentList from './pages/DocumentList';
-import Settings from './pages/Settings';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
 
-const { Content } = Layout;
+import AppLayout from './components/Layout/AppLayout';
+import Home from './pages/Home';
+import Requirement from './pages/Requirement';
+import TestCaseDetail from './pages/TestCaseDetail';
+import Settings from './pages/Settings';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Layout style={{ minHeight: '100vh' }}>
-        <AppSidebar />
-        <Layout>
-          <AppHeader />
-          <Content style={{ margin: '16px' }}>
-            <div style={{ padding: 24, minHeight: 360, background: '#fff', borderRadius: 8 }}>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/projects" element={<ProjectList />} />
-                <Route path="/projects/:id" element={<ProjectDetail />} />
-                <Route path="/testcases" element={<TestCaseList />} />
-                <Route path="/testcases/:id" element={<TestCaseDetail />} />
-                <Route path="/documents" element={<DocumentList />} />
-                <Route path="/settings" element={<Settings />} />
-              </Routes>
-            </div>
-          </Content>
-        </Layout>
-      </Layout>
-    </BrowserRouter>
+    <ConfigProvider locale={zhCN}>
+      <BrowserRouter>
+        <Routes>
+          {/* Main layout with collapsible sidebar */}
+          <Route path="/" element={<AppLayout />}>
+            <Route index element={<Home />} />
+            <Route path="projects/:projectId" element={<Home />} />
+            <Route path="requirements/:id" element={<Requirement />} />
+            <Route path="testcases/:id" element={<TestCaseDetail />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </ConfigProvider>
   );
 }
 

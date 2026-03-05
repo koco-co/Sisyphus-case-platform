@@ -1,7 +1,7 @@
 """Alibaba (DashScope) provider implementation."""
 
 import httpx
-from typing import AsyncIterator
+from typing import AsyncIterator, Optional
 
 from app.llm.base import LLMProvider, LLMResponse, Message
 
@@ -34,7 +34,7 @@ class AlibabaProvider(LLMProvider):
     async def generate(
         self,
         prompt: str,
-        model: str | None = None,
+        model: Optional[str] = None,
         temperature: float = 0.7,
         max_tokens: int = 1000,
     ) -> LLMResponse:
@@ -58,7 +58,7 @@ class AlibabaProvider(LLMProvider):
     async def generate_stream(
         self,
         prompt: str,
-        model: str | None = None,
+        model: Optional[str] = None,
         temperature: float = 0.7,
         max_tokens: int = 1000,
     ) -> AsyncIterator[str]:
@@ -81,7 +81,7 @@ class AlibabaProvider(LLMProvider):
     async def chat(
         self,
         messages: list[Message],
-        model: str | None = None,
+        model: Optional[str] = None,
         temperature: float = 0.7,
         max_tokens: int = 1000,
     ) -> LLMResponse:
