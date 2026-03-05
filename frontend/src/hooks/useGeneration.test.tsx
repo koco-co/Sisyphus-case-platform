@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useGeneration } from './useGeneration'
 
-// Mock WebSocket
+// Mock WebSocket with class syntax
 class MockWebSocket {
   static CONNECTING = 0
   static OPEN = 1
@@ -15,28 +15,12 @@ class MockWebSocket {
   onmessage: ((event: MessageEvent) => void) | null = null
   onerror: ((event: Event) => void) | null = null
 
-  constructor(public url: string) {}
-
   send = vi.fn()
   close = vi.fn()
 
-  simulateOpen() {
-    if (this.onopen) this.onopen(new Event('open'))
-  }
-
-  simulateMessage(data: object) {
-    if (this.onmessage) {
-      this.onmessage(new MessageEvent('message', { data: JSON.stringify(data) }))
-    }
-  }
-
-  simulateClose() {
-    this.readyState = MockWebSocket.CLOSED
-    if (this.onclose) this.onclose(new CloseEvent('close'))
-  }
+  constructor(public url: string) {}
 }
 
-// Mock global WebSocket
 vi.stubGlobal('WebSocket', MockWebSocket)
 
 describe('useGeneration', () => {
@@ -82,5 +66,33 @@ describe('useGeneration', () => {
 
     expect(result.current.progress.stage).toBe('idle')
     expect(result.current.isGenerating).toBe(false)
+  })
+
+  it('should start generation', () => {
+    const { result } = renderHook(() => useGeneration())
+
+    act(() => {
+      result.current.generate('Test requirement')
+    })
+
+    expect(result.current.isGenerating).toBe(true)
+  })
+
+  it('should cancel generation', () => {
+    const { result } = renderHook(() => useGeneration())
+
+    act(() => {
+      result.current.generate('Test requirement')
+    })
+
+    expect(result.current.isGenerating).toBe(true)
+
+    act(() => {
+      result.current.cancel()
+    })
+
+    expect(result.current.isGenerating).toBe(false)
+    expect(result.current.progress.stage).toBe('idle')
+    expect(result.current.progress.message).toBe('已取消')
   })
 })
