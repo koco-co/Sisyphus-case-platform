@@ -22,3 +22,4 @@ class Project(Base):
     parent = relationship("Project", remote_side=[id], back_populates="children")
     children = relationship("Project", back_populates="parent", foreign_keys=[parent_id])
     test_cases = relationship("TestCase", back_populates="project", cascade="all, delete-orphan")
+    requirements = relationship("Requirement", back_populates="project", cascade="all, delete-orphan")
