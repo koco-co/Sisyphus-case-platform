@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, act, waitFor } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
 import { useFileUpload } from './useFileUpload'
@@ -23,22 +23,15 @@ function createWrapper() {
   }
 }
 
-// Mock axios - 定义在 mock 工厂内部
-vi.mock('axios', () => {
-  const mockPost = vi.fn()
-  const mockGet = vi.fn()
-
-  return {
-    default: {
-      create: () => ({
-        post: mockPost,
-        get: mockGet,
-      }),
-      _mockPost: mockPost,
-      _mockGet: mockGet,
-    },
-  }
-})
+// Mock axios
+vi.mock('axios', () => ({
+  default: {
+    create: () => ({
+      post: vi.fn(),
+      get: vi.fn(),
+    }),
+  },
+}))
 
 describe('useFileUpload', () => {
   beforeEach(() => {
@@ -54,7 +47,7 @@ describe('useFileUpload', () => {
     expect(typeof result.current.uploadFile).toBe('function')
   })
 
-  it('should have uploadProgress', () => {
+  it('should have uploadProgress with initial state', () => {
     const { result } = renderHook(() => useFileUpload(), {
       wrapper: createWrapper(),
     })
