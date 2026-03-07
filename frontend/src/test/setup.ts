@@ -28,7 +28,7 @@ class ResizeObserverMock {
   unobserve = vi.fn()
   disconnect = vi.fn()
 }
-global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver
+globalThis.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver
 
 // Mock scrollTo
 window.scrollTo = vi.fn()

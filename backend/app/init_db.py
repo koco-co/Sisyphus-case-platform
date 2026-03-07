@@ -5,6 +5,7 @@
 """
 import asyncio
 import logging
+from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from app.database import engine
 from app.models import Base
@@ -20,7 +21,7 @@ async def init_db() -> None:
         async with engine.begin() as conn:
             # 启用 pgvector 扩展
             try:
-                await conn.execute("CREATE EXTENSION IF NOT EXISTS vector")
+                await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
                 logger.info("✅ pgvector 扩展已启用")
             except SQLAlchemyError as e:
                 logger.error(f"❌ 启用 pgvector 扩展失败: {e}")

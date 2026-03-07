@@ -3,22 +3,30 @@ import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 
 import AppLayout from './components/Layout/AppLayout';
-import Home from './pages/Home';
-import Requirement from './pages/Requirement';
-import TestCaseDetail from './pages/TestCaseDetail';
+import Dashboard from './pages/Dashboard';
 import Settings from './pages/Settings';
+import RequirementIntakePage from './modules/intake/pages/RequirementIntakePage';
+import RequirementStructurePage from './modules/requirement/pages/RequirementStructurePage';
+import TestPointPage from './modules/test-points/pages/TestPointPage';
+import TestCaseWorkbenchPage from './modules/test-cases/pages/TestCaseWorkbenchPage';
+import ReviewDashboardPage from './modules/review/pages/ReviewDashboardPage';
+import KnowledgeLibraryPage from './modules/knowledge/pages/KnowledgeLibraryPage';
+import IntegrationSettingsPage from './modules/integrations/pages/IntegrationSettingsPage';
 
 function App() {
   return (
     <ConfigProvider locale={zhCN}>
       <BrowserRouter>
         <Routes>
-          {/* Main layout with collapsible sidebar */}
           <Route path="/" element={<AppLayout />}>
-            <Route index element={<Home />} />
-            <Route path="projects/:projectId" element={<Home />} />
-            <Route path="requirements/:id" element={<Requirement />} />
-            <Route path="testcases/:id" element={<TestCaseDetail />} />
+            <Route index element={<Dashboard />} />
+            <Route path="intake" element={<RequirementIntakePage />} />
+            <Route path="structure" element={<RequirementStructurePage />} />
+            <Route path="test-points" element={<TestPointPage />} />
+            <Route path="cases" element={<TestCaseWorkbenchPage />} />
+            <Route path="review" element={<ReviewDashboardPage />} />
+            <Route path="knowledge" element={<KnowledgeLibraryPage />} />
+            <Route path="integrations" element={<IntegrationSettingsPage />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>

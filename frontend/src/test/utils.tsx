@@ -2,7 +2,8 @@ import React from 'react'
 import { QueryClient, QueryClientProvider,
 } from '@tanstack/react-query'
 import { render,
- RenderOptions} from '@testing-library/react'
+} from '@testing-library/react'
+import type { RenderOptions } from '@testing-library/react'
 
 // 创建一个测试用的 QueryClient
 export function createTestQueryClient() {

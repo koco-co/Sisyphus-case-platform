@@ -1,93 +1,43 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
-test.describe('Application', () => {
-  test.describe('Home Page', () => {
-    test('should load home page', async ({ page }) => {
-      await page.goto('/')
-
-      await expect(page).toHaveURL('/')
-      const title = page.locator('h1')
-      await expect(title).toBeVisible()
-    })
-
-    test('should display input area on home page', async ({ page }) => {
-      await page.goto('/')
-
-      const inputArea = page.locator('textarea')
-      await expect(inputArea.first()).toBeVisible()
-    })
-
-    test('should allow text input in textarea', async ({ page }) => {
-      await page.goto('/')
-
-      const textarea = page.locator('textarea').first()
-      await textarea.fill('Test requirement description')
-
-      await expect(textarea).toHaveValue('Test requirement description')
-    })
-
-    test('should have send button', async ({ page }) => {
-      await page.goto('/')
-
-      const sendButton = page.locator('button[type="submit"], button:has-text("发送")').first()
-      await expect(sendButton).toBeVisible()
-    })
-
-    test('should have file upload button', async ({ page }) => {
-      await page.goto('/')
-
-      const uploadButton = page.locator('input[type="file"]')
-      await expect(uploadButton.first()).toBeVisible()
-    })
+test.describe('Workbench routes', () => {
+  test('loads dashboard', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: '仪表盘' })).toBeVisible()
   })
 
-  test.describe('Navigation', () => {
-    test('should navigate to settings', async ({ page }) => {
-      await page.goto('/settings')
-
-      await expect(page).toHaveURL('/settings')
-    })
-
-    test('should navigate to test cases', async ({ page }) => {
-      await page.goto('/test-cases')
-
-      await expect(page).toHaveURL('/test-cases')
-    })
-
-    test('should navigate to requirements', async ({ page }) => {
-      await page.goto('/requirements')
-
-      await expect(page).toHaveURL('/requirements')
-    })
-
-    test('should navigate to projects', async ({ page }) => {
-      await page.goto('/projects')
-
-      await expect(page).toHaveURL('/projects')
-    })
+  test('loads intake page', async ({ page }) => {
+    await page.goto('/intake')
+    await expect(page.getByRole('heading', { name: '需求导入' })).toBeVisible()
   })
 
-  test.describe('Layout', () => {
-    test('should display sidebar navigation', async ({ page }) => {
-      await page.goto('/')
-
-      const sidebar = page.locator('nav, [class*="sidebar"], [class*="sider"]').first()
-      await expect(sidebar).toBeVisible()
-    })
-  })
-})
-
-test.describe('Settings Page', () => {
-  test('should load settings page', async ({ page }) => {
-    await page.goto('/settings')
-
-    await expect(page).toHaveURL('/settings')
+  test('loads structure page', async ({ page }) => {
+    await page.goto('/structure')
+    await expect(page.getByRole('heading', { name: '需求结构化' })).toBeVisible()
   })
 
-  test('should display form elements', async ({ page }) => {
-    await page.goto('/settings')
+  test('loads test point page', async ({ page }) => {
+    await page.goto('/test-points')
+    await expect(page.getByRole('heading', { name: '测试点设计' })).toBeVisible()
+  })
 
-    const form = page.locator('form')
-    await expect(form.first()).toBeVisible()
+  test('loads case workbench page', async ({ page }) => {
+    await page.goto('/cases')
+    await expect(page.getByRole('heading', { name: '测试用例工作台' })).toBeVisible()
+  })
+
+  test('loads review page', async ({ page }) => {
+    await page.goto('/review')
+    await expect(page.getByRole('heading', { name: '覆盖分析与发布' })).toBeVisible()
+  })
+
+  test('loads knowledge page', async ({ page }) => {
+    await page.goto('/knowledge')
+    await expect(page.getByRole('heading', { name: '知识库管理' })).toBeVisible()
+  })
+
+  test('loads integrations page', async ({ page }) => {
+    await page.goto('/integrations')
+    await expect(page.getByRole('heading', { name: '集成与导出' })).toBeVisible()
   })
 })

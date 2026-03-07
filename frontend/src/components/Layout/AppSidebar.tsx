@@ -1,9 +1,13 @@
 import { Menu, Button, Divider } from 'antd';
 import {
   DashboardOutlined,
+  BranchesOutlined,
+  DeploymentUnitOutlined,
   FileSearchOutlined,
   FileTextOutlined,
+  ReadOutlined,
   ThunderboltOutlined,
+  SafetyCertificateOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -18,19 +22,39 @@ const menuItems = [
     label: '仪表盘',
   },
   {
-    key: '/generate',
+    key: '/intake',
     icon: <ThunderboltOutlined />,
-    label: '用例生成',
+    label: '需求导入',
   },
   {
-    key: '/testcases',
-    icon: <FileSearchOutlined />,
-    label: '测试用例',
-  },
-  {
-    key: '/documents',
+    key: '/structure',
     icon: <FileTextOutlined />,
-    label: '文档管理',
+    label: '需求结构化',
+  },
+  {
+    key: '/test-points',
+    icon: <BranchesOutlined />,
+    label: '测试点设计',
+  },
+  {
+    key: '/cases',
+    icon: <FileSearchOutlined />,
+    label: '测试用例工作台',
+  },
+  {
+    key: '/review',
+    icon: <SafetyCertificateOutlined />,
+    label: '覆盖与发布',
+  },
+  {
+    key: '/knowledge',
+    icon: <ReadOutlined />,
+    label: '知识库',
+  },
+  {
+    key: '/integrations',
+    icon: <DeploymentUnitOutlined />,
+    label: '集成与导出',
   },
 ];
 
@@ -46,12 +70,8 @@ export default function AppSidebar() {
   // Handle selected keys for routes with parameters
   const getSelectedKeys = () => {
     const path = location.pathname;
-    // Match /generate or /generate/:projectId
-    if (path.startsWith('/generate')) {
-      return ['/generate'];
-    }
-    if (path.startsWith('/projects')) {
-      return ['/projects'];
+    if (path.startsWith('/test-points')) {
+      return ['/test-points'];
     }
     return [path];
   };

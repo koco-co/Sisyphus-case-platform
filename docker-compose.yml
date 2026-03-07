@@ -3,7 +3,6 @@ services:
     env_file:
       - .env
     image: pgvector/pgvector:pg16
-    container_name: sisyphus-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: sisyphus
@@ -11,27 +10,60 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sisyphus"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:RELEASE.2025-02-28T09-55-16Z
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-sisyphus}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-sisyphus123}
+    command: server /data --console-address ":9001"
+    ports:
+      - "9010:9000"
+      - "9011:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: sisyphus-backend
     restart: unless-stopped
     env_file:
       - .env
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
     environment:
-      DATABASE_URL: postgresql+asyncpg://sisyphus:${POSTGRES_PASSWORD}@postgres:5432/sisyphus
+      DATABASE_URL: postgresql+asyncpg://sisyphus:${POSTGRES_PASSWORD:-changeme}@postgres:5432/sisyphus
+      REDIS_URL: redis://redis:6379/0
+      STORAGE_ENDPOINT: http://minio:9000
+      STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:-sisyphus}
+      STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-sisyphus123}
+      STORAGE_BUCKET: ${STORAGE_BUCKET:-sisyphus}
       API_HOST: 0.0.0.0
       API_PORT: 8000
       DEBUG: ${DEBUG:-False}
@@ -41,7 +73,7 @@ services:
       GLM_MODEL: ${GLM_MODEL:-glm-4}
       DEFAULT_LLM_PROVIDER: ${DEFAULT_LLM_PROVIDER:-glm}
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       - ./backend/skills:/app/skills
     healthcheck:
@@ -53,3 +85,4 @@ services:
 
 volumes:
   postgres_data:
+  minio_data:

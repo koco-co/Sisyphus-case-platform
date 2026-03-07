@@ -19,7 +19,6 @@ export default function Dashboard() {
               title="项目总数"
               value={0}
               prefix={<ProjectOutlined />}
-              valueStyle={{ color: '#1677ff' }}
             />
           </Card>
         </Col>
@@ -29,7 +28,6 @@ export default function Dashboard() {
               title="文档总数"
               value={0}
               prefix={<FileTextOutlined />}
-              valueStyle={{ color: '#52c41a' }}
             />
           </Card>
         </Col>
@@ -39,7 +37,6 @@ export default function Dashboard() {
               title="已生成用例"
               value={0}
               prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#1890ff' }}
             />
           </Card>
         </Col>
@@ -49,7 +46,6 @@ export default function Dashboard() {
               title="待审核"
               value={0}
               prefix={<ClockCircleOutlined />}
-              valueStyle={{ color: '#faad14' }}
             />
           </Card>
         </Col>

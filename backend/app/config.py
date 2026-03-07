@@ -6,6 +6,11 @@ class Settings(BaseSettings):
 
     # Database
     database_url: str = "postgresql+asyncpg://sisyphus:YOUR_DB_PASSWORD@localhost:5432/sisyphus"
+    redis_url: str = "redis://localhost:6379/0"
+    storage_endpoint: str = "http://localhost:9000"
+    storage_access_key: str = "sisyphus"
+    storage_secret_key: str = "sisyphus123"
+    storage_bucket: str = "sisyphus"
 
     # API
     api_host: str = "0.0.0.0"
