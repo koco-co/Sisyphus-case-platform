@@ -1,0 +1,7 @@
+# Production overrides — used with: docker compose -f docker-compose.yml -f docker-compose.prod.yml up
+services:
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+
+  # TODO: add production-specific settings (resource limits, restart policies, etc.)
