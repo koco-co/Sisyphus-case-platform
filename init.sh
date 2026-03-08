@@ -15,6 +15,7 @@ success() { echo -e "${GREEN}[OK]${NC}   $*"; }
 section() { echo -e "\n${BLUE}━━━ $* ━━━${NC}"; }
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
+COMPOSE_PROJECT_FILE="$PROJECT_DIR/.compose-project-name"
 
 # ─── PATH: include common install locations for uv and bun ────────────────────
 export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
@@ -76,12 +77,15 @@ success "docker: $(docker --version | awk '{print $3}' | tr -d ',')"
 # ─── Section 2: Clear ports ────────────────────────────────────────────────────
 section "2. Clearing ports"
 
-# Stop existing Docker infrastructure first (prevents killing Docker's own proxy)
-if docker info >/dev/null 2>&1 && \
-   docker compose -f "$PROJECT_DIR/docker/docker-compose.yml" ps -q 2>/dev/null | grep -q .; then
-  info "Stopping existing Docker containers..."
-  docker compose -f "$PROJECT_DIR/docker/docker-compose.yml" down 2>/dev/null || true
-  success "Docker containers stopped"
+# Stop previous run's compose project (if any) so ports are free. Ignore errors so
+# "No such container" from stale compose state never fails the script.
+if docker info >/dev/null 2>&1 && [ -f "$COMPOSE_PROJECT_FILE" ]; then
+  OLD_PROJECT=$(cat "$COMPOSE_PROJECT_FILE" 2>/dev/null)
+  if [ -n "$OLD_PROJECT" ]; then
+    info "Stopping previous Docker Compose project..."
+    docker compose -p "$OLD_PROJECT" -f "$PROJECT_DIR/docker/docker-compose.yml" down 2>/dev/null || true
+    success "Previous containers stopped (or already gone)"
+  fi
 fi
 
 kill_port() {
@@ -132,13 +136,17 @@ success "Frontend dependencies installed"
 # ─── Section 5: Start Docker infrastructure ───────────────────────────────────
 section "5. Starting Docker infrastructure"
 
-info "Starting postgres, redis, qdrant, minio..."
-docker compose -f "$PROJECT_DIR/docker/docker-compose.yml" up -d
+# Use a new project name every run so Docker Compose never hits "No such container"
+# from stale state. Volumes use fixed names in docker-compose.yml so data persists.
+COMPOSE_PROJECT_NAME="sisyphus_$(date +%s)_$$"
+echo "$COMPOSE_PROJECT_NAME" > "$COMPOSE_PROJECT_FILE"
+info "Starting postgres, redis, qdrant, minio (project: $COMPOSE_PROJECT_NAME)..."
+docker compose -p "$COMPOSE_PROJECT_NAME" -f "$PROJECT_DIR/docker/docker-compose.yml" up -d
 
 # ── Wait for PostgreSQL ──
 info "Waiting for PostgreSQL..."
 RETRIES=60
-until docker compose -f "$PROJECT_DIR/docker/docker-compose.yml" exec -T postgres \
+until docker compose -p "$COMPOSE_PROJECT_NAME" -f "$PROJECT_DIR/docker/docker-compose.yml" exec -T postgres \
     pg_isready -U postgres >/dev/null 2>&1; do
   RETRIES=$((RETRIES - 1))
   [ $RETRIES -eq 0 ] && error "PostgreSQL did not become ready in time"
@@ -151,7 +159,7 @@ success "PostgreSQL is ready"
 # ── Wait for Redis ──
 info "Waiting for Redis..."
 RETRIES=30
-until docker compose -f "$PROJECT_DIR/docker/docker-compose.yml" exec -T redis \
+until docker compose -p "$COMPOSE_PROJECT_NAME" -f "$PROJECT_DIR/docker/docker-compose.yml" exec -T redis \
     redis-cli ping >/dev/null 2>&1; do
   RETRIES=$((RETRIES - 1))
   [ $RETRIES -eq 0 ] && error "Redis did not become ready in time"
@@ -196,7 +204,7 @@ cleanup() {
   echo ""
   info "Shutting down..."
   kill "$BACKEND_PID" "$CELERY_PID" 2>/dev/null || true
-  info "Infrastructure still running. To stop: docker compose -f docker/docker-compose.yml down"
+  info "Infrastructure still running. To stop: docker compose -p $COMPOSE_PROJECT_NAME -f docker/docker-compose.yml down"
 }
 trap cleanup EXIT INT TERM
 
