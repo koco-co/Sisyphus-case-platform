@@ -1,16 +1,16 @@
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+from alembic import context
 from app.core.config import settings
-from app.shared.base_model import Base
+from app.modules.audit.models import AuditLog  # noqa: F401
 
 # Import all models to register them with Base.metadata
 from app.modules.auth.models import User  # noqa: F401
-from app.modules.products.models import Product, Iteration, Requirement, RequirementVersion  # noqa: F401
-from app.modules.audit.models import AuditLog  # noqa: F401
 from app.modules.notification.models import Notification  # noqa: F401
+from app.modules.products.models import Iteration, Product, Requirement, RequirementVersion  # noqa: F401
+from app.shared.base_model import Base
 
 config = context.config
 

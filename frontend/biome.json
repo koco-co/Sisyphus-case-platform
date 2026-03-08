@@ -1,6 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
-  "organizeImports": { "enabled": true },
+  "$schema": "https://biomejs.dev/schemas/2.4.6/schema.json",
   "linter": {
     "enabled": true,
     "rules": { "recommended": true }
@@ -14,7 +13,20 @@
   "javascript": {
     "formatter": { "quoteStyle": "single", "semicolons": "always" }
   },
+  "css": {
+    "parser": { "cssModules": false },
+    "formatter": { "enabled": false },
+    "linter": { "enabled": false }
+  },
   "files": {
-    "ignore": [".next", "node_modules"]
+    "includes": [
+      "src/**/*.ts",
+      "src/**/*.tsx",
+      "src/**/*.js",
+      "*.ts",
+      "*.tsx",
+      "next.config.ts",
+      "next-env.d.ts"
+    ]
   }
 }
