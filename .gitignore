@@ -222,3 +222,6 @@ Thumbs.db
 
 # Docker volumes data
 docker/data/
+
+# Compose project name (written by init.sh for docker compose down)
+.compose-project-name
