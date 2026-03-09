@@ -181,3 +181,25 @@ async def upload_requirement(
     service = RequirementService(session)
     req = await service.create_requirement(data)
     return RequirementResponse.model_validate(req)
+
+
+@router.post(
+    "/requirements/{requirement_id}/paste-image",
+    response_model=RequirementResponse,
+)
+async def paste_image_to_requirement(
+    requirement_id: uuid.UUID,
+    file: Annotated[UploadFile, File(...)],
+    session: AsyncSessionDep,
+) -> RequirementResponse:
+    """Handle image paste upload: parse via UDA and append to requirement content_ast."""
+    from app.modules.uda.parsers import parse_document as uda_parse
+
+    raw_bytes = await file.read()
+    filename = file.filename or "pasted_image.png"
+
+    _full_text, parsed_ast = uda_parse(filename, raw_bytes)
+
+    service = RequirementService(session)
+    req = await service.append_parsed_content(requirement_id, filename, parsed_ast)
+    return RequirementResponse.model_validate(req)

@@ -24,8 +24,9 @@ def parse_document(filename: str, raw_bytes: bytes) -> tuple[str, dict]:
 
         return parse_txt(raw_bytes)
     elif ext in ("png", "jpg", "jpeg", "gif", "bmp", "webp"):
-        # For images, we just note the file type — OCR not implemented yet
-        return f"[Image file: {filename}]", {"raw_text": f"[Image file: {filename}]", "sections": []}
+        from app.engine.uda.ocr_parser import ocr_parse
+
+        return ocr_parse(raw_bytes, ext)
     else:
         # Try to read as text
         try:

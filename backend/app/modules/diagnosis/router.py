@@ -57,6 +57,8 @@ async def run_diagnosis(requirement_id: uuid.UUID, session: AsyncSessionDep) -> 
     async def on_complete(full_text: str) -> None:
         async with get_async_session_context() as new_session:
             new_svc = DiagnosisService(new_session)
+            # 自动解析 AI 响应并持久化（消息 + 风险项 + 报告更新）
+            await new_svc.persist_ai_response(report_id, full_text, round_num=1)
             await new_svc.complete_report(report_id, summary=full_text)
 
     collector = SSECollector(stream, on_complete=on_complete)
@@ -79,10 +81,10 @@ async def chat_diagnosis(
     async def on_complete(full_text: str) -> None:
         async with get_async_session_context() as new_session:
             new_svc = DiagnosisService(new_session)
-            msgs = await new_svc.list_messages(report_id)
-            round_num = len(msgs) // 2 + 1
+            round_num = await new_svc.get_current_round(report_id)
             await new_svc.save_message(report_id, "user", user_message, round_num=round_num)
-            await new_svc.save_message(report_id, "assistant", full_text, round_num=round_num)
+            # 自动解析 AI 响应并持久化（消息 + 风险项）
+            await new_svc.persist_ai_response(report_id, full_text, round_num=round_num)
 
     collector = SSECollector(stream, on_complete=on_complete)
     return StreamingResponse(collector, media_type="text/event-stream")

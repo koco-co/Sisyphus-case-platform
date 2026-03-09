@@ -24,6 +24,12 @@ class ChatRequest(BaseModel):
     message: str
 
 
+class TemplateGenerateRequest(BaseModel):
+    requirement_id: uuid.UUID
+    template_id: uuid.UUID
+    variables: dict[str, str] | None = None
+
+
 async def _save_and_parse(
     session_id: uuid.UUID,
     requirement_id: uuid.UUID,
@@ -31,6 +37,7 @@ async def _save_and_parse(
 ) -> None:
     """Persist assistant message and auto-parse test cases from AI output."""
     from app.core.database import get_async_session_context
+    from app.modules.testcases.schemas import TestCaseCreate, TestCaseStepSchema
     from app.modules.testcases.service import TestCaseService
 
     async with get_async_session_context() as new_session:
@@ -44,23 +51,29 @@ async def _save_and_parse(
         tc_svc = TestCaseService(new_session)
         for case in parsed:
             try:
-                case_id = f"TC-{uuid.uuid4().hex[:8].upper()}"
-                tc = await tc_svc.create_case(
-                    requirement_id=requirement_id,
-                    case_id=case_id,
-                    title=case["title"],
-                    priority=case.get("priority", "P1"),
-                    case_type=case.get("case_type", "normal"),
-                    precondition=case.get("precondition", ""),
-                    source="ai",
-                )
-                for step in case.get("steps", []):
-                    await tc_svc.add_step(
-                        tc.id,
-                        step["step_num"],
-                        step["action"],
-                        step["expected_result"],
+                steps = [
+                    TestCaseStepSchema(
+                        step=step.get("step_num", i + 1),
+                        action=step.get("action", ""),
+                        expected=step.get("expected_result", ""),
                     )
+                    for i, step in enumerate(case.get("steps", []))
+                ]
+                case_type_raw = case.get("case_type", "functional")
+                valid_types = {"functional", "boundary", "exception", "performance", "security", "compatibility"}
+                case_type = case_type_raw if case_type_raw in valid_types else "functional"
+
+                data = TestCaseCreate(
+                    requirement_id=requirement_id,
+                    generation_session_id=session_id,
+                    title=case.get("title", ""),
+                    priority=case.get("priority", "P1"),
+                    case_type=case_type,  # type: ignore[arg-type]
+                    precondition=case.get("precondition", ""),
+                    source="ai_generated",
+                    steps=steps,
+                )
+                await tc_svc.create_case(data)
             except Exception:
                 logger.warning("Failed to save parsed test case: %s", case.get("title", ""))
 
@@ -144,6 +157,57 @@ async def chat_by_requirement(
 
     async def on_complete(full_text: str) -> None:
         await _save_and_parse(sid, requirement_id, full_text)
+
+    collector = SSECollector(stream, on_complete=on_complete)
+    return StreamingResponse(collector, media_type="text/event-stream")
+
+
+@router.post("/from-template")
+async def generate_from_template(
+    data: TemplateGenerateRequest,
+    session: AsyncSessionDep,
+) -> StreamingResponse:
+    """基于模板生成测试用例（模板驱动模式）。"""
+    import json
+
+    from sqlalchemy import select
+
+    from app.engine.case_gen.template_driven import template_driven_stream
+    from app.modules.products.models import Requirement
+    from app.modules.templates.models import TestCaseTemplate
+
+    tpl_q = select(TestCaseTemplate).where(
+        TestCaseTemplate.id == data.template_id,
+        TestCaseTemplate.deleted_at.is_(None),
+    )
+    tpl_result = await session.execute(tpl_q)
+    template = tpl_result.scalar_one_or_none()
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+
+    req = await session.get(Requirement, data.requirement_id)
+    if not req:
+        raise HTTPException(status_code=404, detail="Requirement not found")
+
+    req_content = json.dumps(req.content_ast, ensure_ascii=False) if req.content_ast else ""
+
+    svc = GenerationService(session)
+    gen_session = await svc.get_or_create_session(data.requirement_id, mode="template_driven")
+    sid = gen_session.id
+
+    stream = await template_driven_stream(
+        template_name=template.name,
+        template_category=template.category,
+        template_description=template.description or "",
+        template_content=template.template_content,
+        template_variables=template.variables,
+        user_variables=data.variables,
+        requirement_title=req.title,
+        requirement_content=req_content,
+    )
+
+    async def on_complete(full_text: str) -> None:
+        await _save_and_parse(sid, data.requirement_id, full_text)
 
     collector = SSECollector(stream, on_complete=on_complete)
     return StreamingResponse(collector, media_type="text/event-stream")

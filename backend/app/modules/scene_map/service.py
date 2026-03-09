@@ -1,8 +1,11 @@
 import json
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
+from itertools import groupby
 from uuid import UUID
 
+from fastapi import HTTPException
+from fastapi import status as http_status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,7 +13,7 @@ from app.ai.prompts import assemble_prompt
 from app.ai.stream_adapter import get_thinking_stream
 from app.modules.products.models import Requirement
 from app.modules.scene_map.models import SceneMap, TestPoint
-from app.modules.scene_map.schemas import TestPointCreate, TestPointUpdate
+from app.modules.scene_map.schemas import BatchPointUpdate, ReorderItem, TestPointCreate, TestPointUpdate
 
 
 class SceneMapService:
@@ -41,6 +44,14 @@ class SceneMapService:
         result = await self.session.execute(q)
         return result.scalar_one_or_none()
 
+    async def get_map_by_id(self, map_id: UUID) -> SceneMap | None:
+        q = select(SceneMap).where(
+            SceneMap.id == map_id,
+            SceneMap.deleted_at.is_(None),
+        )
+        result = await self.session.execute(q)
+        return result.scalar_one_or_none()
+
     async def list_test_points(self, scene_map_id: UUID) -> list[TestPoint]:
         q = (
             select(TestPoint)
@@ -48,7 +59,7 @@ class SceneMapService:
                 TestPoint.scene_map_id == scene_map_id,
                 TestPoint.deleted_at.is_(None),
             )
-            .order_by(TestPoint.group_name, TestPoint.created_at)
+            .order_by(TestPoint.sort_order, TestPoint.group_name, TestPoint.created_at)
         )
         result = await self.session.execute(q)
         return list(result.scalars().all())
@@ -148,6 +159,106 @@ class SceneMapService:
         if scene_map:
             await self.session.refresh(scene_map)
         return scene_map
+
+    # ── Batch operations (B-M04-09) ───────────────────────────────
+
+    async def batch_update_points(self, updates: list[BatchPointUpdate]) -> list[TestPoint]:
+        updated: list[TestPoint] = []
+        for item in updates:
+            tp = await self.session.get(TestPoint, item.id)
+            if not tp or tp.deleted_at is not None:
+                continue
+            for field, value in item.model_dump(exclude={"id"}, exclude_none=True).items():
+                setattr(tp, field, value)
+            updated.append(tp)
+        await self.session.commit()
+        for tp in updated:
+            await self.session.refresh(tp)
+        return updated
+
+    async def reorder_points(self, map_id: UUID, order: list[ReorderItem]) -> list[TestPoint]:
+        scene_map = await self.get_map_by_id(map_id)
+        if not scene_map:
+            raise HTTPException(
+                status_code=http_status.HTTP_404_NOT_FOUND,
+                detail="Scene map not found",
+            )
+        order_map = {item.id: item.sort_order for item in order}
+        points = await self.list_test_points(map_id)
+        for tp in points:
+            if tp.id in order_map:
+                tp.sort_order = order_map[tp.id]
+        await self.session.commit()
+        return await self.list_test_points(map_id)
+
+    # ── Export (B-M04-10) ─────────────────────────────────────────
+
+    async def export_scene_map(self, map_id: UUID, fmt: str = "json") -> dict | str:
+        scene_map = await self.get_map_by_id(map_id)
+        if not scene_map:
+            raise HTTPException(
+                status_code=http_status.HTTP_404_NOT_FOUND,
+                detail="Scene map not found",
+            )
+        points = await self.list_test_points(map_id)
+
+        if fmt == "json":
+            return self._export_json(scene_map, points)
+        elif fmt == "md":
+            return self._export_markdown(scene_map, points)
+        else:
+            raise HTTPException(
+                status_code=http_status.HTTP_400_BAD_REQUEST,
+                detail=f"Unsupported format: {fmt}. Use 'json' or 'md'.",
+            )
+
+    def _export_json(self, scene_map: SceneMap, points: list[TestPoint]) -> dict:
+        return {
+            "scene_map": {
+                "id": str(scene_map.id),
+                "requirement_id": str(scene_map.requirement_id),
+                "status": scene_map.status,
+                "confirmed_at": scene_map.confirmed_at.isoformat() if scene_map.confirmed_at else None,
+            },
+            "test_points": [
+                {
+                    "id": str(tp.id),
+                    "group_name": tp.group_name,
+                    "title": tp.title,
+                    "description": tp.description,
+                    "priority": tp.priority,
+                    "status": tp.status,
+                    "estimated_cases": tp.estimated_cases,
+                    "source": tp.source,
+                }
+                for tp in points
+            ],
+        }
+
+    def _export_markdown(self, scene_map: SceneMap, points: list[TestPoint]) -> str:
+        lines: list[str] = [
+            f"# 场景地图 — {scene_map.status}",
+            "",
+            f"- **ID**: `{scene_map.id}`",
+            f"- **需求 ID**: `{scene_map.requirement_id}`",
+            f"- **状态**: {scene_map.status}",
+            "",
+        ]
+        sorted_points = sorted(points, key=lambda p: p.group_name)
+        for group, group_points in groupby(sorted_points, key=lambda p: p.group_name):
+            lines.append(f"## {group}")
+            lines.append("")
+            for tp in group_points:
+                priority_badge = f"[{tp.priority}]"
+                lines.append(f"- {priority_badge} **{tp.title}**")
+                if tp.description:
+                    lines.append(f"  - 描述: {tp.description}")
+                lines.append(f"  - 预计用例数: {tp.estimated_cases} | 来源: {tp.source} | 状态: {tp.status}")
+            lines.append("")
+
+        return "\n".join(lines)
+
+    # ── AI generation ─────────────────────────────────────────────
 
     async def generate_stream(self, requirement_id: UUID) -> AsyncIterator[str]:
         req = await self.session.get(Requirement, requirement_id)

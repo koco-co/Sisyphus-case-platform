@@ -108,3 +108,35 @@ async def delete_document(doc_id: uuid.UUID, session: AsyncSessionDep) -> dict:
     if not success:
         raise HTTPException(status_code=404, detail="Document not found")
     return {"ok": True}
+
+
+@router.post("/test")
+async def test_rag_retrieval(
+    session: AsyncSessionDep,
+    query: str = Query(..., min_length=1, description="测试查询语句"),
+    top_k: int = Query(5, ge=1, le=20),
+    score_threshold: float = Query(0.5, ge=0.0, le=1.0),
+    doc_id: uuid.UUID | None = None,
+) -> dict:
+    """Test RAG retrieval hit rate — returns matching chunks with scores."""
+    doc_ids = [str(doc_id)] if doc_id else None
+    try:
+        from app.engine.rag.retriever import retrieve
+
+        results = await retrieve(query, top_k=top_k, score_threshold=score_threshold, doc_ids=doc_ids)
+        return {
+            "query": query,
+            "total_hits": len(results),
+            "hits": [
+                {
+                    "chunk_id": r.chunk_id,
+                    "score": round(r.score, 4),
+                    "content_preview": r.content[:300],
+                    "metadata": r.metadata,
+                }
+                for r in results
+            ],
+            "avg_score": round(sum(r.score for r in results) / len(results), 4) if results else 0.0,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"RAG retrieval failed: {e}") from e

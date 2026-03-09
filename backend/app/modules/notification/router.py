@@ -1,69 +1,108 @@
 import uuid
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel as PydanticBaseModel
 
 from app.core.dependencies import AsyncSessionDep
+from app.modules.notification.schemas import (
+    NotificationCreate,
+    NotificationResponse,
+    UnreadCountResponse,
+)
 from app.modules.notification.service import NotificationService
+from app.shared.pagination import PaginatedResponse
 
 router = APIRouter(prefix="/notifications", tags=["notifications"])
 
 
-class NotificationCreate(PydanticBaseModel):
-    title: str
-    content: str | None = None
-    type: str = "info"
-    ref_type: str | None = None
-    ref_id: uuid.UUID | None = None
-    user_id: uuid.UUID
+@router.post("", response_model=NotificationResponse, status_code=status.HTTP_201_CREATED)
+async def create_notification(data: NotificationCreate, session: AsyncSessionDep) -> NotificationResponse:
+    svc = NotificationService(session)
+    notif = await svc.create_notification(data)
+    return NotificationResponse.model_validate(notif)
 
 
-@router.get("/")
+@router.get("", response_model=PaginatedResponse[NotificationResponse])
 async def list_notifications(
     session: AsyncSessionDep,
     user_id: uuid.UUID | None = None,
     unread_only: bool = False,
-) -> list[dict]:
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=100),
+) -> dict:
+    if not user_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="user_id is required")
     svc = NotificationService(session)
-    notifications = await svc.list_notifications(user_id, unread_only)
-    return [
-        {
-            "id": str(n.id),
-            "title": n.title,
-            "content": n.content,
-            "type": n.type,
-            "is_read": n.is_read,
-            "ref_type": n.ref_type,
-            "ref_id": str(n.ref_id) if n.ref_id else None,
-            "created_at": n.created_at.isoformat() if n.created_at else "",
-        }
-        for n in notifications
-    ]
+    notifications, total = await svc.get_user_notifications(user_id, unread_only, page, page_size)
+    return {
+        "items": [NotificationResponse.model_validate(n) for n in notifications],
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "pages": (total + page_size - 1) // page_size if total > 0 else 0,
+    }
 
 
-@router.post("/", status_code=201)
-async def create_notification(data: NotificationCreate, session: AsyncSessionDep) -> dict:
+@router.get("/unread-count", response_model=UnreadCountResponse)
+async def get_unread_count(user_id: uuid.UUID, session: AsyncSessionDep) -> UnreadCountResponse:
     svc = NotificationService(session)
-    n = await svc.create_notification(
+    count = await svc.get_unread_count(user_id)
+    return UnreadCountResponse(count=count)
+
+
+@router.patch("/{notification_id}/read")
+async def mark_as_read(notification_id: uuid.UUID, session: AsyncSessionDep) -> dict:
+    svc = NotificationService(session)
+    success = await svc.mark_as_read(notification_id)
+    if not success:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
+    return {"ok": True}
+
+
+@router.patch("/read-all/{user_id}")
+async def mark_all_as_read(user_id: uuid.UUID, session: AsyncSessionDep) -> dict:
+    svc = NotificationService(session)
+    count = await svc.mark_all_as_read(user_id)
+    return {"marked_read": count}
+
+
+class BroadcastRequest(PydanticBaseModel):
+    user_ids: list[uuid.UUID]
+    title: str
+    content: str | None = None
+    notification_type: str = "system"
+
+
+class EventNotifyRequest(PydanticBaseModel):
+    event_type: str
+    entity_type: str
+    entity_id: uuid.UUID
+    actor_id: uuid.UUID
+    target_user_ids: list[uuid.UUID]
+
+
+@router.post("/broadcast")
+async def broadcast(data: BroadcastRequest, session: AsyncSessionDep) -> dict:
+    """Send the same notification to multiple users."""
+    svc = NotificationService(session)
+    count = await svc.broadcast(
+        user_ids=data.user_ids,
         title=data.title,
         content=data.content,
-        type=data.type,
-        ref_type=data.ref_type,
-        ref_id=data.ref_id,
-        user_id=data.user_id,
+        notification_type=data.notification_type,
     )
-    return {"id": str(n.id)}
+    return {"sent": count}
 
 
-@router.post("/{notification_id}/read")
-async def mark_read(notification_id: uuid.UUID, session: AsyncSessionDep) -> dict:
+@router.post("/event")
+async def notify_on_event(data: EventNotifyRequest, session: AsyncSessionDep) -> dict:
+    """Send contextual event-based notifications."""
     svc = NotificationService(session)
-    success = await svc.mark_read(notification_id)
-    return {"ok": success}
-
-
-@router.post("/mark-all-read/{user_id}")
-async def mark_all_read(user_id: uuid.UUID, session: AsyncSessionDep) -> dict:
-    svc = NotificationService(session)
-    count = await svc.mark_all_read(user_id)
-    return {"marked_read": count}
+    count = await svc.notify_on_event(
+        event_type=data.event_type,
+        entity_type=data.entity_type,
+        entity_id=data.entity_id,
+        actor_id=data.actor_id,
+        target_user_ids=data.target_user_ids,
+    )
+    return {"sent": count}

@@ -137,6 +137,22 @@ class GenerationService:
             enriched = f"{context}\n\n用户请求：{user_message}"
             if history:
                 history[-1]["content"] = enriched
+            else:
+                history.append({"role": "user", "content": enriched})
+
+        # In test_point_driven mode without test points, warn the user
+        if (
+            gen_session.mode == "test_point_driven"
+            and not scene_map
+            and not any("测试点" in msg.get("content", "") for msg in history)
+        ):
+            history.append(
+                {
+                    "role": "system",
+                    "content": "注意：当前需求尚未生成测试点/场景地图，建议先完成 M04 测试点分析后再进入用例生成。",
+                }
+            )
+
         # Select prompt module based on session mode
         if gen_session.mode == "test_point_driven":
             task_instruction = "根据已确认的测试点，生成高质量、可执行的测试用例，输出 JSON 数组。"

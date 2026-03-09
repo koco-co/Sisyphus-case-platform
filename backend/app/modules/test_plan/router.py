@@ -1,84 +1,62 @@
 import uuid
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel as PydanticBaseModel
+from fastapi import APIRouter, Query, status
 
 from app.core.dependencies import AsyncSessionDep
+from app.modules.test_plan.schemas import (
+    TestPlanCreate,
+    TestPlanResponse,
+    TestPlanStatsResponse,
+    TestPlanUpdate,
+)
 from app.modules.test_plan.service import TestPlanService
 
 router = APIRouter(prefix="/test-plans", tags=["test-plans"])
 
 
-class TestPlanCreate(PydanticBaseModel):
-    iteration_id: uuid.UUID
-    name: str
-    description: str | None = None
-    scope: dict | None = None
-
-
-class TestPlanStatusUpdate(PydanticBaseModel):
-    status: str
-
-
-@router.get("/")
-async def list_plans(session: AsyncSessionDep, iteration_id: uuid.UUID | None = None) -> list[dict]:
+@router.get("", response_model=list[TestPlanResponse])
+async def list_plans(
+    session: AsyncSessionDep,
+    iteration_id: Annotated[uuid.UUID | None, Query()] = None,
+    status_filter: Annotated[str | None, Query(alias="status")] = None,
+) -> list[TestPlanResponse]:
     svc = TestPlanService(session)
-    plans = await svc.list_plans(iteration_id)
-    return [
-        {
-            "id": str(p.id),
-            "iteration_id": str(p.iteration_id),
-            "name": p.name,
-            "status": p.status,
-            "test_case_count": p.test_case_count,
-            "created_at": p.created_at.isoformat() if p.created_at else "",
-        }
-        for p in plans
-    ]
+    plans = await svc.list_plans(iteration_id, status_filter)
+    return [TestPlanResponse.model_validate(p) for p in plans]
 
 
-@router.get("/{plan_id}")
-async def get_plan(plan_id: uuid.UUID, session: AsyncSessionDep) -> dict:
+@router.get("/stats", response_model=TestPlanStatsResponse)
+async def get_stats(
+    session: AsyncSessionDep,
+    iteration_id: Annotated[uuid.UUID, Query()],
+) -> TestPlanStatsResponse:
+    svc = TestPlanService(session)
+    return await svc.get_stats(iteration_id)
+
+
+@router.get("/{plan_id}", response_model=TestPlanResponse)
+async def get_plan(plan_id: uuid.UUID, session: AsyncSessionDep) -> TestPlanResponse:
     svc = TestPlanService(session)
     plan = await svc.get_plan(plan_id)
-    if not plan:
-        raise HTTPException(status_code=404, detail="Test plan not found")
-    return {
-        "id": str(plan.id),
-        "iteration_id": str(plan.iteration_id),
-        "name": plan.name,
-        "description": plan.description,
-        "status": plan.status,
-        "scope": plan.scope,
-        "test_case_count": plan.test_case_count,
-    }
+    return TestPlanResponse.model_validate(plan)
 
 
-@router.post("/", status_code=201)
-async def create_plan(data: TestPlanCreate, session: AsyncSessionDep) -> dict:
+@router.post("", response_model=TestPlanResponse, status_code=status.HTTP_201_CREATED)
+async def create_plan(data: TestPlanCreate, session: AsyncSessionDep) -> TestPlanResponse:
     svc = TestPlanService(session)
-    plan = await svc.create_plan(
-        iteration_id=data.iteration_id,
-        name=data.name,
-        description=data.description,
-        scope=data.scope,
-    )
-    return {"id": str(plan.id), "name": plan.name}
+    plan = await svc.create_plan(data)
+    return TestPlanResponse.model_validate(plan)
 
 
-@router.patch("/{plan_id}/status")
-async def update_status(plan_id: uuid.UUID, data: TestPlanStatusUpdate, session: AsyncSessionDep) -> dict:
+@router.patch("/{plan_id}", response_model=TestPlanResponse)
+async def update_plan(plan_id: uuid.UUID, data: TestPlanUpdate, session: AsyncSessionDep) -> TestPlanResponse:
     svc = TestPlanService(session)
-    plan = await svc.update_status(plan_id, data.status)
-    if not plan:
-        raise HTTPException(status_code=404, detail="Test plan not found")
-    return {"id": str(plan.id), "status": plan.status}
+    plan = await svc.update_plan(plan_id, data)
+    return TestPlanResponse.model_validate(plan)
 
 
-@router.delete("/{plan_id}")
-async def delete_plan(plan_id: uuid.UUID, session: AsyncSessionDep) -> dict:
+@router.delete("/{plan_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_plan(plan_id: uuid.UUID, session: AsyncSessionDep) -> None:
     svc = TestPlanService(session)
-    success = await svc.soft_delete(plan_id)
-    if not success:
-        raise HTTPException(status_code=404, detail="Test plan not found")
-    return {"ok": True}
+    await svc.soft_delete(plan_id)

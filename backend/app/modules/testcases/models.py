@@ -11,15 +11,22 @@ class TestCase(BaseModel):
     __tablename__ = "test_cases"
 
     requirement_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("requirements.id"), index=True)
-    test_point_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    scene_node_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True, index=True)
+    generation_session_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True, index=True)
     case_id: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     title: Mapped[str] = mapped_column(Text)
+    module_path: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    precondition: Mapped[str | None] = mapped_column(Text, nullable=True)
     priority: Mapped[str] = mapped_column(String(10), default="P1")
-    case_type: Mapped[str] = mapped_column(String(20), default="normal")
+    case_type: Mapped[str] = mapped_column(String(20), default="functional")
     status: Mapped[str] = mapped_column(String(20), default="draft")
-    source: Mapped[str] = mapped_column(String(20), default="ai")
+    source: Mapped[str] = mapped_column(String(20), default="ai_generated")
+    steps: Mapped[list] = mapped_column(JSONB, default=list)
+    tags: Mapped[list] = mapped_column(JSONB, default=list)
     ai_score: Mapped[float | None] = mapped_column(nullable=True)
-    precondition: Mapped[str | None] = mapped_column(Text)
+    created_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    reviewer_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    review_comment: Mapped[str | None] = mapped_column(Text, nullable=True)
     version: Mapped[int] = mapped_column(Integer, default=1)
 
 
@@ -38,4 +45,4 @@ class TestCaseVersion(BaseModel):
     test_case_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("test_cases.id"), index=True)
     version: Mapped[int] = mapped_column(Integer)
     snapshot: Mapped[dict] = mapped_column(JSONB)
-    change_reason: Mapped[str | None] = mapped_column(Text)
+    change_reason: Mapped[str | None] = mapped_column(Text, nullable=True)

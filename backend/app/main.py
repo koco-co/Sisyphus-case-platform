@@ -6,8 +6,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.audit_middleware import audit_logging_middleware
 from app.core.config import settings
 from app.core.middleware import request_logging_middleware
+from app.core.rate_limiter import rate_limit_middleware
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +37,7 @@ _MODULE_NAMES = [
     "audit",
     "recycle",
     "ai_config",
+    "tasks",
 ]
 
 
@@ -73,6 +76,8 @@ app.add_middleware(
 )
 
 app.middleware("http")(request_logging_middleware)
+app.middleware("http")(rate_limit_middleware)
+app.middleware("http")(audit_logging_middleware)
 
 for _r in _collect_routers():
     app.include_router(_r, prefix="/api")

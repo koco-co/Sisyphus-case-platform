@@ -23,3 +23,25 @@ class DiffResponse(BaseModel):
 class DiffRequest(BaseModel):
     version_from: int
     version_to: int
+
+
+class SuggestionItem(BaseModel):
+    name: str
+    description: str = ""
+    category: str = "normal"
+    priority: str = "P1"
+    reason: str = ""
+
+
+class SuggestionResponse(BaseModel):
+    suggestions: list[SuggestionItem]
+    count: int
+
+
+class RegenerateRequest(BaseModel):
+    test_point_ids: list[str] | None = None
+
+
+class RegenerateResponse(BaseModel):
+    regenerated_cases: list[dict]
+    count: int

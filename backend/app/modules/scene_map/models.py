@@ -29,3 +29,4 @@ class TestPoint(BaseModel):
     status: Mapped[str] = mapped_column(String(20), default="ai_generated")
     estimated_cases: Mapped[int] = mapped_column(Integer, default=3)
     source: Mapped[str] = mapped_column(String(20), default="ai")
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)

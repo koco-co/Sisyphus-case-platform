@@ -156,6 +156,39 @@ class RequirementService:
         await self.session.refresh(requirement)
         return requirement
 
+    async def append_parsed_content(self, requirement_id: UUID, filename: str, parsed_ast: dict) -> Requirement:
+        """Append parsed content (e.g. from a pasted image) to an existing requirement."""
+        requirement = await self.session.get(Requirement, requirement_id)
+        if not requirement or requirement.deleted_at is not None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Requirement not found")
+
+        # Snapshot current version before modifying
+        version_snapshot = RequirementVersion(
+            requirement_id=requirement.id,
+            version=requirement.version,
+            content_ast=requirement.content_ast or {},
+            change_summary=f"Before appending parsed content from {filename}",
+        )
+        self.session.add(version_snapshot)
+
+        existing_ast = dict(requirement.content_ast) if requirement.content_ast else {}
+        attachments: list[dict] = existing_ast.get("attachments", [])
+        attachments.append({"filename": filename, "parsed": parsed_ast})
+        existing_ast["attachments"] = attachments
+
+        # Merge parsed sections into existing sections
+        existing_sections: list[dict] = existing_ast.get("sections", [])
+        new_sections: list[dict] = parsed_ast.get("sections", [])
+        existing_sections.extend(new_sections)
+        existing_ast["sections"] = existing_sections
+
+        requirement.content_ast = existing_ast
+        requirement.version += 1
+
+        await self.session.commit()
+        await self.session.refresh(requirement)
+        return requirement
+
     async def soft_delete_requirement(self, requirement_id: UUID) -> None:
         requirement = await self.session.get(Requirement, requirement_id)
         if not requirement or requirement.deleted_at is not None:

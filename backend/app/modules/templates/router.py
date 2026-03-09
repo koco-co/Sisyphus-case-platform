@@ -1,94 +1,78 @@
 import uuid
 
-from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel as PydanticBaseModel
+from fastapi import APIRouter, Query, status
 
 from app.core.dependencies import AsyncSessionDep
+from app.modules.templates.schemas import (
+    TemplateApplyRequest,
+    TemplateApplyResponse,
+    TemplateCreate,
+    TemplateListItem,
+    TemplateListResponse,
+    TemplateResponse,
+    TemplateUpdate,
+)
 from app.modules.templates.service import TemplateService
 
 router = APIRouter(prefix="/templates", tags=["templates"])
 
 
-class TemplateCreate(PydanticBaseModel):
-    name: str
-    category: str = "functional"
-    description: str | None = None
-    template_content: dict = {}
-    variables: dict | None = None
-
-
-@router.get("/")
+@router.get("", response_model=TemplateListResponse)
 async def list_templates(
     session: AsyncSessionDep,
     category: str | None = None,
+    keyword: str | None = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-) -> dict:
+) -> TemplateListResponse:
     svc = TemplateService(session)
-    templates, total = await svc.list_templates(category, page, page_size)
-    return {
-        "items": [
-            {
-                "id": str(t.id),
-                "name": t.name,
-                "category": t.category,
-                "description": t.description,
-                "usage_count": t.usage_count,
-                "status": t.status,
-                "created_at": t.created_at.isoformat() if t.created_at else "",
-            }
-            for t in templates
-        ],
-        "total": total,
-        "page": page,
-        "page_size": page_size,
-    }
+    templates, total = await svc.list_templates(category, keyword, page, page_size)
+    return TemplateListResponse(
+        items=[TemplateListItem.model_validate(t) for t in templates],
+        total=total,
+        page=page,
+        page_size=page_size,
+    )
 
 
-@router.get("/{template_id}")
-async def get_template(template_id: uuid.UUID, session: AsyncSessionDep) -> dict:
+@router.get("/{template_id}", response_model=TemplateResponse)
+async def get_template(template_id: uuid.UUID, session: AsyncSessionDep) -> TemplateResponse:
     svc = TemplateService(session)
     tpl = await svc.get_template(template_id)
-    if not tpl:
-        raise HTTPException(status_code=404, detail="Template not found")
-    return {
-        "id": str(tpl.id),
-        "name": tpl.name,
-        "category": tpl.category,
-        "description": tpl.description,
-        "template_content": tpl.template_content,
-        "variables": tpl.variables,
-        "usage_count": tpl.usage_count,
-        "status": tpl.status,
-    }
+    return TemplateResponse.model_validate(tpl)
 
 
-@router.post("/", status_code=201)
-async def create_template(data: TemplateCreate, session: AsyncSessionDep) -> dict:
+@router.post("", response_model=TemplateResponse, status_code=status.HTTP_201_CREATED)
+async def create_template(data: TemplateCreate, session: AsyncSessionDep) -> TemplateResponse:
     svc = TemplateService(session)
-    tpl = await svc.create_template(
-        name=data.name,
-        category=data.category,
-        description=data.description,
-        template_content=data.template_content,
-        variables=data.variables,
-    )
-    return {"id": str(tpl.id), "name": tpl.name}
+    tpl = await svc.create_template(data)
+    return TemplateResponse.model_validate(tpl)
 
 
-@router.post("/{template_id}/use")
-async def use_template(template_id: uuid.UUID, session: AsyncSessionDep) -> dict:
+@router.patch("/{template_id}", response_model=TemplateResponse)
+async def update_template(
+    template_id: uuid.UUID,
+    data: TemplateUpdate,
+    session: AsyncSessionDep,
+) -> TemplateResponse:
     svc = TemplateService(session)
-    tpl = await svc.use_template(template_id)
-    if not tpl:
-        raise HTTPException(status_code=404, detail="Template not found")
-    return {"id": str(tpl.id), "template_content": tpl.template_content, "variables": tpl.variables}
+    tpl = await svc.update_template(template_id, data)
+    return TemplateResponse.model_validate(tpl)
 
 
-@router.delete("/{template_id}")
-async def delete_template(template_id: uuid.UUID, session: AsyncSessionDep) -> dict:
+@router.post("/{template_id}/apply", response_model=TemplateApplyResponse)
+async def apply_template(
+    template_id: uuid.UUID,
+    data: TemplateApplyRequest,
+    session: AsyncSessionDep,
+) -> TemplateApplyResponse:
+    """Apply a template with variable substitution to generate case content."""
     svc = TemplateService(session)
-    success = await svc.soft_delete(template_id)
-    if not success:
-        raise HTTPException(status_code=404, detail="Template not found")
-    return {"ok": True}
+    result = await svc.apply_template(template_id, data.requirement_id, data.variables)
+    return TemplateApplyResponse(**result)
+
+
+@router.delete("/{template_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_template(template_id: uuid.UUID, session: AsyncSessionDep) -> None:
+    svc = TemplateService(session)
+    await svc.soft_delete(template_id)

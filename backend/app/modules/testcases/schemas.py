@@ -1,60 +1,147 @@
 import uuid
 from typing import Literal
 
+from pydantic import Field
+
 from app.shared.base_schema import BaseResponse, BaseSchema
+from app.shared.pagination import PaginatedResponse
+
+# ── Step schema ────────────────────────────────────────────────────
 
 
 class TestCaseStepSchema(BaseSchema):
-    step_num: int
+    step: int
     action: str
-    expected_result: str
+    expected: str
 
 
-class TestCaseStepResponse(BaseResponse):
-    test_case_id: uuid.UUID
-    step_num: int
-    action: str
-    expected_result: str
+# ── Create / Update ────────────────────────────────────────────────
+
+CaseTypeLiteral = Literal[
+    "functional",
+    "boundary",
+    "exception",
+    "performance",
+    "security",
+    "compatibility",
+]
+StatusLiteral = Literal["draft", "review", "approved", "rejected", "deprecated"]
+PriorityLiteral = Literal["P0", "P1", "P2", "P3"]
+SourceLiteral = Literal["ai_generated", "manual", "imported"]
 
 
 class TestCaseCreate(BaseSchema):
     requirement_id: uuid.UUID
-    test_point_id: uuid.UUID | None = None
-    case_id: str
+    scene_node_id: uuid.UUID | None = None
+    generation_session_id: uuid.UUID | None = None
+    case_id: str | None = None
     title: str
-    priority: Literal["P0", "P1", "P2"] = "P1"
-    case_type: Literal["normal", "exception", "boundary", "concurrent"] = "normal"
+    module_path: str | None = None
     precondition: str | None = None
+    priority: PriorityLiteral = "P1"
+    case_type: CaseTypeLiteral = "functional"
+    source: SourceLiteral = "manual"
     steps: list[TestCaseStepSchema] = []
+    tags: list[str] = []
+    created_by: uuid.UUID | None = None
 
 
 class TestCaseUpdate(BaseSchema):
     title: str | None = None
-    priority: Literal["P0", "P1", "P2"] | None = None
-    case_type: str | None = None
-    status: str | None = None
+    module_path: str | None = None
     precondition: str | None = None
+    priority: PriorityLiteral | None = None
+    case_type: CaseTypeLiteral | None = None
+    status: StatusLiteral | None = None
     steps: list[TestCaseStepSchema] | None = None
+    tags: list[str] | None = None
+
+
+# ── Response ───────────────────────────────────────────────────────
 
 
 class TestCaseResponse(BaseResponse):
     requirement_id: uuid.UUID
-    test_point_id: uuid.UUID | None
+    scene_node_id: uuid.UUID | None
+    generation_session_id: uuid.UUID | None
     case_id: str
     title: str
+    module_path: str | None
+    precondition: str | None
     priority: str
     case_type: str
     status: str
     source: str
+    steps: list[TestCaseStepSchema]
+    tags: list[str]
     ai_score: float | None
-    precondition: str | None
+    created_by: uuid.UUID | None
+    reviewer_id: uuid.UUID | None = None
+    review_comment: str | None = None
     version: int
 
 
-class TestCaseListQuery(BaseSchema):
+TestCaseListResponse = PaginatedResponse[TestCaseResponse]
+
+
+# ── Filter / Batch ─────────────────────────────────────────────────
+
+
+class TestCaseFilter(BaseSchema):
     requirement_id: uuid.UUID | None = None
+    scene_node_id: uuid.UUID | None = None
     priority: str | None = None
     case_type: str | None = None
     status: str | None = None
-    page: int = 1
-    page_size: int = 20
+    source: str | None = None
+    keyword: str | None = None
+    page: int = Field(default=1, ge=1)
+    page_size: int = Field(default=20, ge=1, le=100)
+
+
+class TestCaseBatchAction(BaseSchema):
+    case_ids: list[uuid.UUID]
+    status: StatusLiteral
+
+
+# ── Stats ──────────────────────────────────────────────────────────
+
+
+class StatusCountItem(BaseSchema):
+    status: str
+    count: int
+
+
+class TestCaseStatsResponse(BaseSchema):
+    total: int
+    by_status: list[StatusCountItem]
+
+
+# ── Version ────────────────────────────────────────────────────────
+
+
+class TestCaseVersionResponse(BaseResponse):
+    test_case_id: uuid.UUID
+    version: int
+    snapshot: dict
+    change_reason: str | None
+
+
+# ── Review ─────────────────────────────────────────────────────────
+
+
+class ReviewRequest(BaseSchema):
+    reviewer_id: uuid.UUID | None = None
+    reason: str | None = None
+
+
+# ── Traceability ───────────────────────────────────────────────────
+
+
+class TraceabilityResponse(BaseSchema):
+    test_case: TestCaseResponse
+    test_point: dict | None = None
+    scene_map: dict | None = None
+    requirement: dict | None = None
+    iteration: dict | None = None
+    product: dict | None = None

@@ -1,12 +1,15 @@
 import uuid
+from typing import Literal
 
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import PlainTextResponse, StreamingResponse
 
 from app.ai.parser import parse_test_points
 from app.ai.sse_collector import SSECollector
 from app.core.dependencies import AsyncSessionDep
 from app.modules.scene_map.schemas import (
+    BatchUpdateRequest,
+    ReorderRequest,
     SceneMapResponse,
     TestPointCreate,
     TestPointResponse,
@@ -123,3 +126,53 @@ async def confirm_scene_map(requirement_id: uuid.UUID, session: AsyncSessionDep)
     resp = SceneMapResponse.model_validate(scene_map)
     resp.test_points = [TestPointResponse.model_validate(tp) for tp in test_points]
     return resp
+
+
+# ── Batch operations (B-M04-09) ───────────────────────────────────
+
+
+@router.post("/{requirement_id}/test-points/batch-update", response_model=list[TestPointResponse])
+async def batch_update_points(
+    requirement_id: uuid.UUID,
+    data: BatchUpdateRequest,
+    session: AsyncSessionDep,
+) -> list[TestPointResponse]:
+    svc = SceneMapService(session)
+    scene_map = await svc.get_map(requirement_id)
+    if not scene_map:
+        raise HTTPException(status_code=404, detail="Scene map not found")
+    updated = await svc.batch_update_points(data.updates)
+    return [TestPointResponse.model_validate(tp) for tp in updated]
+
+
+@router.post("/{requirement_id}/test-points/reorder", response_model=list[TestPointResponse])
+async def reorder_points(
+    requirement_id: uuid.UUID,
+    data: ReorderRequest,
+    session: AsyncSessionDep,
+) -> list[TestPointResponse]:
+    svc = SceneMapService(session)
+    scene_map = await svc.get_map(requirement_id)
+    if not scene_map:
+        raise HTTPException(status_code=404, detail="Scene map not found")
+    points = await svc.reorder_points(scene_map.id, data.order)
+    return [TestPointResponse.model_validate(tp) for tp in points]
+
+
+# ── Export (B-M04-10) ─────────────────────────────────────────────
+
+
+@router.get("/{requirement_id}/export", response_model=None)
+async def export_scene_map(
+    requirement_id: uuid.UUID,
+    session: AsyncSessionDep,
+    fmt: Literal["json", "md"] = Query("json", alias="format"),
+) -> dict | PlainTextResponse:
+    svc = SceneMapService(session)
+    scene_map = await svc.get_map(requirement_id)
+    if not scene_map:
+        raise HTTPException(status_code=404, detail="Scene map not found")
+    result = await svc.export_scene_map(scene_map.id, fmt)
+    if isinstance(result, str):
+        return PlainTextResponse(content=result, media_type="text/markdown")
+    return result

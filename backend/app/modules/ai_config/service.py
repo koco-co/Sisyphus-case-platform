@@ -13,6 +13,7 @@ from app.ai.prompts import (
 )
 from app.modules.ai_config.models import AiConfiguration
 from app.modules.ai_config.schemas import AiConfigCreate, AiConfigUpdate
+from app.modules.products.models import Iteration
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +56,11 @@ class AiConfigService:
         return config
 
     async def get_effective_config(self, iteration_id: UUID | None = None, product_id: UUID | None = None) -> dict:
-        """Get merged config following inheritance: iteration > product > global > default."""
+        """Get merged config following inheritance: iteration > product > global > default.
+
+        If iteration_id is given but product_id is not, automatically resolve
+        the owning product so that product-level overrides are applied.
+        """
         merged: dict = {
             "team_standard_prompt": DEFAULT_TEAM_STANDARD,
             "output_preference": dict(DEFAULT_OUTPUT_PREFERENCE),
@@ -67,15 +72,25 @@ class AiConfigService:
             "llm_temperature": None,
         }
 
+        # Auto-resolve product_id from iteration
+        resolved_product_id = product_id
+        if iteration_id and not resolved_product_id:
+            iteration = await self.session.get(Iteration, iteration_id)
+            if iteration:
+                resolved_product_id = iteration.product_id
+
+        # Layer 1: global defaults
         global_config = await self.get_by_scope("global")
         if global_config:
             merged = self._merge_config(merged, global_config)
 
-        if product_id:
-            product_config = await self.get_by_scope("product", product_id)
+        # Layer 2: product-level overrides
+        if resolved_product_id:
+            product_config = await self.get_by_scope("product", resolved_product_id)
             if product_config:
                 merged = self._merge_config(merged, product_config)
 
+        # Layer 3: iteration-level overrides (highest priority)
         if iteration_id:
             iteration_config = await self.get_by_scope("iteration", iteration_id)
             if iteration_config:
