@@ -10,6 +10,12 @@ class ProductCreate(BaseSchema):
     description: str | None = None
 
 
+class ProductUpdate(BaseSchema):
+    name: str | None = None
+    slug: str | None = None
+    description: str | None = None
+
+
 class ProductResponse(BaseResponse):
     name: str
     slug: str
@@ -21,6 +27,13 @@ class IterationCreate(BaseSchema):
     name: str
     start_date: date | str | None = None
     end_date: date | str | None = None
+
+
+class IterationUpdate(BaseSchema):
+    name: str | None = None
+    start_date: date | None = None
+    end_date: date | None = None
+    status: str | None = None
 
 
 class IterationResponse(BaseResponse):
@@ -37,6 +50,13 @@ class RequirementCreate(BaseSchema):
     title: str
     content_ast: dict | None = None
     frontmatter: dict | None = None
+
+
+class RequirementUpdate(BaseSchema):
+    title: str | None = None
+    content_ast: dict | None = None
+    frontmatter: dict | None = None
+    status: str | None = None
 
 
 class RequirementResponse(BaseResponse):
