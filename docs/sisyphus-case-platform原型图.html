@@ -1,0 +1,4821 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sisyphus-case-platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0f12;
+      --bg1: #131619;
+      --bg2: #1a1e24;
+      --bg3: #212730;
+      --border: #2a313d;
+      --border2: #353d4a;
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #566577;
+      --accent: #00d9a3;
+      --accent2: #00b386;
+      --accent-d: rgba(0, 217, 163, .1);
+      --amber: #f59e0b;
+      --red: #f43f5e;
+      --blue: #3b82f6;
+      --purple: #a855f7;
+      --yellow: #eab308;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+      --display: 'Syne', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* NAV TABS */
+    .nav {
+      display: flex;
+      gap: 2px;
+      padding: 12px 16px;
+      background: var(--bg1);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      align-items: center;
+    }
+
+    .nav-title {
+      font-family: var(--display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: .5px;
+      margin-right: 20px;
+    }
+
+    .tab {
+      padding: 5px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text3);
+      font-size: 12px;
+      font-weight: 500;
+      transition: all .15s;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .tab:hover {
+      color: var(--text2);
+      background: var(--bg2);
+    }
+
+    .tab.active {
+      color: var(--accent);
+      background: var(--accent-d);
+      border-color: rgba(0, 217, 163, .25);
+    }
+
+    .badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: var(--bg3);
+      color: var(--text3);
+      margin-left: 4px;
+    }
+
+    /* PAGES */
+    .page {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* LAYOUT */
+    .sidebar {
+      width: 220px;
+      background: var(--bg1);
+      border-right: 1px solid var(--border);
+      min-height: 100vh;
+      padding: 16px 0;
+      position: fixed;
+      top: 49px;
+      left: 0;
+    }
+
+    .main-content {
+      margin-left: 220px;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .no-sidebar {
+      padding: 24px;
+    }
+
+    /* SIDEBAR */
+    .sb-section {
+      padding: 4px 12px 8px;
+    }
+
+    .sb-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 0 4px;
+      margin-bottom: 6px;
+    }
+
+    .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text2);
+      font-size: 12.5px;
+      transition: all .12s;
+      border: 1px solid transparent;
+    }
+
+    .sb-item:hover {
+      background: var(--bg2);
+      color: var(--text);
+    }
+
+    .sb-item.active {
+      background: var(--accent-d);
+      color: var(--accent);
+      border-color: rgba(0, 217, 163, .2);
+    }
+
+    .sb-item .icon {
+      font-size: 14px;
+      width: 18px;
+      text-align: center;
+      opacity: .8;
+    }
+
+    .sb-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .sb-count {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    /* TOPBAR */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .topbar h1 {
+      font-family: var(--display);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .topbar .sub {
+      color: var(--text3);
+      font-size: 12px;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      background: var(--bg2);
+      color: var(--text2);
+      transition: all .15s;
+      font-family: var(--sans);
+    }
+
+    .btn:hover {
+      border-color: var(--border2);
+      background: var(--bg3);
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent2);
+      border-color: var(--accent2);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: transparent;
+      color: var(--text3);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      background: var(--bg2);
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 11.5px;
+    }
+
+    .btn-danger {
+      border-color: rgba(244, 63, 94, .3);
+      color: var(--red);
+    }
+
+    .btn-danger:hover {
+      background: rgba(244, 63, 94, .1);
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .card-hover {
+      transition: border-color .15s, transform .15s;
+    }
+
+    .card-hover:hover {
+      border-color: var(--border2);
+      transform: translateY(-1px);
+    }
+
+    /* GRID */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    /* STATUS PILLS */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      font-family: var(--mono);
+    }
+
+    .pill-green {
+      background: rgba(0, 217, 163, .12);
+      color: var(--accent);
+      border: 1px solid rgba(0, 217, 163, .25);
+    }
+
+    .pill-amber {
+      background: rgba(245, 158, 11, .1);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, .25);
+    }
+
+    .pill-red {
+      background: rgba(244, 63, 94, .1);
+      color: var(--red);
+      border: 1px solid rgba(244, 63, 94, .25);
+    }
+
+    .pill-blue {
+      background: rgba(59, 130, 246, .1);
+      color: var(--blue);
+      border: 1px solid rgba(59, 130, 246, .25);
+    }
+
+    .pill-purple {
+      background: rgba(168, 85, 247, .1);
+      color: var(--purple);
+      border: 1px solid rgba(168, 85, 247, .25);
+    }
+
+    .pill-gray {
+      background: var(--bg3);
+      color: var(--text3);
+      border: 1px solid var(--border);
+    }
+
+    /* STAT CARD */
+    .stat-val {
+      font-family: var(--mono);
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 11.5px;
+      color: var(--text3);
+      margin-top: 4px;
+    }
+
+    .stat-delta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 8px;
+    }
+
+    /* PROGRESS BAR */
+    .progress-bar {
+      height: 3px;
+      background: var(--bg3);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--accent);
+      transition: width .4s;
+    }
+
+    .progress-fill.amber {
+      background: var(--amber);
+    }
+
+    .progress-fill.red {
+      background: var(--red);
+    }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+    }
+
+    /* INPUT */
+    .input {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13px;
+      padding: 7px 12px;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .input:focus {
+      border-color: var(--accent);
+    }
+
+    .input::placeholder {
+      color: var(--text3);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* TABLE */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .tbl th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tbl td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12.5px;
+      color: var(--text2);
+    }
+
+    .tbl tr:hover td {
+      background: var(--bg2);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* MONO TEXT */
+    .mono {
+      font-family: var(--mono);
+    }
+
+    /* TAG */
+    .tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      background: var(--bg3);
+      color: var(--text3);
+      border: 1px solid var(--border);
+      margin: 2px;
+    }
+
+    /* ANNOTATION */
+    .annotation {
+      position: absolute;
+      background: rgba(0, 217, 163, .15);
+      border: 1px solid rgba(0, 217, 163, .4);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 11px;
+      color: var(--accent);
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .anno-line {
+      border-left: 2px dashed rgba(0, 217, 163, .4);
+    }
+
+    /* SECTION HEADER */
+    .sec-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .sec-title {
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .sec-sub {
+      font-size: 11.5px;
+      color: var(--text3);
+    }
+
+    /* RISK ITEM */
+    .risk-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+
+    .risk-item:hover {
+      border-color: var(--border2);
+    }
+
+    .risk-item.high {
+      border-left: 3px solid var(--red);
+    }
+
+    .risk-item.med {
+      border-left: 3px solid var(--amber);
+    }
+
+    .risk-item.done {
+      border-left: 3px solid var(--accent);
+      opacity: .6;
+    }
+
+    /* CHAT BUBBLE */
+    .chat-msg {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .chat-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .chat-ai {
+      background: linear-gradient(135deg, var(--accent-d), rgba(59, 130, 246, .15));
+      border: 1px solid rgba(0, 217, 163, .3);
+      color: var(--accent);
+    }
+
+    .chat-user {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text2);
+    }
+
+    .chat-bubble {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      max-width: 480px;
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+
+    .chat-bubble.ai-bubble {
+      border-color: rgba(0, 217, 163, .2);
+      background: rgba(0, 217, 163, .04);
+    }
+
+    .chat-time {
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 4px;
+      font-family: var(--mono);
+    }
+
+    /* SCENE NODE */
+    .scene-node {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: all .12s;
+    }
+
+    .scene-node:hover {
+      border-color: var(--border2);
+      background: var(--bg3);
+    }
+
+    .scene-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-green {
+      background: var(--accent);
+    }
+
+    .dot-yellow {
+      background: var(--amber);
+    }
+
+    .dot-red {
+      background: var(--red);
+    }
+
+    .dot-gray {
+      background: var(--text3);
+    }
+
+    /* WATERMARK */
+    .page-watermark {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: .5px;
+    }
+
+    /* 3-COL LAYOUT */
+    .three-col {
+      display: grid;
+      grid-template-columns: 240px 1fr 340px;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--bg1);
+      height: calc(100vh - 130px);
+      min-height: 600px;
+    }
+
+    .col-left {
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    .col-mid {
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    .col-right {
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    .col-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      position: sticky;
+      top: 0;
+      background: var(--bg1);
+      z-index: 5;
+    }
+
+    /* DIAGNOSIS THREE-COL */
+    .diag-col {
+      display: grid;
+      grid-template-columns: 300px 1fr 280px;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--bg1);
+      min-height: 600px;
+    }
+
+    /* TOOLTIP ANNO */
+    .frame-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      background: var(--accent);
+      color: #000;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+  </style>
+  <style>
+    /* ── Part 2 additional styles ── */
+
+    :root {
+      --bg: #0d0f12;
+      --bg1: #131619;
+      --bg2: #1a1e24;
+      --bg3: #212730;
+      --border: #2a313d;
+      --border2: #353d4a;
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #566577;
+      --accent: #00d9a3;
+      --accent2: #00b386;
+      --accent-d: rgba(0, 217, 163, .1);
+      --amber: #f59e0b;
+      --red: #f43f5e;
+      --blue: #3b82f6;
+      --purple: #a855f7;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+      --display: 'Syne', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .nav {
+      display: flex;
+      gap: 2px;
+      padding: 12px 16px;
+      background: var(--bg1);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      align-items: center;
+    }
+
+    .nav-title {
+      font-family: var(--display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: .5px;
+      margin-right: 20px;
+    }
+
+    .tab {
+      padding: 5px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text3);
+      font-size: 12px;
+      font-weight: 500;
+      transition: all .15s;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .tab:hover {
+      color: var(--text2);
+      background: var(--bg2);
+    }
+
+    .tab.active {
+      color: var(--accent);
+      background: var(--accent-d);
+      border-color: rgba(0, 217, 163, .25);
+    }
+
+    .page {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: var(--bg1);
+      border-right: 1px solid var(--border);
+      min-height: calc(100vh - 49px);
+      padding: 16px 0;
+      position: fixed;
+      top: 49px;
+      left: 0;
+    }
+
+    .main-content {
+      margin-left: 220px;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .no-sidebar {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .sb-section {
+      padding: 4px 12px 8px;
+    }
+
+    .sb-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 0 4px;
+      margin-bottom: 6px;
+    }
+
+    .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text2);
+      font-size: 12.5px;
+      transition: all .12s;
+      border: 1px solid transparent;
+    }
+
+    .sb-item:hover {
+      background: var(--bg2);
+      color: var(--text);
+    }
+
+    .sb-item.active {
+      background: var(--accent-d);
+      color: var(--accent);
+      border-color: rgba(0, 217, 163, .2);
+    }
+
+    .sb-item .icon {
+      font-size: 14px;
+      width: 18px;
+      text-align: center;
+    }
+
+    .sb-count {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .topbar h1 {
+      font-family: var(--display);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .topbar .sub {
+      color: var(--text3);
+      font-size: 12px;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      background: var(--bg2);
+      color: var(--text2);
+      transition: all .15s;
+      font-family: var(--sans);
+    }
+
+    .btn:hover {
+      background: var(--bg3);
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent2);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: transparent;
+      color: var(--text3);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      background: var(--bg2);
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 11.5px;
+    }
+
+    .card {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      font-family: var(--mono);
+    }
+
+    .pill-green {
+      background: rgba(0, 217, 163, .12);
+      color: var(--accent);
+      border: 1px solid rgba(0, 217, 163, .25);
+    }
+
+    .pill-amber {
+      background: rgba(245, 158, 11, .1);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, .25);
+    }
+
+    .pill-red {
+      background: rgba(244, 63, 94, .1);
+      color: var(--red);
+      border: 1px solid rgba(244, 63, 94, .25);
+    }
+
+    .pill-blue {
+      background: rgba(59, 130, 246, .1);
+      color: var(--blue);
+      border: 1px solid rgba(59, 130, 246, .25);
+    }
+
+    .pill-gray {
+      background: var(--bg3);
+      color: var(--text3);
+      border: 1px solid var(--border);
+    }
+
+    .mono {
+      font-family: var(--mono);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      background: var(--bg3);
+      color: var(--text3);
+      border: 1px solid var(--border);
+      margin: 2px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 12px 0;
+    }
+
+    .input {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13px;
+      padding: 7px 12px;
+      outline: none;
+      transition: border-color .15s;
+      width: 100%;
+    }
+
+    .input:focus {
+      border-color: var(--accent);
+    }
+
+    .input::placeholder {
+      color: var(--text3);
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: 240px 1fr 340px;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--bg1);
+      height: calc(100vh - 100px);
+      min-height: 640px;
+    }
+
+    .col-left {
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    .col-mid {
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    .col-right {
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    .col-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      position: sticky;
+      top: 0;
+      background: var(--bg1);
+      z-index: 5;
+    }
+
+    .scene-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-green {
+      background: var(--accent);
+    }
+
+    .dot-yellow {
+      background: var(--amber);
+    }
+
+    .dot-red {
+      background: var(--red);
+    }
+
+    .dot-gray {
+      background: var(--text3);
+    }
+
+    .sec-title {
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .page-watermark {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: .5px;
+    }
+
+    .chat-msg {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .chat-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .chat-ai {
+      background: linear-gradient(135deg, var(--accent-d), rgba(59, 130, 246, .15));
+      border: 1px solid rgba(0, 217, 163, .3);
+      color: var(--accent);
+    }
+
+    .chat-user {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text2);
+    }
+
+    .chat-bubble {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      max-width: 440px;
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+
+    .chat-bubble.ai-bubble {
+      border-color: rgba(0, 217, 163, .2);
+      background: rgba(0, 217, 163, .04);
+    }
+
+    .chat-time {
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 4px;
+      font-family: var(--mono);
+    }
+
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .tbl th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tbl td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12.5px;
+      color: var(--text2);
+    }
+
+    .tbl tr:hover td {
+      background: var(--bg2);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* TEST POINT SPECIFIC */
+    .tp-group-header {
+      padding: 8px 12px 4px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      font-family: var(--mono);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tp-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background .12s;
+    }
+
+    .tp-item:hover {
+      background: var(--bg2);
+    }
+
+    .tp-item.active {
+      background: rgba(0, 217, 163, .04);
+      border-left: 2px solid var(--accent);
+    }
+
+    .tp-checkbox {
+      width: 15px;
+      height: 15px;
+      border: 1.5px solid var(--border2);
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    .tp-checked {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+    }
+
+    /* STREAM TEXT */
+    .stream-char {
+      display: inline;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(2px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .case-preview {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .case-preview-title {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .case-step {
+      display: flex;
+      gap: 8px;
+      padding: 4px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+      font-size: 11.5px;
+      color: var(--text2);
+    }
+
+    .step-num {
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 11px;
+      width: 16px;
+      flex-shrink: 0;
+      font-weight: 600;
+    }
+
+    /* PROGRESS STEPS */
+    .prog-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 20px;
+    }
+
+    .prog-step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text3);
+    }
+
+    .prog-step.done {
+      color: var(--accent);
+    }
+
+    .prog-step.active {
+      color: var(--text);
+      background: var(--bg2);
+      border-radius: 6px;
+    }
+
+    .prog-arrow {
+      color: var(--border2);
+      font-size: 12px;
+    }
+
+    /* ── Part 3 additional styles ── */
+
+    :root {
+      --bg: #0d0f12;
+      --bg1: #131619;
+      --bg2: #1a1e24;
+      --bg3: #212730;
+      --border: #2a313d;
+      --border2: #353d4a;
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #566577;
+      --accent: #00d9a3;
+      --accent2: #00b386;
+      --accent-d: rgba(0, 217, 163, .1);
+      --amber: #f59e0b;
+      --red: #f43f5e;
+      --blue: #3b82f6;
+      --purple: #a855f7;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+      --display: 'Syne', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .nav {
+      display: flex;
+      gap: 2px;
+      padding: 12px 16px;
+      background: var(--bg1);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      align-items: center;
+    }
+
+    .nav-title {
+      font-family: var(--display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: .5px;
+      margin-right: 20px;
+    }
+
+    .tab {
+      padding: 5px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text3);
+      font-size: 12px;
+      font-weight: 500;
+      transition: all .15s;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .tab:hover {
+      color: var(--text2);
+      background: var(--bg2);
+    }
+
+    .tab.active {
+      color: var(--accent);
+      background: var(--accent-d);
+      border-color: rgba(0, 217, 163, .25);
+    }
+
+    .page {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: var(--bg1);
+      border-right: 1px solid var(--border);
+      min-height: calc(100vh - 49px);
+      padding: 16px 0;
+      position: fixed;
+      top: 49px;
+      left: 0;
+    }
+
+    .main-content {
+      margin-left: 220px;
+      padding: 24px;
+    }
+
+    .no-sidebar {
+      padding: 24px;
+    }
+
+    .sb-section {
+      padding: 4px 12px 8px;
+    }
+
+    .sb-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 0 4px;
+      margin-bottom: 6px;
+    }
+
+    .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text2);
+      font-size: 12.5px;
+      transition: all .12s;
+      border: 1px solid transparent;
+    }
+
+    .sb-item:hover {
+      background: var(--bg2);
+      color: var(--text);
+    }
+
+    .sb-item.active {
+      background: var(--accent-d);
+      color: var(--accent);
+      border-color: rgba(0, 217, 163, .2);
+    }
+
+    .sb-count {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .topbar h1 {
+      font-family: var(--display);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .topbar .sub {
+      color: var(--text3);
+      font-size: 12px;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      background: var(--bg2);
+      color: var(--text2);
+      transition: all .15s;
+      font-family: var(--sans);
+    }
+
+    .btn:hover {
+      background: var(--bg3);
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent2);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: transparent;
+      color: var(--text3);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      background: var(--bg2);
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 11.5px;
+    }
+
+    .card {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      font-family: var(--mono);
+    }
+
+    .pill-green {
+      background: rgba(0, 217, 163, .12);
+      color: var(--accent);
+      border: 1px solid rgba(0, 217, 163, .25);
+    }
+
+    .pill-amber {
+      background: rgba(245, 158, 11, .1);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, .25);
+    }
+
+    .pill-red {
+      background: rgba(244, 63, 94, .1);
+      color: var(--red);
+      border: 1px solid rgba(244, 63, 94, .25);
+    }
+
+    .pill-blue {
+      background: rgba(59, 130, 246, .1);
+      color: var(--blue);
+      border: 1px solid rgba(59, 130, 246, .25);
+    }
+
+    .pill-gray {
+      background: var(--bg3);
+      color: var(--text3);
+      border: 1px solid var(--border);
+    }
+
+    .mono {
+      font-family: var(--mono);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      background: var(--bg3);
+      color: var(--text3);
+      border: 1px solid var(--border);
+      margin: 2px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 12px 0;
+    }
+
+    .input {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13px;
+      padding: 7px 12px;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .input:focus {
+      border-color: var(--accent);
+    }
+
+    .input::placeholder {
+      color: var(--text3);
+    }
+
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .tbl th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tbl td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12.5px;
+      color: var(--text2);
+    }
+
+    .tbl tr:hover td {
+      background: var(--bg2);
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .sec-title {
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .page-watermark {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: .5px;
+    }
+
+    .stat-val {
+      font-family: var(--mono);
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 11.5px;
+      color: var(--text3);
+      margin-top: 4px;
+    }
+
+    .progress-bar {
+      height: 3px;
+      background: var(--bg3);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--accent);
+    }
+
+    /* DIFF SPECIFIC */
+    .diff-del {
+      background: rgba(244, 63, 94, .1);
+      border-left: 3px solid var(--red);
+      padding: 4px 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--red);
+      margin: 2px 0;
+    }
+
+    .diff-add {
+      background: rgba(0, 217, 163, .08);
+      border-left: 3px solid var(--accent);
+      padding: 4px 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      margin: 2px 0;
+    }
+
+    .diff-ctx {
+      padding: 4px 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text3);
+      margin: 2px 0;
+    }
+
+    /* CHART PLACEHOLDER */
+    .chart-placeholder {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--text3);
+    }
+
+    /* SETTING ROW */
+    .setting-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .setting-label {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .setting-desc {
+      font-size: 11.5px;
+      color: var(--text3);
+      margin-top: 2px;
+    }
+
+    .toggle {
+      width: 38px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .toggle::after {
+      content: '';
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      transition: .2s;
+    }
+
+    .toggle.off {
+      background: var(--bg3);
+    }
+
+    .toggle.off::after {
+      right: auto;
+      left: 2px;
+    }
+
+    /* MINI BAR CHART */
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 60px;
+    }
+
+    .bar {
+      flex: 1;
+      background: var(--accent);
+      border-radius: 3px 3px 0 0;
+      opacity: .8;
+      min-width: 8px;
+      transition: height .3s;
+    }
+
+    .bar.amber {
+      background: var(--amber);
+    }
+
+    .bar.red {
+      background: var(--red);
+    }
+
+    .bar.blue {
+      background: var(--blue);
+    }
+
+    /* ── Body-level styles from Part 2 ── */
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0
+      }
+    }
+
+    /* ── Body-level styles from Part 3 ── */
+
+    /* ── Keyframes ── */
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(2px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    /* ── Page display init ── */
+    .page {
+      display: none;
+    }
+
+    .nav {
+      flex-wrap: wrap;
+      gap: 2px 2px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════ NAV ═══════ -->
+  <div class="nav">
+    <span class="nav-title">Sisyphus-case-platform</span>
+    <div class="tab" onclick="show('p1',this)">① 项目列表</div>
+    <div class="tab" onclick="show('p2',this)">② 需求卡片</div>
+    <div class="tab" onclick="show('p3',this)">③ 健康诊断</div>
+    <div class="tab" onclick="show('p4',this)">④ 测试点确认</div>
+    <div class="tab" onclick="show('p5',this)">⑤ 生成工作台</div>
+    <div class="tab" onclick="show('p6',this)">⑥ 用例管理</div>
+    <div class="tab" onclick="show('p7',this)">⑦ Diff 视图</div>
+    <div class="tab" onclick="show('p8',this)">⑧ 质量看板</div>
+    <div class="tab" onclick="show('p9',this)">⑨ 系统设置</div>
+    <div class="tab" onclick="show('p10',this)">⑩ 知识库</div>
+    <div class="tab" onclick="show('p11',this)">⑪ 模板库</div>
+  </div>
+
+  <div class="page active no-sidebar" id="p1">
+    <div style="max-width:1200px;margin:0 auto;">
+
+      <div class="topbar">
+        <div>
+          <div class="page-watermark">Sisyphus-case-platform · 项目列表</div>
+          <h1>全部项目</h1>
+          <div class="sub">4 个子产品 · 当前迭代进行中</div>
+        </div>
+        <div class="spacer"></div>
+        <input class="input" placeholder="🔍  搜索项目..." style="width:220px">
+        <button class="btn">⚙ 筛选</button>
+        <button class="btn btn-primary">＋ 新建项目</button>
+      </div>
+
+      <!-- STAT ROW -->
+      <div class="grid-4" style="margin-bottom:24px;">
+        <div class="card" style="border-color:rgba(0,217,163,.25);background:rgba(0,217,163,.04);">
+          <div class="stat-val" style="color:var(--accent)">847</div>
+          <div class="stat-label">本周生成用例</div>
+          <div class="stat-delta">↑ 23% 较上周</div>
+        </div>
+        <div class="card">
+          <div class="stat-val">12</div>
+          <div class="stat-label">进行中迭代</div>
+          <div class="stat-delta" style="color:var(--amber)">3 个 Sprint 本周截止</div>
+        </div>
+        <div class="card">
+          <div class="stat-val">94<span style="font-size:16px;color:var(--text3)">%</span></div>
+          <div class="stat-label">平均用例覆盖率</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:94%"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="stat-val" style="color:var(--red)">18</div>
+          <div class="stat-label">待处理健康诊断</div>
+          <div class="stat-delta" style="color:var(--red)">需要补充场景</div>
+        </div>
+      </div>
+
+      <!-- PRODUCT FILTER -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="btn btn-sm btn-primary">全部</button>
+        <button class="btn btn-sm">离线开发</button>
+        <button class="btn btn-sm">实时开发</button>
+        <button class="btn btn-sm">数据资产</button>
+        <button class="btn btn-sm">数据治理</button>
+        <button class="btn btn-sm">BI 分析</button>
+      </div>
+
+      <!-- PROJECT CARDS -->
+      <div class="grid-3">
+
+        <!-- CARD 1 -->
+        <div class="card card-hover" style="cursor:pointer;position:relative;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div
+                style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,rgba(0,217,163,.2),rgba(59,130,246,.2));border:1px solid rgba(0,217,163,.3);display:flex;align-items:center;justify-content:center;font-size:16px;">
+                ⚡</div>
+              <div>
+                <div style="font-weight:600;font-size:13.5px;">离线开发平台</div>
+                <div style="color:var(--text3);font-size:11.5px;">2025-Q2-Sprint 3</div>
+              </div>
+            </div>
+            <span class="pill pill-green">进行中</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+            <div style="text-align:center;padding:8px;background:var(--bg2);border-radius:6px;">
+              <div class="mono" style="font-size:18px;font-weight:600;color:var(--text)">312</div>
+              <div style="font-size:10.5px;color:var(--text3)">用例总数</div>
+            </div>
+            <div style="text-align:center;padding:8px;background:var(--bg2);border-radius:6px;">
+              <div class="mono" style="font-size:18px;font-weight:600;color:var(--accent)">89%</div>
+              <div style="font-size:10.5px;color:var(--text3)">覆盖率</div>
+            </div>
+            <div style="text-align:center;padding:8px;background:var(--bg2);border-radius:6px;">
+              <div class="mono" style="font-size:18px;font-weight:600;color:var(--amber)">8</div>
+              <div style="font-size:10.5px;color:var(--text3)">待处理</div>
+            </div>
+          </div>
+          <div class="progress-bar" style="height:4px;margin-bottom:10px;">
+            <div class="progress-fill" style="width:89%"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text3);">
+            <span>👥 张晓峰 李明 王芳</span>
+            <span class="spacer"></span>
+            <span class="pill pill-amber" style="font-size:10px;">3 个需求待诊断</span>
+          </div>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="card card-hover" style="cursor:pointer;position:relative;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div
+                style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(244,63,94,.15));border:1px solid rgba(168,85,247,.3);display:flex;align-items:center;justify-content:center;font-size:16px;">
+                🔴</div>
+              <div>
+                <div style="font-weight:600;font-size:13.5px;">实时开发平台</div>
+                <div style="color:var(--text3);font-size:11.5px;">2025-Q2-Sprint 2</div>
+              </div>
+            </div>
+            <span class="pill pill-green">进行中</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+            <div style="text-align:center;padding:8px;background:var(--bg2);border-radius:6px;">
+              <div class="mono" style="font-size:18px;font-weight:600;">248</div>
+              <div style="font-size:10.5px;color:var(--text3)">用例总数</div>
+            </div>
+            <div style="text-align:center;padding:8px;background:var(--bg2);border-radius:6px;">
+              <div class="mono" style="font-size:18px;font-weight:600;color:var(--amber)">76%</div>
+              <div style="font-size:10.5px;color:var(--text3)">覆盖率</div>
+            </div>
+            <div style="text-align:center;padding:8px;background:var(--bg2);border-radius:6px;">
+              <div class="mono" style="font-size:18px;font-weight:600;color:var(--red)">14</div>
+              <div style="font-size:10.5px;color:var(--text3)">待处理</div>
+            </div>
+          </div>
+          <div class="progress-bar" style="height:4px;margin-bottom:10px;">
+            <div class="progress-fill amber" style="width:76%"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text3);">
+            <span>👥 陈伟 刘洋</span>
+            <span class="spacer"></span>
+            <span class="pill pill-red" style="font-size:10px;">⚠ 2 处 Diff 未处理</span>
+          </div>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="card card-hover" style="cursor:pointer;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div
+                style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(234,179,8,.1));border:1px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;font-size:16px;">
+                🗂</div>
+              <div>
+                <div style="font-weight:600;font-size:13.5px;">数据资产管理</div>
+                <div style="color:var(--text3);font-size:11.5px;">2025-Q2-Sprint 3</div>
+              </div>
+            </div>
+            <span class="pill pill-amber">评审中</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+            <div style="text-align:center;padding:8px;background:var(--bg2);border-radius:6px;">
+              <div class="mono" style="font-size:18px;font-weight:600;">189</div>
+              <div style="font-size:10.5px;color:var(--text3)">用例总数</div>
+            </div>
+            <div style="text-align:center;padding:8px;background:var(--bg2);border-radius:6px;">
+              <div class="mono" style="font-size:18px;font-weight:600;color:var(--accent)">97%</div>
+              <div style="font-size:10.5px;color:var(--text3)">覆盖率</div>
+            </div>
+            <div style="text-align:center;padding:8px;background:var(--bg2);border-radius:6px;">
+              <div class="mono" style="font-size:18px;font-weight:600;color:var(--accent)">0</div>
+              <div style="font-size:10.5px;color:var(--text3)">待处理</div>
+            </div>
+          </div>
+          <div class="progress-bar" style="height:4px;margin-bottom:10px;">
+            <div class="progress-fill" style="width:97%"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text3);">
+            <span>👥 赵丽 孙建国</span>
+            <span class="spacer"></span>
+            <span class="pill pill-green" style="font-size:10px;">✓ 全部测试点已确认</span>
+          </div>
+        </div>
+
+        <!-- CARD 4 -->
+        <div class="card card-hover" style="cursor:pointer;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div
+                style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(0,217,163,.1));border:1px solid rgba(59,130,246,.3);display:flex;align-items:center;justify-content:center;font-size:16px;">
+                🛡</div>
+              <div>
+                <div style="font-weight:600;font-size:13.5px;">数据治理平台</div>
+                <div style="color:var(--text3);font-size:11.5px;">2025-Q2-Sprint 1</div>
+              </div>
+            </div>
+            <span class="pill pill-gray">已归档</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+            <div style="text-align:center;padding:8px;background:var(--bg2);border-radius:6px;">
+              <div class="mono" style="font-size:18px;font-weight:600;color:var(--text3)">423</div>
+              <div style="font-size:10.5px;color:var(--text3)">用例总数</div>
+            </div>
+            <div style="text-align:center;padding:8px;background:var(--bg2);border-radius:6px;">
+              <div class="mono" style="font-size:18px;font-weight:600;color:var(--text3)">92%</div>
+              <div style="font-size:10.5px;color:var(--text3)">覆盖率</div>
+            </div>
+            <div style="text-align:center;padding:8px;background:var(--bg2);border-radius:6px;">
+              <div class="mono" style="font-size:18px;font-weight:600;color:var(--text3)">—</div>
+              <div style="font-size:10.5px;color:var(--text3)">待处理</div>
+            </div>
+          </div>
+          <div class="progress-bar" style="height:4px;margin-bottom:10px;">
+            <div class="progress-fill" style="width:92%;opacity:.4;"></div>
+          </div>
+          <div style="font-size:11.5px;color:var(--text3);">Sprint 1 已完成 · 点击查看历史</div>
+        </div>
+
+        <!-- NEW PROJECT CARD -->
+        <div class="card card-hover"
+          style="cursor:pointer;border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px;gap:10px;color:var(--text3);transition:all .2s;">
+          <div style="font-size:28px;opacity:.4;">＋</div>
+          <div style="font-size:13px;font-weight:500;">新建子产品</div>
+          <div style="font-size:11.5px;color:var(--text3);">创建新的测试项目空间</div>
+        </div>
+
+      </div><!-- /grid -->
+
+      <!-- RECENT ACTIVITY -->
+      <div style="margin-top:28px;">
+        <div class="sec-header">
+          <div class="sec-title">最近动态</div>
+          <div class="sec-sub">最近 24 小时</div>
+        </div>
+        <div class="card" style="padding:0;">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>子产品</th>
+                <th>需求</th>
+                <th>操作</th>
+                <th>执行者</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono" style="color:var(--text3);font-size:11px;">14:23</td>
+                <td>离线开发</td>
+                <td>REQ-089 草稿自动保存</td>
+                <td>测试点确认 <span style="color:var(--accent)">→ 生成用例</span></td>
+                <td>张晓峰</td>
+                <td><span class="pill pill-green">完成 · 18条</span></td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--text3);font-size:11px;">13:47</td>
+                <td>实时开发</td>
+                <td>REQ-042 Flink 窗口计算</td>
+                <td>需求变更 v1.3 <span style="color:var(--amber)">→ 影响分析</span></td>
+                <td>陈伟</td>
+                <td><span class="pill pill-amber">12条待复核</span></td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--text3);font-size:11px;">11:02</td>
+                <td>数据资产</td>
+                <td>REQ-031 数据血缘</td>
+                <td>健康诊断 <span style="color:var(--red)">→ 发现3处遗漏</span></td>
+                <td>赵丽</td>
+                <td><span class="pill pill-red">待处理</span></td>
+              </tr>
+              <tr>
+                <td class="mono" style="color:var(--text3);font-size:11px;">09:15</td>
+                <td>离线开发</td>
+                <td>REQ-088 任务版本管理</td>
+                <td>历史用例导入</td>
+                <td>李明</td>
+                <td><span class="pill pill-blue">清洗中 · 89%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="page" id="p2">
+
+    <div class="sidebar">
+      <div class="sb-section">
+        <div class="sb-label">子产品</div>
+        <div class="sb-item active"><span class="icon">⚡</span>离线开发<span class="sb-count">8</span></div>
+        <div class="sb-item"><span class="icon">🔴</span>实时开发<span class="sb-count">6</span></div>
+        <div class="sb-item"><span class="icon">🗂</span>数据资产<span class="sb-count">5</span></div>
+        <div class="sb-item"><span class="icon">🛡</span>数据治理<span class="sb-count">4</span></div>
+      </div>
+      <hr class="divider" style="margin:4px 0;">
+      <div class="sb-section">
+        <div class="sb-label">迭代</div>
+        <div class="sb-item active"><span class="sb-dot" style="background:var(--accent)"></span>Sprint 3 <span
+            class="sb-count">8</span></div>
+        <div class="sb-item"><span class="sb-dot" style="background:var(--text3)"></span>Sprint 2<span
+            class="sb-count">6</span></div>
+      </div>
+      <hr class="divider" style="margin:4px 0;">
+      <div class="sb-section">
+        <div class="sb-label">需求列表</div>
+        <div class="sb-item active" style="flex-direction:column;align-items:flex-start;gap:4px;">
+          <div style="display:flex;align-items:center;gap:8px;width:100%;">
+            <span class="sb-dot dot-green"></span>
+            <span style="font-size:12px;">REQ-089</span>
+            <span class="pill pill-amber" style="margin-left:auto;font-size:9px;padding:1px 5px;">编辑中</span>
+          </div>
+          <div style="font-size:11px;color:var(--text2);padding-left:16px;">草稿自动保存</div>
+        </div>
+        <div class="sb-item" style="flex-direction:column;align-items:flex-start;gap:4px;">
+          <div style="display:flex;align-items:center;gap:8px;width:100%;">
+            <span class="sb-dot dot-yellow"></span>
+            <span style="font-size:12px;">REQ-090</span>
+            <span class="pill pill-red" style="margin-left:auto;font-size:9px;padding:1px 5px;">待诊断</span>
+          </div>
+          <div style="font-size:11px;color:var(--text3);padding-left:16px;">版本对比功能</div>
+        </div>
+        <div class="sb-item" style="flex-direction:column;align-items:flex-start;gap:4px;">
+          <div style="display:flex;align-items:center;gap:8px;width:100%;">
+            <span class="sb-dot dot-gray"></span>
+            <span style="font-size:12px;">REQ-091</span>
+            <span class="pill pill-gray" style="margin-left:auto;font-size:9px;padding:1px 5px;">草稿</span>
+          </div>
+          <div style="font-size:11px;color:var(--text3);padding-left:16px;">批量导出任务</div>
+        </div>
+        <div class="sb-item" style="flex-direction:column;align-items:flex-start;gap:4px;">
+          <div style="display:flex;align-items:center;gap:8px;width:100%;">
+            <span class="sb-dot dot-green"></span>
+            <span style="font-size:12px;">REQ-092</span>
+            <span class="pill pill-green" style="margin-left:auto;font-size:9px;padding:1px 5px;">已确认</span>
+          </div>
+          <div style="font-size:11px;color:var(--text3);padding-left:16px;">任务依赖管理</div>
+        </div>
+        <div class="sb-item" style="justify-content:center;color:var(--text3);border-style:dashed;margin-top:6px;">
+          <span style="font-size:12px;">＋ 新建需求卡片</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <div class="page-watermark">离线开发 · Sprint 3 · REQ-089</div>
+          <h1>草稿自动保存</h1>
+        </div>
+        <div class="spacer"></div>
+        <span class="pill pill-amber">v1.2 · 编辑中</span>
+        <button class="btn btn-sm">👁 版本历史</button>
+        <button class="btn btn-sm">🔗 分享</button>
+        <button class="btn btn-sm btn-primary">✓ 确认需求</button>
+      </div>
+
+      <!-- METADATA ROW -->
+      <div
+        style="display:flex;gap:20px;padding:10px 14px;background:var(--bg1);border:1px solid var(--border);border-radius:8px;margin-bottom:20px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
+          <span style="color:var(--text3)">优先级</span>
+          <span class="pill pill-red">P1</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
+          <span style="color:var(--text3)">负责人</span>
+          <span style="color:var(--text)">张晓峰</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
+          <span style="color:var(--text3)">评审人</span>
+          <span style="color:var(--text)">李明</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
+          <span style="color:var(--text3)">标签</span>
+          <span class="tag">自动保存</span><span class="tag">草稿</span><span class="tag">任务编辑</span>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;">
+          <span class="pill pill-amber" style="font-size:11px;">⚠ 需求健康诊断未完成</span>
+          <button class="btn btn-sm" style="border-color:rgba(245,158,11,.4);color:var(--amber);">开始诊断 →</button>
+        </div>
+      </div>
+
+      <!-- EDITOR AREA -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <!-- EDITOR TOOLBAR -->
+        <div
+          style="display:flex;align-items:center;gap:2px;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg1);">
+          <button class="btn btn-ghost btn-sm" style="font-weight:700;font-size:13px;">B</button>
+          <button class="btn btn-ghost btn-sm" style="font-style:italic;">I</button>
+          <button class="btn btn-ghost btn-sm">H₁</button>
+          <button class="btn btn-ghost btn-sm">H₂</button>
+          <div style="width:1px;height:16px;background:var(--border);margin:0 6px;"></div>
+          <button class="btn btn-ghost btn-sm">≡ 列表</button>
+          <button class="btn btn-ghost btn-sm">☑ 待办</button>
+          <button class="btn btn-ghost btn-sm">⊞ 表格</button>
+          <button class="btn btn-ghost btn-sm">🖼 图片</button>
+          <div style="width:1px;height:16px;background:var(--border);margin:0 6px;"></div>
+          <button class="btn btn-ghost btn-sm" style="color:var(--accent);">✦ AI 补全</button>
+        </div>
+
+        <!-- DOCUMENT BODY -->
+        <div style="padding:24px 32px;line-height:1.8;max-width:760px;">
+
+          <!-- FRONTMATTER CHIP -->
+          <div
+            style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;padding:10px 12px;background:var(--bg2);border-radius:6px;border:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--text3);">
+            <span><span style="color:var(--accent)">product:</span> 离线开发</span>
+            <span style="color:var(--border)">|</span>
+            <span><span style="color:var(--accent)">iteration:</span> 2025-Q2-Sprint3</span>
+            <span style="color:var(--border)">|</span>
+            <span><span style="color:var(--accent)">id:</span> REQ-089</span>
+            <span style="color:var(--border)">|</span>
+            <span><span style="color:var(--accent)">priority:</span> P1</span>
+            <span style="color:var(--border)">|</span>
+            <span><span style="color:var(--accent)">version:</span> 1.2</span>
+          </div>
+
+          <h2
+            style="font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:8px;">
+            功能描述</h2>
+          <p style="color:var(--text2);margin-bottom:14px;">数据开发任务编辑器支持草稿<strong
+              style="color:var(--text)">自动保存</strong>功能。用户在任务编辑界面进行任何修改后，系统将每隔 <strong
+              style="color:var(--accent);font-family:var(--mono)">30 秒</strong> 自动将当前内容保存为草稿，无需用户手动操作。</p>
+          <p style="color:var(--text2);margin-bottom:20px;">草稿保存不影响已发布版本，仅对当前编辑中的用户可见。</p>
+
+          <h2
+            style="font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:8px;">
+            验收标准</h2>
+          <div style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;color:var(--text2);">
+            <span style="color:var(--accent);margin-top:2px;">✓</span>
+            <span>编辑器修改后超过 30 秒未手动保存，系统自动保存草稿，右上角显示「已自动保存 14:23」</span>
+          </div>
+          <div style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;color:var(--text2);">
+            <span style="color:var(--accent);margin-top:2px;">✓</span>
+            <span>草稿保存<strong style="color:var(--red)">失败</strong>时，右上角显示红色警告图标，提示文案："自动保存失败（网络异常），已为您保留本地草稿"</span>
+          </div>
+          <div style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;color:var(--text2);">
+            <span style="color:var(--accent);margin-top:2px;">✓</span>
+            <span>刷新页面后草稿内容不丢失，页面顶部显示"检测到未保存草稿，是否恢复？"</span>
+          </div>
+          <div style="margin-bottom:20px;display:flex;align-items:flex-start;gap:8px;color:var(--text3);">
+            <span style="margin-top:2px;">○</span>
+            <span>（待补充）草稿保存的最大存储数量限制？</span>
+            <button class="btn btn-sm"
+              style="color:var(--accent);border-color:rgba(0,217,163,.3);font-size:11px;padding:2px 8px;">填写</button>
+          </div>
+
+          <h2
+            style="font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:8px;">
+            相关资料</h2>
+
+          <!-- IMAGE CARD -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+            <div
+              style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;">
+              <div
+                style="height:80px;background:var(--bg3);border-radius:6px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:22px;opacity:.5;">
+                🖼</div>
+              <div style="font-size:11.5px;color:var(--text2);">任务编辑界面截图</div>
+              <div style="font-size:10.5px;color:var(--accent);margin-top:2px;">✓ 已归档至 MinIO</div>
+            </div>
+            <div
+              style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;">
+              <div
+                style="height:80px;background:var(--bg3);border-radius:6px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:22px;opacity:.5;">
+                📊</div>
+              <div style="font-size:11.5px;color:var(--text2);">草稿保存流程图（Lucidchart）</div>
+              <div style="font-size:10.5px;color:var(--accent);margin-top:2px;">✓ 已归档 · OCR 已提取文字</div>
+            </div>
+          </div>
+
+          <h2
+            style="font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:12px;border-bottom:2px solid var(--border);padding-bottom:8px;">
+            排除范围</h2>
+          <p style="color:var(--text3);">已发布的任务版本不触发自动保存逻辑，只读模式下不保存草稿。</p>
+
+          <!-- CURSOR BLINK -->
+          <div style="display:inline-flex;align-items:center;gap:4px;margin-top:20px;color:var(--text3);">
+            <span
+              style="width:2px;height:16px;background:var(--accent);animation:blink 1s infinite;display:inline-block;"></span>
+            <span style="font-size:12px;">继续编辑... 按 / 插入块</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: LINKED ITEMS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
+        <div class="card">
+          <div class="sec-header" style="margin-bottom:10px;">
+            <div class="sec-title" style="font-size:12.5px;">关联测试点</div>
+            <span class="pill pill-amber" style="margin-left:auto;">待确认</span>
+          </div>
+          <div style="font-size:12px;color:var(--text3);">需求诊断完成后，AI 将自动生成测试点草稿。</div>
+          <button class="btn btn-sm btn-primary" style="margin-top:10px;width:100%;justify-content:center;">开始需求健康诊断
+            →</button>
+        </div>
+        <div class="card">
+          <div class="sec-header" style="margin-bottom:10px;">
+            <div class="sec-title" style="font-size:12.5px;">关联用例</div>
+            <span class="mono" style="margin-left:auto;font-size:12px;color:var(--text3)">0 条</span>
+          </div>
+          <div style="font-size:12px;color:var(--text3);">测试点确认后自动生成用例。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="p3">
+
+    <div class="sidebar">
+      <div class="sb-section">
+        <div class="sb-item"><span class="icon">←</span> 返回需求列表</div>
+      </div>
+      <hr class="divider" style="margin:4px 0;">
+      <div class="sb-section">
+        <div class="sb-label">诊断进度</div>
+        <div class="sb-item active"><span class="icon">🔍</span>需求健康报告</div>
+        <div class="sb-item"><span class="icon">💬</span>场景补全对话</div>
+        <div class="sb-item" style="opacity:.4;"><span class="icon">🗺</span>测试点确认</div>
+        <div class="sb-item" style="opacity:.4;"><span class="icon">⚡</span>生成用例</div>
+      </div>
+      <hr class="divider" style="margin:4px 0;">
+      <div class="sb-section">
+        <div class="sb-label">健康报告概览</div>
+        <div style="padding:8px;background:var(--bg2);border-radius:6px;margin-bottom:4px;">
+          <div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:6px;">
+            <span style="color:var(--text3)">总遗漏项</span>
+            <span class="mono" style="font-weight:600;">8</span>
+          </div>
+          <div style="display:flex;gap:4px;flex-direction:column;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:11px;">
+              <span style="width:8px;height:8px;border-radius:2px;background:var(--red);flex-shrink:0;"></span>
+              <span style="color:var(--text3);">高风险</span>
+              <span class="mono" style="margin-left:auto;color:var(--red);">3</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:11px;">
+              <span style="width:8px;height:8px;border-radius:2px;background:var(--amber);flex-shrink:0;"></span>
+              <span style="color:var(--text3);">中风险</span>
+              <span class="mono" style="margin-left:auto;color:var(--amber);">3</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:11px;">
+              <span style="width:8px;height:8px;border-radius:2px;background:var(--blue);flex-shrink:0;"></span>
+              <span style="color:var(--text3);">行业清单</span>
+              <span class="mono" style="margin-left:auto;color:var(--blue);">2</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:11px;">
+              <span style="width:8px;height:8px;border-radius:2px;background:var(--accent);flex-shrink:0;"></span>
+              <span style="color:var(--text3);">已处理</span>
+              <span class="mono" style="margin-left:auto;color:var(--accent);">2</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <div class="page-watermark">REQ-089 · 需求健康诊断</div>
+          <h1>需求健康诊断</h1>
+          <div class="sub">草稿自动保存 · 场景补全对话进行中</div>
+        </div>
+        <div class="spacer"></div>
+        <span class="pill pill-amber">第 2 轮 · 深度聚焦</span>
+        <button class="btn btn-sm">⬇ 导出报告</button>
+        <button class="btn btn-sm btn-primary">完成，进入测试点确认 →</button>
+      </div>
+
+      <div class="diag-col">
+
+        <!-- LEFT: HEALTH REPORT -->
+        <div class="col-left">
+          <div class="col-header">
+            🔍 需求健康报告
+            <span class="mono" style="margin-left:auto;font-size:10px;color:var(--text3);">8 处遗漏</span>
+          </div>
+          <div style="padding:10px;">
+
+            <div style="font-size:11px;color:var(--text3);margin-bottom:8px;font-family:var(--mono);">🔴 高风险 · 3 项</div>
+
+            <div class="risk-item high">
+              <div style="flex:1;">
+                <div style="font-size:12.5px;font-weight:500;margin-bottom:3px;">网络中断恢复策略缺失</div>
+                <div style="font-size:11.5px;color:var(--text3);">§2 只描述成功保存，未说明网络中断时如何处理</div>
+                <div style="margin-top:5px;display:flex;gap:4px;">
+                  <span class="tag" style="font-size:10px;">异常路径</span>
+                  <span class="pill pill-amber" style="font-size:10px;padding:1px 6px;">讨论中</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="risk-item high">
+              <div style="flex:1;">
+                <div style="font-size:12.5px;font-weight:500;margin-bottom:3px;">并发编辑冲突未说明</div>
+                <div style="font-size:11.5px;color:var(--text3);">多用户同时编辑同一任务时草稿如何处理</div>
+                <div style="margin-top:5px;display:flex;gap:4px;">
+                  <span class="tag" style="font-size:10px;">并发竞争</span>
+                  <span class="pill pill-red" style="font-size:10px;padding:1px 6px;">未处理</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="risk-item high">
+              <div style="flex:1;">
+                <div style="font-size:12.5px;font-weight:500;margin-bottom:3px;">草稿存储上限未定义</div>
+                <div style="font-size:11.5px;color:var(--text3);">每个任务可存多少份草稿？超出后的处理策略？</div>
+                <div style="margin-top:5px;display:flex;gap:4px;">
+                  <span class="tag" style="font-size:10px;">边界值</span>
+                  <span class="pill pill-red" style="font-size:10px;padding:1px 6px;">未处理</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size:11px;color:var(--text3);margin:10px 0 8px;font-family:var(--mono);">🟡 中风险 · 3 项</div>
+
+            <div class="risk-item med">
+              <div style="flex:1;">
+                <div style="font-size:12.5px;font-weight:500;margin-bottom:3px;">权限边界未说明</div>
+                <div style="font-size:11.5px;color:var(--text3);">只读用户是否可以触发自动保存接口？</div>
+              </div>
+            </div>
+            <div class="risk-item med">
+              <div style="flex:1;">
+                <div style="font-size:12.5px;font-weight:500;margin-bottom:3px;">保存间隔最小值</div>
+                <div style="font-size:11.5px;color:var(--text3);">30秒是固定值还是可配置？最小配置值是多少？</div>
+              </div>
+            </div>
+            <div class="risk-item med" style="opacity:.6;">
+              <div style="flex:1;">
+                <div style="font-size:12.5px;font-weight:500;margin-bottom:3px;">草稿恢复入口位置</div>
+                <div style="font-size:11.5px;color:var(--text3);">刷新后恢复提示出现在哪里？几秒后消失？</div>
+              </div>
+            </div>
+
+            <div style="font-size:11px;color:var(--text3);margin:10px 0 8px;font-family:var(--mono);">🔵 行业必问 · 2 项
+            </div>
+            <div class="risk-item done" style="border-left-color:var(--blue);">
+              <div style="flex:1;">
+                <div style="font-size:12.5px;font-weight:500;margin-bottom:3px;">幂等性保障</div>
+                <div style="font-size:11.5px;color:var(--text3);">重复触发自动保存是否产生重复草稿？</div>
+                <span class="pill pill-green" style="font-size:10px;margin-top:4px;padding:1px 6px;">✓ 已确认</span>
+              </div>
+            </div>
+            <div class="risk-item done" style="border-left-color:var(--blue);">
+              <div style="flex:1;">
+                <div style="font-size:12.5px;font-weight:500;margin-bottom:3px;">断网期间本地存储策略</div>
+                <div style="font-size:11.5px;color:var(--text3);">是否有 localStorage 兜底？</div>
+                <span class="pill pill-green" style="font-size:10px;margin-top:4px;padding:1px 6px;">✓ 已确认</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- MID: CHAT -->
+        <div class="col-mid">
+          <div class="col-header" style="background:var(--bg);">
+            💬 场景补全对话
+            <div style="margin-left:auto;display:flex;gap:6px;">
+              <span class="pill pill-amber">第2轮 · 深度聚焦</span>
+              <span class="mono" style="font-size:10px;color:var(--text3);align-self:center;">3/8 已处理</span>
+            </div>
+          </div>
+          <div style="padding:14px;display:flex;flex-direction:column;gap:2px;">
+
+            <!-- ROUND INDICATOR -->
+            <div style="text-align:center;margin-bottom:10px;">
+              <span
+                style="font-size:10.5px;color:var(--text3);background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:3px 10px;font-family:var(--mono);">第一轮
+                · 广度扫描完成</span>
+            </div>
+
+            <div class="chat-msg">
+              <div class="chat-avatar chat-ai">AI</div>
+              <div>
+                <div class="chat-bubble ai-bubble">
+                  好的，我来聚焦「<strong>网络中断恢复策略</strong>」这个问题。<br><br>
+                  当自动保存请求因网络中断而失败时，系统是：<br>
+                  <strong>A)</strong> 直接丢弃这次保存，等下一个30秒周期重试<br>
+                  <strong>B)</strong> 先写入 localStorage，等网络恢复后再同步<br>
+                  <strong>C)</strong> 其他策略？
+                </div>
+                <div class="chat-time">14:18 · 深度聚焦第1层</div>
+              </div>
+            </div>
+
+            <div class="chat-msg" style="flex-direction:row-reverse;">
+              <div class="chat-avatar chat-user">张</div>
+              <div style="text-align:right;">
+                <div class="chat-bubble" style="margin-left:auto;">
+                  选 B，先写 localStorage，等网络恢复自动同步到服务端
+                </div>
+                <div class="chat-time">14:19</div>
+              </div>
+            </div>
+
+            <div class="chat-msg">
+              <div class="chat-avatar chat-ai">AI</div>
+              <div>
+                <div class="chat-bubble ai-bubble">
+                  明白了。那再追问一层：如果用户在网络未恢复期间多次编辑，localStorage
+                  中会有多个版本，同步到服务端时是取<strong>最新一份</strong>还是<strong>按时间合并</strong>？
+                </div>
+                <div class="chat-time">14:19 · 深度聚焦第2层</div>
+              </div>
+            </div>
+
+            <div class="chat-msg" style="flex-direction:row-reverse;">
+              <div class="chat-avatar chat-user">张</div>
+              <div style="text-align:right;">
+                <div class="chat-bubble" style="margin-left:auto;">取最新一份，不合并</div>
+                <div class="chat-time">14:20</div>
+              </div>
+            </div>
+
+            <div class="chat-msg">
+              <div class="chat-avatar chat-ai">AI</div>
+              <div>
+                <div class="chat-bubble ai-bubble">
+                  好的，确认：<br>
+                  ✓ 网络中断时写 localStorage 暂存<br>
+                  ✓ 恢复后以最新版本同步到服务端<br>
+                  ✓ 同步成功后清除 localStorage 旧版本<br><br>
+                  <strong>已更新场景地图节点：</strong><br>
+                  🟡 新增 · "网络中断时 localStorage 暂存" <span class="pill pill-green" style="font-size:10px;">→ 已确认</span>
+                </div>
+                <div class="chat-time">14:20 · 节点已更新</div>
+              </div>
+            </div>
+
+            <div class="chat-msg">
+              <div class="chat-avatar chat-ai">AI</div>
+              <div>
+                <div class="chat-bubble ai-bubble"
+                  style="border-color:rgba(244,63,94,.25);background:rgba(244,63,94,.04);">
+                  接下来处理「<strong>并发编辑冲突</strong>」。<br>多个用户同时打开同一任务进行编辑时，草稿保存是否会互相覆盖？是否有用户级别的草稿隔离？
+                </div>
+                <div class="chat-time">14:21 · 下一个高风险项</div>
+              </div>
+            </div>
+
+            <!-- INPUT -->
+            <div style="display:flex;gap:8px;margin-top:8px;align-items:flex-end;">
+              <textarea class="input" style="flex:1;resize:none;height:60px;padding:8px 12px;font-size:12.5px;"
+                placeholder="回复 AI 的追问..."></textarea>
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <button class="btn btn-primary btn-sm">发送</button>
+                <button class="btn btn-sm" style="font-size:11px;">跳过</button>
+                <button class="btn btn-sm" style="font-size:11px;">已知晓</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT: SCENE MAP PREVIEW -->
+        <div class="col-right">
+          <div class="col-header">
+            🗺 场景地图实时预览
+            <div style="margin-left:auto;display:flex;gap:4px;">
+              <button class="btn btn-ghost btn-sm" style="font-size:10px;">📋 列表</button>
+              <button class="btn btn-sm btn-primary" style="font-size:10px;">🌳 图形</button>
+            </div>
+          </div>
+          <div style="padding:10px;">
+
+            <!-- MAP STATS -->
+            <div
+              style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-bottom:12px;text-align:center;">
+              <div
+                style="padding:6px;background:rgba(0,217,163,.08);border-radius:5px;border:1px solid rgba(0,217,163,.2);">
+                <div class="mono" style="font-size:16px;font-weight:600;color:var(--accent);">6</div>
+                <div style="font-size:9.5px;color:var(--text3);">绿色</div>
+              </div>
+              <div
+                style="padding:6px;background:rgba(245,158,11,.08);border-radius:5px;border:1px solid rgba(245,158,11,.2);">
+                <div class="mono" style="font-size:16px;font-weight:600;color:var(--amber);">4</div>
+                <div style="font-size:9.5px;color:var(--text3);">黄色</div>
+              </div>
+              <div
+                style="padding:6px;background:rgba(244,63,94,.08);border-radius:5px;border:1px solid rgba(244,63,94,.2);">
+                <div class="mono" style="font-size:16px;font-weight:600;color:var(--red);">5</div>
+                <div style="font-size:9.5px;color:var(--text3);">红色</div>
+              </div>
+              <div style="padding:6px;background:var(--bg2);border-radius:5px;border:1px solid var(--border);">
+                <div class="mono" style="font-size:16px;font-weight:600;color:var(--text3);">2</div>
+                <div style="font-size:9.5px;color:var(--text3);">灰色</div>
+              </div>
+            </div>
+
+            <!-- SCENE NODES LIST -->
+            <div style="font-size:10.5px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">正常流程</div>
+            <div class="scene-node"><span class="scene-dot dot-green"></span><span
+                style="font-size:12px;flex:1;">正常自动保存触发</span><span class="mono"
+                style="font-size:10px;color:var(--text3);">~3条</span></div>
+            <div class="scene-node"><span class="scene-dot dot-green"></span><span
+                style="font-size:12px;flex:1;">手动保存优先级高于自动</span><span class="mono"
+                style="font-size:10px;color:var(--text3);">~2条</span></div>
+            <div class="scene-node"><span class="scene-dot dot-green"></span><span
+                style="font-size:12px;flex:1;">草稿恢复弹窗交互</span><span class="mono"
+                style="font-size:10px;color:var(--text3);">~3条</span></div>
+
+            <div style="font-size:10.5px;color:var(--text3);font-family:var(--mono);margin:8px 0 6px;">异常场景</div>
+            <div class="scene-node"><span class="scene-dot dot-yellow"></span><span
+                style="font-size:12px;flex:1;">localStorage 暂存（已确认）</span><span class="mono"
+                style="font-size:10px;color:var(--text3);">~4条</span></div>
+            <div class="scene-node"><span class="scene-dot dot-yellow"></span><span
+                style="font-size:12px;flex:1;">网络恢复后同步策略</span><span class="mono"
+                style="font-size:10px;color:var(--text3);">~3条</span></div>
+            <div class="scene-node" style="border-color:rgba(244,63,94,.3);"><span
+                class="scene-dot dot-red"></span><span style="font-size:12px;flex:1;">并发编辑冲突 ← 讨论中</span><span
+                class="mono" style="font-size:10px;color:var(--red);">~5条</span></div>
+
+            <div style="font-size:10.5px;color:var(--text3);font-family:var(--mono);margin:8px 0 6px;">边界值</div>
+            <div class="scene-node" style="border-color:rgba(244,63,94,.3);"><span
+                class="scene-dot dot-red"></span><span style="font-size:12px;flex:1;">草稿存储上限</span><span class="mono"
+                style="font-size:10px;color:var(--red);">~3条</span></div>
+            <div class="scene-node"><span class="scene-dot dot-yellow"></span><span
+                style="font-size:12px;flex:1;">保存间隔边界值（0/最大值）</span><span class="mono"
+                style="font-size:10px;color:var(--text3);">~4条</span></div>
+
+            <div style="font-size:10.5px;color:var(--text3);font-family:var(--mono);margin:8px 0 6px;">权限 & 安全</div>
+            <div class="scene-node"><span class="scene-dot dot-red"></span><span
+                style="font-size:12px;flex:1;">只读用户权限边界</span><span class="mono"
+                style="font-size:10px;color:var(--red);">~2条</span></div>
+            <div class="scene-node"><span class="scene-dot dot-gray"></span><span
+                style="font-size:12px;flex:1;">待确认：草稿可见范围</span><span class="mono"
+                style="font-size:10px;color:var(--text3);">?</span></div>
+            <div class="scene-node"><span class="scene-dot dot-gray"></span><span
+                style="font-size:12px;flex:1;">待确认：草稿数据加密</span><span class="mono"
+                style="font-size:10px;color:var(--text3);">?</span></div>
+
+            <div
+              style="margin-top:12px;padding:8px;background:var(--bg2);border-radius:6px;border:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text3);">预计生成用例总数</div>
+              <div class="mono" style="font-size:22px;font-weight:600;color:var(--text);margin:2px 0;">~38 条</div>
+              <div style="font-size:11px;color:var(--text3);">红色/灰色处理完后方可生成</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /diag-col -->
+    </div>
+  </div>
+
+  <div class="page active no-sidebar" id="p4" style="padding:0;">
+
+    <!-- SUB NAV -->
+    <div
+      style="padding:10px 20px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+      <div class="page-watermark" style="margin-right:12px;">REQ-089 · 测试点分析</div>
+      <div class="prog-steps">
+        <div class="prog-step done">✓ 需求录入</div>
+        <div class="prog-arrow">›</div>
+        <div class="prog-step done">✓ 健康诊断</div>
+        <div class="prog-arrow">›</div>
+        <div class="prog-step active">🎯 测试点确认</div>
+        <div class="prog-arrow">›</div>
+        <div class="prog-step" style="opacity:.5;">⚡ 生成用例</div>
+      </div>
+      <div class="spacer"></div>
+      <span class="pill pill-amber" style="font-size:11px;">2 个红色节点待处理</span>
+      <button class="btn btn-sm">🔗 与PM分享评审链接</button>
+      <button class="btn btn-sm btn-primary">✓ 确认全部，开始生成用例 →</button>
+    </div>
+
+    <!-- THREE-COL LAYOUT -->
+    <div style="display:grid;grid-template-columns:260px 1fr 300px;height:calc(100vh - 98px);border-top:none;">
+
+      <!-- LEFT: TREE NAV + STATS -->
+      <div style="border-right:1px solid var(--border);overflow-y:auto;background:var(--bg1);">
+        <div class="col-header" style="background:var(--bg1);">
+          📋 测试点分组
+          <span class="mono" style="margin-left:auto;font-size:10px;color:var(--text3);">18 个</span>
+        </div>
+
+        <!-- STATS BAR -->
+        <div style="padding:10px 12px;border-bottom:1px solid var(--border);">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px;">
+            <div
+              style="text-align:center;padding:5px 4px;background:rgba(0,217,163,.08);border-radius:5px;border:1px solid rgba(0,217,163,.2);">
+              <div class="mono" style="font-size:15px;font-weight:600;color:var(--accent);">8</div>
+              <div style="font-size:9px;color:var(--text3);">已覆盖</div>
+            </div>
+            <div
+              style="text-align:center;padding:5px 4px;background:rgba(245,158,11,.08);border-radius:5px;border:1px solid rgba(245,158,11,.2);">
+              <div class="mono" style="font-size:15px;font-weight:600;color:var(--amber);">6</div>
+              <div style="font-size:9px;color:var(--text3);">AI补全</div>
+            </div>
+            <div
+              style="text-align:center;padding:5px 4px;background:rgba(244,63,94,.08);border-radius:5px;border:1px solid rgba(244,63,94,.2);">
+              <div class="mono" style="font-size:15px;font-weight:600;color:var(--red);">2</div>
+              <div style="font-size:9px;color:var(--text3);">待处理</div>
+            </div>
+            <div
+              style="text-align:center;padding:5px 4px;background:var(--bg2);border-radius:5px;border:1px solid var(--border);">
+              <div class="mono" style="font-size:15px;font-weight:600;color:var(--text3);">2</div>
+              <div style="font-size:9px;color:var(--text3);">待确认</div>
+            </div>
+          </div>
+          <div style="height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;display:flex;">
+            <div style="width:44%;background:var(--accent);"></div>
+            <div style="width:33%;background:var(--amber);"></div>
+            <div style="width:11%;background:var(--red);"></div>
+            <div style="width:11%;background:var(--text3);"></div>
+          </div>
+          <div style="font-size:10.5px;color:var(--text3);margin-top:6px;">预计生成用例 <span class="mono"
+              style="color:var(--text);font-weight:600;">~52条</span>（待红色处理完后确认）</div>
+        </div>
+
+        <!-- GROUP: NORMAL -->
+        <div class="tp-group-header">
+          <span class="scene-dot dot-green"></span> 正常流程
+          <span class="mono" style="margin-left:auto;font-size:10px;">4</span>
+        </div>
+        <div class="tp-item active">
+          <div class="tp-checkbox tp-checked">✓</div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;font-weight:500;color:var(--text);">连接参数配置有效性</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">MySQL / Oracle / PostgreSQL</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--accent);">~3</span>
+        </div>
+        <div class="tp-item">
+          <div class="tp-checkbox tp-checked">✓</div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--text2);">手动保存优先级高于自动保存</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--text3);">~2</span>
+        </div>
+        <div class="tp-item">
+          <div class="tp-checkbox tp-checked">✓</div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--text2);">草稿恢复弹窗交互</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--text3);">~3</span>
+        </div>
+        <div class="tp-item">
+          <div class="tp-checkbox tp-checked">✓</div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--text2);">已发布版本不受草稿影响</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--text3);">~2</span>
+        </div>
+
+        <!-- GROUP: EXCEPTION -->
+        <div class="tp-group-header">
+          <span class="scene-dot dot-yellow"></span> 异常场景
+          <span class="pill pill-amber" style="font-size:9px;margin-left:4px;">AI补全</span>
+          <span class="mono" style="margin-left:auto;font-size:10px;">5</span>
+        </div>
+        <div class="tp-item">
+          <div class="tp-checkbox tp-checked">✓</div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--text2);">localStorage 暂存行为</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--text3);">~4</span>
+        </div>
+        <div class="tp-item">
+          <div class="tp-checkbox tp-checked">✓</div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--text2);">网络恢复后同步最新版本</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--text3);">~3</span>
+        </div>
+        <div class="tp-item" style="border-left:2px solid var(--red);">
+          <div class="tp-checkbox" style="border-color:var(--red);"></div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--red);font-weight:500;">并发编辑冲突 ⚠</div>
+            <div style="font-size:11px;color:var(--text3);">多用户同时编辑同一任务时的草稿隔离</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--red);">~5</span>
+        </div>
+        <div class="tp-item">
+          <div class="tp-checkbox tp-checked">✓</div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--text2);">保存失败提示文案准确性</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--text3);">~2</span>
+        </div>
+        <div class="tp-item">
+          <div class="tp-checkbox tp-checked">✓</div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--text2);">服务端错误时前端降级展示</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--text3);">~3</span>
+        </div>
+
+        <!-- GROUP: BOUNDARY -->
+        <div class="tp-group-header">
+          <span class="scene-dot dot-yellow"></span> 边界值
+          <span class="mono" style="margin-left:auto;font-size:10px;">4</span>
+        </div>
+        <div class="tp-item" style="border-left:2px solid var(--red);">
+          <div class="tp-checkbox" style="border-color:var(--red);"></div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--red);font-weight:500;">草稿存储上限 ⚠</div>
+            <div style="font-size:11px;color:var(--text3);">每任务最多存几份？超出如何处理？</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--red);">~3</span>
+        </div>
+        <div class="tp-item">
+          <div class="tp-checkbox tp-checked">✓</div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--text2);">保存间隔极值（0/最大/负数）</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--text3);">~4</span>
+        </div>
+        <div class="tp-item">
+          <div class="tp-checkbox" style="border-color:var(--text3);background:var(--bg3);"></div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--text3);">草稿可见范围（用户隔离）</div>
+            <div style="font-size:11px;color:var(--text3);">待确认</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--text3);">?</span>
+        </div>
+        <div class="tp-item">
+          <div class="tp-checkbox" style="border-color:var(--text3);background:var(--bg3);"></div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--text3);">草稿数据存储加密</div>
+            <div style="font-size:11px;color:var(--text3);">待确认</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--text3);">?</span>
+        </div>
+
+        <!-- GROUP: PERMISSION -->
+        <div class="tp-group-header">
+          <span class="scene-dot dot-green"></span> 权限
+          <span class="mono" style="margin-left:auto;font-size:10px;">1</span>
+        </div>
+        <div class="tp-item">
+          <div class="tp-checkbox tp-checked">✓</div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;color:var(--text2);">只读用户无法触发自动保存接口</div>
+          </div>
+          <span class="mono" style="font-size:10px;color:var(--text3);">~2</span>
+        </div>
+
+        <div style="padding:10px 12px;">
+          <button class="btn btn-sm"
+            style="width:100%;justify-content:center;border-style:dashed;color:var(--accent);">＋ 手动添加测试点</button>
+        </div>
+      </div>
+
+      <!-- MID: DETAIL PANEL -->
+      <div style="overflow-y:auto;background:var(--bg);padding:20px 24px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <h2 style="font-family:var(--display);font-size:16px;font-weight:700;">连接参数配置有效性</h2>
+          <span class="pill pill-green">已确认</span>
+          <span class="tag">正常流程</span>
+          <div class="spacer"></div>
+          <button class="btn btn-sm btn-ghost">✏️ 编辑</button>
+          <button class="btn btn-sm btn-ghost" style="color:var(--red);">🗑 删除</button>
+        </div>
+
+        <div
+          style="padding:12px;background:var(--bg1);border:1px solid var(--border);border-radius:8px;margin-bottom:16px;font-size:12.5px;line-height:1.7;color:var(--text2);">
+          验证 MySQL、Oracle、PostgreSQL 三种数据库的 <strong style="color:var(--text)">JDBC 连接参数配置</strong>的有效性，包括
+          Host、Port、DatabaseName、Username、Password 等核心参数的正确性校验，以及 SSL 配置的连接安全性验证。
+        </div>
+
+        <!--粒度提示 -->
+        <div
+          style="padding:8px 12px;background:rgba(0,217,163,.06);border:1px solid rgba(0,217,163,.2);border-radius:6px;margin-bottom:16px;display:flex;align-items:center;gap:8px;font-size:12px;">
+          <span style="color:var(--accent);">✦</span>
+          <span style="color:var(--text2);">粒度合适：此测试点预计生成 <span class="mono"
+              style="color:var(--accent);font-weight:600;">3条</span> 用例（正常范围 2~5 条）</span>
+        </div>
+
+        <!-- EXPECTED CASES -->
+        <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px;">预期生成用例预览（点击「确认并生成」后生成详细步骤）
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+          <div style="padding:10px 12px;background:var(--bg1);border:1px solid var(--border);border-radius:6px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <span class="mono" style="font-size:11px;color:var(--text3);">TC-089-001</span>
+              <span class="pill pill-red" style="font-size:10px;padding:1px 5px;">P0</span>
+              <span class="tag" style="font-size:10px;">正常</span>
+            </div>
+            <div style="font-size:12.5px;color:var(--text);">使用正确 MySQL 连接参数验证连接成功</div>
+          </div>
+          <div style="padding:10px 12px;background:var(--bg1);border:1px solid var(--border);border-radius:6px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <span class="mono" style="font-size:11px;color:var(--text3);">TC-089-002</span>
+              <span class="pill pill-amber" style="font-size:10px;padding:1px 5px;">P1</span>
+              <span class="tag" style="font-size:10px;">异常</span>
+            </div>
+            <div style="font-size:12.5px;color:var(--text);">错误密码导致连接失败时的错误提示可读性</div>
+          </div>
+          <div style="padding:10px 12px;background:var(--bg1);border:1px solid var(--border);border-radius:6px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <span class="mono" style="font-size:11px;color:var(--text3);">TC-089-003</span>
+              <span class="pill pill-amber" style="font-size:10px;padding:1px 5px;">P1</span>
+              <span class="tag" style="font-size:10px;">边界</span>
+            </div>
+            <div style="font-size:12.5px;color:var(--text);">SSL 证书配置后连接安全性验证</div>
+          </div>
+        </div>
+
+        <!-- SOURCE -->
+        <div
+          style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding:10px 12px;background:var(--bg1);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text3);">
+          <span>来源：</span>
+          <span style="color:var(--text2);">需求文档 §2.1</span>
+          <span>·</span>
+          <span style="color:var(--accent);">健康诊断补全（边界值缺失）</span>
+          <span>·</span>
+          <span style="color:var(--text2);">行业必问清单 #幂等性</span>
+        </div>
+
+        <!-- ALERT ITEM: RED -->
+        <div
+          style="padding:12px;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.3);border-radius:8px;margin-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="color:var(--red);font-size:14px;">⚠</span>
+            <span style="font-size:13px;font-weight:600;color:var(--red);">「并发编辑冲突」需要先确认才能生成用例</span>
+          </div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">AI
+            在健康诊断中识别到此遗漏场景，尚未在对话中确认。请先完成场景补全对话，或手动填写测试点描述。</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sm" style="color:var(--red);border-color:rgba(244,63,94,.3);">返回对话补充</button>
+            <button class="btn btn-sm btn-ghost">手动填写描述</button>
+            <button class="btn btn-sm btn-ghost" style="color:var(--text3);">暂时跳过此项</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: VISUAL MAP PLACEHOLDER -->
+      <div style="border-left:1px solid var(--border);overflow-y:auto;background:var(--bg1);">
+        <div class="col-header">
+          🌳 场景地图（可视化）
+          <div style="margin-left:auto;display:flex;gap:4px;">
+            <button class="btn btn-primary btn-sm" style="font-size:10px;">🌳 图形</button>
+            <button class="btn btn-sm" style="font-size:10px;">📋 列表</button>
+          </div>
+        </div>
+        <!-- REACT FLOW PLACEHOLDER -->
+        <div style="padding:16px;">
+          <div
+            style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:20px;min-height:420px;position:relative;overflow:hidden;">
+
+            <!-- LEGEND -->
+            <div
+              style="position:absolute;top:10px;right:10px;background:var(--bg1);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:10.5px;">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><span
+                  class="scene-dot dot-green"></span><span style="color:var(--text3);">文档已覆盖</span></div>
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><span
+                  class="scene-dot dot-yellow"></span><span style="color:var(--text3);">AI识别补全</span></div>
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><span
+                  class="scene-dot dot-red"></span><span style="color:var(--text3);">缺失待处理</span></div>
+              <div style="display:flex;align-items:center;gap:5px;"><span class="scene-dot dot-gray"></span><span
+                  style="color:var(--text3);">待确认</span></div>
+            </div>
+
+            <!-- TREE VISUALIZATION (CSS-BASED) -->
+            <div style="font-family:var(--mono);font-size:11px;">
+
+              <!-- ROOT -->
+              <div style="text-align:center;margin-bottom:24px;">
+                <div
+                  style="display:inline-block;padding:6px 14px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:8px;font-weight:600;color:var(--text);">
+                  REQ-089 草稿自动保存</div>
+              </div>
+
+              <!-- L1 NODES -->
+              <div style="display:flex;justify-content:space-around;position:relative;margin-bottom:20px;">
+                <div
+                  style="position:absolute;top:-12px;left:50%;width:0;height:12px;border-left:1px dashed var(--border2);">
+                </div>
+                <div style="position:absolute;top:-12px;left:12%;right:12%;height:1px;background:var(--border2);"></div>
+
+                <div style="text-align:center;">
+                  <div
+                    style="padding:5px 10px;background:rgba(0,217,163,.1);border:1px solid rgba(0,217,163,.35);border-radius:6px;color:var(--accent);font-size:10.5px;">
+                    正常流程</div>
+                  <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;align-items:center;">
+                    <div
+                      style="padding:3px 8px;background:var(--bg2);border:1px solid rgba(0,217,163,.3);border-radius:4px;font-size:10px;color:var(--text2);white-space:nowrap;">
+                      连接参数有效性</div>
+                    <div
+                      style="padding:3px 8px;background:var(--bg2);border:1px solid rgba(0,217,163,.3);border-radius:4px;font-size:10px;color:var(--text2);white-space:nowrap;">
+                      手动保存优先级</div>
+                    <div
+                      style="padding:3px 8px;background:var(--bg2);border:1px solid rgba(0,217,163,.3);border-radius:4px;font-size:10px;color:var(--text2);white-space:nowrap;">
+                      草稿恢复弹窗</div>
+                    <div
+                      style="padding:3px 8px;background:var(--bg2);border:1px solid rgba(0,217,163,.3);border-radius:4px;font-size:10px;color:var(--text2);white-space:nowrap;">
+                      已发布版不受影响</div>
+                  </div>
+                </div>
+
+                <div style="text-align:center;">
+                  <div
+                    style="padding:5px 10px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:6px;color:var(--amber);font-size:10.5px;">
+                    异常/边界</div>
+                  <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;align-items:center;">
+                    <div
+                      style="padding:3px 8px;background:var(--bg2);border:1px solid rgba(245,158,11,.3);border-radius:4px;font-size:10px;color:var(--text2);white-space:nowrap;">
+                      localStorage暂存</div>
+                    <div
+                      style="padding:3px 8px;background:var(--bg2);border:1px solid rgba(245,158,11,.3);border-radius:4px;font-size:10px;color:var(--text2);white-space:nowrap;">
+                      网络恢复同步</div>
+                    <div
+                      style="padding:3px 8px;background:rgba(244,63,94,.1);border:1.5px solid var(--red);border-radius:4px;font-size:10px;color:var(--red);white-space:nowrap;font-weight:600;">
+                      并发冲突 ⚠</div>
+                    <div
+                      style="padding:3px 8px;background:rgba(244,63,94,.1);border:1.5px solid var(--red);border-radius:4px;font-size:10px;color:var(--red);white-space:nowrap;font-weight:600;">
+                      存储上限 ⚠</div>
+                    <div
+                      style="padding:3px 8px;background:var(--bg2);border:1px solid rgba(245,158,11,.3);border-radius:4px;font-size:10px;color:var(--text2);white-space:nowrap;">
+                      间隔极值</div>
+                  </div>
+                </div>
+
+                <div style="text-align:center;">
+                  <div
+                    style="padding:5px 10px;background:rgba(86,101,119,.15);border:1px solid var(--border2);border-radius:6px;color:var(--text3);font-size:10.5px;">
+                    权限/安全</div>
+                  <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;align-items:center;">
+                    <div
+                      style="padding:3px 8px;background:rgba(0,217,163,.08);border:1px solid rgba(0,217,163,.2);border-radius:4px;font-size:10px;color:var(--text2);white-space:nowrap;">
+                      只读用户权限</div>
+                    <div
+                      style="padding:3px 8px;background:var(--bg3);border:1px dashed var(--border2);border-radius:4px;font-size:10px;color:var(--text3);white-space:nowrap;">
+                      可见范围 ?</div>
+                    <div
+                      style="padding:3px 8px;background:var(--bg3);border:1px dashed var(--border2);border-radius:4px;font-size:10px;color:var(--text3);white-space:nowrap;">
+                      数据加密 ?</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap;">
+              ⚡ 由 React Flow 渲染 · 支持缩放拖拽</div>
+          </div>
+
+          <!-- EXPORT OPTIONS -->
+          <div style="display:flex;gap:6px;margin-top:10px;">
+            <button class="btn btn-sm" style="flex:1;justify-content:center;font-size:11px;">📷 导出 PNG</button>
+            <button class="btn btn-sm" style="flex:1;justify-content:center;font-size:11px;">📋 导出 MD</button>
+            <button class="btn btn-sm" style="flex:1;justify-content:center;font-size:11px;">{ } JSON</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="page" id="p5" style="height:100vh;display:none;flex-direction:column;">
+
+    <!-- TOP BAR -->
+    <div
+      style="padding:8px 16px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;">
+      <div class="page-watermark">离线开发 · Sprint 3 · 生成工作台</div>
+      <div class="spacer"></div>
+      <!-- MODE SWITCHER -->
+      <div
+        style="display:flex;gap:2px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:2px;">
+        <button class="btn btn-sm btn-primary" style="border-radius:5px;font-size:11.5px;">🎯 测试点驱动</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:11.5px;">📄 文档驱动</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:11.5px;">💬 对话引导</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:11.5px;">📋 模板填充</button>
+      </div>
+      <button class="btn btn-sm">⬇ 批量导出</button>
+    </div>
+
+    <!-- THREE-COL -->
+    <div class="three-col"
+      style="margin:0;border:none;border-radius:0;border-top:none;height:calc(100vh - 49px - 49px);">
+
+      <!-- LEFT: DOC TREE -->
+      <div class="col-left">
+        <div class="col-header">📁 需求导航</div>
+        <div style="padding:8px;">
+          <!-- PRODUCT/ITER SELECTOR -->
+          <select class="input" style="margin-bottom:8px;font-size:12px;">
+            <option>⚡ 离线开发 · Sprint 3</option>
+          </select>
+          <div style="font-size:10.5px;color:var(--text3);margin-bottom:6px;font-family:var(--mono);">8 条需求 · 124 个测试点
+          </div>
+
+          <!-- REQUIREMENT ITEMS -->
+          <div style="display:flex;flex-direction:column;gap:2px;">
+
+            <div
+              style="padding:8px 10px;background:var(--accent-d);border:1px solid rgba(0,217,163,.25);border-radius:6px;cursor:pointer;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                <span class="scene-dot dot-green"></span>
+                <span style="font-size:12px;font-weight:600;color:var(--text);">REQ-089</span>
+                <span class="pill pill-green" style="margin-left:auto;font-size:9px;padding:1px 5px;">测试点已确认</span>
+              </div>
+              <div style="font-size:11.5px;color:var(--text2);margin-left:14px;">草稿自动保存</div>
+              <div style="display:flex;gap:4px;margin-left:14px;margin-top:4px;flex-wrap:wrap;">
+                <span class="mono" style="font-size:10px;color:var(--text3);">18测试点 · 预计52条</span>
+              </div>
+              <!-- SUB TEST POINTS -->
+              <div style="margin-left:14px;margin-top:6px;display:flex;flex-direction:column;gap:2px;">
+                <div
+                  style="padding:3px 6px;background:var(--bg2);border-radius:4px;font-size:11px;color:var(--accent);cursor:pointer;">
+                  → 连接参数配置有效性</div>
+                <div
+                  style="padding:3px 6px;background:var(--bg3);border-radius:4px;font-size:11px;color:var(--text3);cursor:pointer;">
+                  手动保存优先级</div>
+                <div
+                  style="padding:3px 6px;background:var(--bg3);border-radius:4px;font-size:11px;color:var(--text3);cursor:pointer;">
+                  localStorage暂存行为</div>
+                <div
+                  style="padding:3px 6px;background:var(--bg3);border-radius:4px;font-size:11px;color:var(--text3);cursor:pointer;opacity:.5;">
+                  …更多 14 个</div>
+              </div>
+            </div>
+
+            <div
+              style="padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;cursor:pointer;opacity:.7;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+                <span class="scene-dot dot-red"></span>
+                <span style="font-size:12px;font-weight:500;">REQ-090</span>
+                <span class="pill pill-red" style="margin-left:auto;font-size:9px;padding:1px 5px;">待诊断</span>
+              </div>
+              <div style="font-size:11.5px;color:var(--text3);margin-left:14px;">版本对比功能</div>
+            </div>
+
+            <div
+              style="padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;cursor:pointer;opacity:.7;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+                <span class="scene-dot dot-gray"></span>
+                <span style="font-size:12px;font-weight:500;">REQ-091</span>
+                <span class="pill pill-gray" style="margin-left:auto;font-size:9px;padding:1px 5px;">草稿</span>
+              </div>
+              <div style="font-size:11.5px;color:var(--text3);margin-left:14px;">批量导出任务</div>
+            </div>
+          </div>
+
+          <div
+            style="margin-top:10px;padding:8px;background:var(--bg2);border-radius:6px;border:1px solid var(--border);">
+            <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">当前上下文已注入</div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;">
+              <span class="tag" style="font-size:10px;">REQ-089 §2.3</span>
+              <span class="tag" style="font-size:10px;border-color:rgba(0,217,163,.3);color:var(--accent)">企业规范
+                v3</span>
+              <span class="tag" style="font-size:10px;">历史用例 ×12</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MID: CHAT + STREAM -->
+      <div class="col-mid">
+        <div class="col-header" style="background:var(--bg);justify-content:space-between;">
+          <span>💬 AI 对话 & 流式生成</span>
+          <div style="display:flex;gap:6px;">
+            <span class="pill pill-green" style="font-size:10px;">GPT-4o</span>
+            <span style="font-size:11px;color:var(--text3);">温度 0.3</span>
+          </div>
+        </div>
+        <div style="padding:14px;display:flex;flex-direction:column;gap:4px;">
+
+          <!-- SYSTEM MESSAGE -->
+          <div style="text-align:center;margin-bottom:8px;">
+            <span
+              style="font-size:10.5px;color:var(--text3);background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:3px 10px;font-family:var(--mono);">🎯
+              测试点驱动模式 · 基于已确认测试点生成用例</span>
+          </div>
+
+          <div class="chat-msg">
+            <div class="chat-avatar chat-user">张</div>
+            <div>
+              <div class="chat-bubble">
+                基于 REQ-089 所有已确认测试点，帮我生成完整用例集，优先级高的先生成
+              </div>
+              <div class="chat-time">14:31</div>
+            </div>
+          </div>
+
+          <div class="chat-msg">
+            <div class="chat-avatar chat-ai">AI</div>
+            <div>
+              <div class="chat-bubble ai-bubble">
+                好的，基于 <strong>18个已确认测试点</strong>开始生成，预计 52 条用例。<br>
+                按优先级顺序：P0 核心场景 → P1 重要场景 → P2 边界补充<br><br>
+                <strong style="color:var(--accent);">正在生成中...</strong> TC-089-001 至 TC-089-008
+              </div>
+              <div class="chat-time">14:31</div>
+            </div>
+          </div>
+
+          <!-- GENERATING CASES -->
+          <div class="chat-msg">
+            <div class="chat-avatar chat-ai">AI</div>
+            <div style="flex:1;">
+              <!-- CASE 1 (完整) -->
+              <div class="case-preview" style="border-color:rgba(0,217,163,.25);background:rgba(0,217,163,.03);">
+                <div class="case-preview-title">
+                  <span class="mono" style="font-size:11px;color:var(--text3);">TC-089-001</span>
+                  <span class="pill pill-red" style="font-size:10px;padding:1px 5px;">P0</span>
+                  <span class="pill pill-green" style="font-size:10px;padding:1px 5px;">✓ 已生成</span>
+                  <span class="spacer"></span>
+                  <button class="btn btn-ghost btn-sm" style="font-size:10px;">✏️</button>
+                </div>
+                <div style="font-size:12.5px;color:var(--text);margin-bottom:6px;font-weight:500;">正常自动保存触发验证</div>
+                <div style="font-size:11.5px;color:var(--text3);margin-bottom:6px;">前置条件：用户已登录，任务处于编辑状态</div>
+                <div class="case-step"><span class="step-num">1</span><span>打开任意数据开发任务，进入编辑模式</span></div>
+                <div class="case-step"><span class="step-num">2</span><span>修改任务中任意字段内容（如修改 SQL 语句）</span></div>
+                <div class="case-step"><span class="step-num">3</span><span>等待 30 秒，不进行任何手动保存操作</span></div>
+                <div class="case-step"><span class="step-num">4</span><span style="color:var(--accent);">预期：右上角显示「已自动保存
+                    14:31」，草稿内容可在刷新后恢复</span></div>
+              </div>
+
+              <!-- CASE 2 (完整) -->
+              <div class="case-preview">
+                <div class="case-preview-title">
+                  <span class="mono" style="font-size:11px;color:var(--text3);">TC-089-002</span>
+                  <span class="pill pill-red" style="font-size:10px;padding:1px 5px;">P0</span>
+                  <span class="pill pill-green" style="font-size:10px;padding:1px 5px;">✓ 已生成</span>
+                  <span class="spacer"></span>
+                  <button class="btn btn-ghost btn-sm" style="font-size:10px;">✏️</button>
+                </div>
+                <div style="font-size:12.5px;color:var(--text);margin-bottom:6px;font-weight:500;">网络断开时 localStorage
+                  暂存行为</div>
+                <div class="case-step"><span class="step-num">1</span><span>进入任务编辑模式，修改内容</span></div>
+                <div class="case-step"><span class="step-num">2</span><span>断开网络连接（模拟网络中断）</span></div>
+                <div class="case-step"><span class="step-num">3</span><span>等待 30 秒自动保存触发</span></div>
+                <div class="case-step"><span class="step-num">4</span><span
+                    style="color:var(--accent);">预期：右上角显示"自动保存失败（网络异常），已为您保留本地草稿"；localStorage 中存有最新内容</span></div>
+              </div>
+
+              <!-- CASE 3 (STREAMING) -->
+              <div class="case-preview" style="border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.03);">
+                <div class="case-preview-title">
+                  <span class="mono" style="font-size:11px;color:var(--text3);">TC-089-003</span>
+                  <span class="pill pill-amber" style="font-size:10px;padding:1px 5px;">P1</span>
+                  <span class="pill pill-amber" style="font-size:10px;padding:1px 5px;">⚡ 生成中...</span>
+                </div>
+                <div style="font-size:12.5px;color:var(--text);margin-bottom:6px;font-weight:500;">网络恢复后草稿同步到服务端</div>
+                <div class="case-step"><span class="step-num">1</span><span>进入任务编辑，修改内容后断开网络</span></div>
+                <div class="case-step"><span class="step-num">2</span><span>确认 localStorage 暂存成功</span></div>
+                <div class="case-step"><span class="step-num">3</span><span>恢复网络连接...</span>
+                  <span
+                    style="display:inline-block;width:6px;height:13px;background:var(--amber);border-radius:1px;animation:blink 0.8s infinite;margin-left:4px;vertical-align:middle;"></span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- QUICK COMMANDS -->
+          <div
+            style="padding:8px;background:var(--bg1);border:1px solid var(--border);border-radius:8px;margin-top:4px;">
+            <div style="font-size:10.5px;color:var(--text3);margin-bottom:6px;font-family:var(--mono);">快捷指令</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="btn btn-sm" style="font-size:11px;">⚡ 只生成异常场景</button>
+              <button class="btn btn-sm" style="font-size:11px;">🔀 只生成边界值</button>
+              <button class="btn btn-sm" style="font-size:11px;">🔁 重新生成选中</button>
+              <button class="btn btn-sm" style="font-size:11px;">✨ 补充并发场景</button>
+            </div>
+          </div>
+
+          <!-- INPUT -->
+          <div style="display:flex;gap:8px;margin-top:8px;align-items:flex-end;">
+            <textarea class="input" style="flex:1;resize:none;height:52px;padding:8px 12px;font-size:12.5px;"
+              placeholder="追加要求，例如「增加 Oracle 数据库的对应用例」..."></textarea>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <button class="btn btn-primary btn-sm">发送</button>
+              <button class="btn btn-sm" style="font-size:11px;">⏸ 暂停</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: CASE LIST -->
+      <div class="col-right">
+        <div class="col-header">
+          📋 用例预览
+          <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
+            <span class="mono" style="font-size:10px;color:var(--accent);">3 / 52</span>
+            <button class="btn btn-ghost btn-sm" style="font-size:10px;">⬇ 导出</button>
+          </div>
+        </div>
+
+        <!-- STATS MINI -->
+        <div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;gap:12px;font-size:11.5px;">
+          <span style="color:var(--accent);">✓ 已生成 <span class="mono" style="font-weight:600;">3</span></span>
+          <span style="color:var(--amber);">⚡ 生成中 <span class="mono">1</span></span>
+          <span style="color:var(--text3);">待生成 <span class="mono">48</span></span>
+        </div>
+
+        <!-- FILTER ROW -->
+        <div style="padding:6px 12px;border-bottom:1px solid var(--border);display:flex;gap:4px;flex-wrap:wrap;">
+          <button class="btn btn-sm btn-primary" style="font-size:10.5px;padding:2px 8px;">全部</button>
+          <button class="btn btn-sm" style="font-size:10.5px;padding:2px 8px;">P0</button>
+          <button class="btn btn-sm" style="font-size:10.5px;padding:2px 8px;">P1</button>
+          <button class="btn btn-sm" style="font-size:10.5px;padding:2px 8px;">异常</button>
+          <button class="btn btn-sm" style="font-size:10.5px;padding:2px 8px;">边界</button>
+        </div>
+
+        <!-- CASE LIST -->
+        <div style="padding:8px;">
+          <div
+            style="padding:8px 10px;background:var(--accent-d);border:1px solid rgba(0,217,163,.25);border-radius:6px;cursor:pointer;margin-bottom:4px;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <span class="mono" style="font-size:10.5px;color:var(--text3);">TC-089-001</span>
+              <span class="pill pill-red" style="font-size:9px;padding:1px 4px;">P0</span>
+              <span class="tag" style="font-size:9px;padding:1px 4px;">正常</span>
+              <button class="btn btn-ghost btn-sm" style="font-size:10px;margin-left:auto;padding:1px 5px;">✏️</button>
+            </div>
+            <div style="font-size:12px;color:var(--text);">正常自动保存触发验证</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">4步骤 · 来源：测试点「连接参数有效性」</div>
+          </div>
+
+          <div
+            style="padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;cursor:pointer;margin-bottom:4px;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <span class="mono" style="font-size:10.5px;color:var(--text3);">TC-089-002</span>
+              <span class="pill pill-red" style="font-size:9px;padding:1px 4px;">P0</span>
+              <span class="tag" style="font-size:9px;padding:1px 4px;">异常</span>
+              <button class="btn btn-ghost btn-sm" style="font-size:10px;margin-left:auto;padding:1px 5px;">✏️</button>
+            </div>
+            <div style="font-size:12px;color:var(--text2);">网络断开时 localStorage 暂存</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">4步骤</div>
+          </div>
+
+          <div
+            style="padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;cursor:pointer;margin-bottom:4px;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <span class="mono" style="font-size:10.5px;color:var(--text3);">TC-089-003</span>
+              <span class="pill pill-amber" style="font-size:9px;padding:1px 4px;">P1</span>
+              <span class="tag" style="font-size:9px;padding:1px 4px;">异常</span>
+              <span style="margin-left:auto;font-size:10px;color:var(--amber);">⚡ 生成中</span>
+            </div>
+            <div style="font-size:12px;color:var(--text3);">网络恢复后草稿同步</div>
+          </div>
+
+          <!-- REMAINING SKELETON -->
+          <div
+            style="padding:24px;text-align:center;color:var(--text3);font-size:12px;background:var(--bg2);border:1px dashed var(--border);border-radius:6px;margin-top:8px;">
+            <div style="font-size:20px;opacity:.3;margin-bottom:6px;">⚡</div>
+            <div>剩余 <span class="mono" style="color:var(--text);">49</span> 条用例生成中</div>
+            <div style="margin-top:4px;font-size:11px;">预计完成 <span class="mono">约 2 分钟</span></div>
+          </div>
+
+          <!-- BATCH ACTIONS -->
+          <div
+            style="margin-top:10px;padding:8px;background:var(--bg1);border:1px solid var(--border);border-radius:6px;">
+            <div style="font-size:10.5px;color:var(--text3);margin-bottom:6px;">生成完成后</div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <button class="btn btn-sm" style="width:100%;justify-content:center;font-size:11.5px;">📊 导出 Excel
+                (.xlsx)</button>
+              <button class="btn btn-sm" style="width:100%;justify-content:center;font-size:11.5px;">🗺 导出
+                XMind</button>
+              <button class="btn btn-sm" style="width:100%;justify-content:center;font-size:11.5px;">🔗 同步到
+                Jira/Xray</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="page" id="p6">
+    <div class="sidebar">
+      <div class="sb-section">
+        <div class="sb-label">子产品</div>
+        <div class="sb-item active"><span>⚡</span>离线开发<span class="sb-count">312</span></div>
+        <div class="sb-item"><span>🔴</span>实时开发<span class="sb-count">248</span></div>
+        <div class="sb-item"><span>🗂</span>数据资产<span class="sb-count">189</span></div>
+      </div>
+      <hr class="divider" style="margin:2px 0;">
+      <div class="sb-section">
+        <div class="sb-label">迭代筛选</div>
+        <div class="sb-item active"><span>●</span>Sprint 3（当前）</div>
+        <div class="sb-item"><span>○</span>Sprint 2</div>
+        <div class="sb-item"><span>○</span>Sprint 1</div>
+      </div>
+      <hr class="divider" style="margin:2px 0;">
+      <div class="sb-section">
+        <div class="sb-label">快速筛选</div>
+        <div class="sb-item"><span>🔴</span>需要重写<span class="sb-count" style="color:var(--red);">4</span></div>
+        <div class="sb-item"><span>🟡</span>需要复核<span class="sb-count" style="color:var(--amber);">11</span></div>
+        <div class="sb-item"><span>⭐</span>高质量用例</div>
+        <div class="sb-item"><span>📋</span>全部用例</div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <div class="page-watermark">离线开发 · Sprint 3 · 用例管理</div>
+          <h1>测试用例</h1>
+          <div class="sub">312 条用例 · 18 个测试点 · 覆盖率 89%</div>
+        </div>
+        <div class="spacer"></div>
+        <input class="input" placeholder="🔍 搜索用例..." style="width:200px;">
+        <button class="btn">⚙ 高级筛选</button>
+        <button class="btn">⬇ 导出</button>
+        <button class="btn btn-primary">＋ 手动添加</button>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div
+        style="display:flex;gap:8px;padding:8px 12px;background:var(--bg1);border:1px solid var(--border);border-radius:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+        <span style="font-size:11.5px;color:var(--text3);">优先级：</span>
+        <button class="btn btn-sm btn-primary">全部</button>
+        <button class="btn btn-sm">P0</button>
+        <button class="btn btn-sm">P1</button>
+        <button class="btn btn-sm">P2</button>
+        <div style="width:1px;height:16px;background:var(--border);"></div>
+        <span style="font-size:11.5px;color:var(--text3);">类型：</span>
+        <button class="btn btn-sm">正常</button>
+        <button class="btn btn-sm">异常</button>
+        <button class="btn btn-sm">边界</button>
+        <button class="btn btn-sm">并发</button>
+        <div style="width:1px;height:16px;background:var(--border);"></div>
+        <span style="font-size:11.5px;color:var(--text3);">状态：</span>
+        <button class="btn btn-sm">草稿</button>
+        <button class="btn btn-sm">已评审</button>
+        <button class="btn btn-sm" style="color:var(--red);border-color:rgba(244,63,94,.3);">⚠ 待复核</button>
+      </div>
+
+      <!-- DIFF ALERT BANNER -->
+      <div
+        style="padding:10px 14px;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.3);border-radius:8px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:20px;">🔔</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);">REQ-089 发生变更（v1.2 → v1.3），影响 <span
+              style="color:var(--red);">4 条</span>需要重写，<span style="color:var(--amber);">11 条</span>需要复核</div>
+          <div style="font-size:11.5px;color:var(--text3);margin-top:2px;">需求变更：自动保存间隔 30秒→10秒，新增用户自定义间隔功能</div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn btn-sm" style="color:var(--red);border-color:rgba(244,63,94,.3);">查看 Diff</button>
+        <button class="btn btn-sm btn-primary">一键重新生成受影响用例</button>
+      </div>
+
+      <!-- TABLE -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th style="width:30px;"><input type="checkbox" style="accent-color:var(--accent);"></th>
+              <th>用例ID</th>
+              <th>标题</th>
+              <th>来源测试点</th>
+              <th>类型</th>
+              <th>优先级</th>
+              <th>步骤数</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:rgba(244,63,94,.04);">
+              <td><input type="checkbox" style="accent-color:var(--accent);"></td>
+              <td><span class="mono" style="font-size:11.5px;color:var(--text3);">TC-089-003</span></td>
+              <td style="color:var(--text);">网络恢复后草稿同步到服务端 <span class="pill pill-red"
+                  style="font-size:9px;margin-left:4px;">需重写</span></td>
+              <td><span class="tag" style="font-size:10.5px;">localStorage暂存行为</span></td>
+              <td><span class="tag" style="font-size:10.5px;">异常</span></td>
+              <td><span class="pill pill-amber" style="font-size:10px;padding:1px 5px;">P1</span></td>
+              <td class="mono" style="color:var(--text3);">4</td>
+              <td><span class="pill pill-red" style="font-size:10px;">待重写</span></td>
+              <td><button class="btn btn-sm" style="font-size:11px;">✏️ 重写</button></td>
+            </tr>
+            <tr style="background:rgba(245,158,11,.03);">
+              <td><input type="checkbox" style="accent-color:var(--accent);"></td>
+              <td><span class="mono" style="font-size:11.5px;color:var(--text3);">TC-089-001</span></td>
+              <td style="color:var(--text);">正常自动保存触发验证 <span class="pill pill-amber"
+                  style="font-size:9px;margin-left:4px;">待复核</span></td>
+              <td><span class="tag" style="font-size:10.5px;">连接参数有效性</span></td>
+              <td><span class="tag" style="font-size:10.5px;">正常</span></td>
+              <td><span class="pill pill-red" style="font-size:10px;padding:1px 5px;">P0</span></td>
+              <td class="mono" style="color:var(--text3);">4</td>
+              <td><span class="pill pill-amber" style="font-size:10px;">待复核</span></td>
+              <td><button class="btn btn-sm" style="font-size:11px;">👁 复核</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" style="accent-color:var(--accent);"></td>
+              <td><span class="mono" style="font-size:11.5px;color:var(--text3);">TC-089-002</span></td>
+              <td style="color:var(--text);">网络断开时 localStorage 暂存行为</td>
+              <td><span class="tag" style="font-size:10.5px;">localStorage暂存行为</span></td>
+              <td><span class="tag" style="font-size:10.5px;">异常</span></td>
+              <td><span class="pill pill-red" style="font-size:10px;padding:1px 5px;">P0</span></td>
+              <td class="mono" style="color:var(--text3);">4</td>
+              <td><span class="pill pill-green" style="font-size:10px;">已评审</span></td>
+              <td><button class="btn btn-sm btn-ghost" style="font-size:11px;">查看</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" style="accent-color:var(--accent);"></td>
+              <td><span class="mono" style="font-size:11.5px;color:var(--text3);">TC-089-008</span></td>
+              <td style="color:var(--text);">保存失败错误提示文案可读性验证</td>
+              <td><span class="tag" style="font-size:10.5px;">保存失败提示</span></td>
+              <td><span class="tag" style="font-size:10.5px;">异常</span></td>
+              <td><span class="pill pill-amber" style="font-size:10px;padding:1px 5px;">P1</span></td>
+              <td class="mono" style="color:var(--text3);">3</td>
+              <td><span class="pill pill-green" style="font-size:10px;">已评审</span></td>
+              <td><button class="btn btn-sm btn-ghost" style="font-size:11px;">查看</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" style="accent-color:var(--accent);"></td>
+              <td><span class="mono" style="font-size:11.5px;color:var(--text3);">TC-089-012</span></td>
+              <td style="color:var(--text);">只读用户无法触发自动保存接口</td>
+              <td><span class="tag" style="font-size:10.5px;">只读用户权限</span></td>
+              <td><span class="tag" style="font-size:10.5px;">权限</span></td>
+              <td><span class="pill pill-amber" style="font-size:10px;padding:1px 5px;">P1</span></td>
+              <td class="mono" style="color:var(--text3);">3</td>
+              <td><span class="pill pill-green" style="font-size:10px;">已评审</span></td>
+              <td><button class="btn btn-sm btn-ghost" style="font-size:11px;">查看</button></td>
+            </tr>
+            <tr style="opacity:.4;">
+              <td colspan="9" style="text-align:center;padding:12px;font-size:12px;color:var(--text3);">… 307
+                条更多用例，使用筛选器缩小范围</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAGINATION -->
+      <div style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;color:var(--text3);">
+        <span>显示 1-5 / 312 条</span>
+        <div class="spacer"></div>
+        <button class="btn btn-sm">«</button>
+        <button class="btn btn-sm btn-primary">1</button>
+        <button class="btn btn-sm">2</button>
+        <button class="btn btn-sm">3</button>
+        <span>…</span>
+        <button class="btn btn-sm">63</button>
+        <button class="btn btn-sm">»</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="p7">
+    <div class="no-sidebar" style="max-width:1200px;margin:0 auto;">
+      <div class="topbar">
+        <div>
+          <div class="page-watermark">REQ-089 · Diff 分析</div>
+          <h1>需求变更分析</h1>
+          <div class="sub">草稿自动保存 · v1.2 → v1.3 · 2025-06-12 14:18</div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn btn-sm">⬇ 导出 Diff 报告</button>
+        <button class="btn btn-sm btn-primary">一键重新生成受影响用例</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
+
+        <!-- LEFT: DIFF CONTENT -->
+        <div>
+          <!-- VERSION SELECTOR -->
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;">
+            <select class="input" style="flex:1;font-size:12px;">
+              <option>v1.2 · 2025-06-10 09:30 · 初稿</option>
+            </select>
+            <span style="color:var(--text3);font-size:14px;">→</span>
+            <select class="input" style="flex:1;font-size:12px;">
+              <option>v1.3 · 2025-06-12 14:15 · 间隔调整</option>
+            </select>
+          </div>
+
+          <div class="card" style="padding:0;overflow:hidden;">
+            <!-- FILE HEADER -->
+            <div
+              style="padding:8px 12px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;color:var(--text3);">
+              <span>📄 REQ-089.md</span>
+              <span style="margin-left:auto;color:var(--red);">-2</span>
+              <span style="color:var(--accent);">+3</span>
+            </div>
+
+            <!-- DIFF BODY -->
+            <div style="padding:12px 14px;">
+              <!-- SECTION 1: DESCRIPTION -->
+              <div
+                style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:8px;padding:3px 8px;background:var(--bg2);border-radius:4px;display:inline-block;">
+                @@ §2 功能描述</div>
+
+              <div class="diff-ctx"> 数据开发任务支持草稿<strong>自动保存</strong>功能。用户在任务编辑界面进行</div>
+              <div class="diff-ctx"> 任何修改后，系统将：</div>
+              <div class="diff-del">- 每隔 <strong>30 秒</strong>自动将当前内容保存为草稿，无需用户手动操作。</div>
+              <div class="diff-add">+ 每隔 <strong>10 秒</strong>自动将当前内容保存为草稿，无需用户手动操作。</div>
+              <div class="diff-add">+ 用户可在「个人设置 > 编辑器」中自定义自动保存间隔（5~120秒）。</div>
+              <div class="diff-ctx"> 草稿保存不影响已发布版本，仅对当前编辑中的用户可见。</div>
+
+              <div style="height:12px;"></div>
+              <div
+                style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:8px;padding:3px 8px;background:var(--bg2);border-radius:4px;display:inline-block;">
+                @@ §3 验收标准</div>
+
+              <div class="diff-ctx"> · 草稿保存失败时，右上角显示红色警告图标</div>
+              <div class="diff-del">- · 提示文案："草稿保存失败，请手动保存"</div>
+              <div class="diff-add">+ · 提示文案："自动保存失败（网络异常），已为您保留本地草稿"</div>
+              <div class="diff-ctx"> · 刷新页面后草稿内容不丢失</div>
+            </div>
+          </div>
+
+          <!-- CHANGE SUMMARY -->
+          <div class="card" style="margin-top:12px;border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.03);">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <span style="font-size:16px;">🧠</span>
+              <div class="sec-title" style="font-size:13px;">AI 语义影响评估</div>
+            </div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.7;">
+              本次变更的核心是<strong style="color:var(--text);">保存间隔从 30秒缩短至
+                10秒</strong>，并新增用户自定义配置能力。这不仅是数值变更，还引入了新的功能维度（用户配置界面），影响评估如下：<br><br>
+              <span style="color:var(--red);">🔴 高影响</span>：所有涉及"30秒"具体时间的用例步骤需完全重写（4条）<br>
+              <span style="color:var(--amber);">🟡 中影响</span>：涉及保存触发时机的用例需验证边界条件是否适用（11条）<br>
+              <span style="color:var(--accent);">🟢 低影响</span>：新增配置功能需补充新测试点（建议新增 3~5 条用例）
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: AFFECTED CASES -->
+        <div>
+          <!-- SUMMARY STATS -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+            <div class="card"
+              style="border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.05);text-align:center;padding:12px;">
+              <div class="mono" style="font-size:22px;font-weight:600;color:var(--red);">4</div>
+              <div style="font-size:11.5px;color:var(--text3);margin-top:2px;">需要重写</div>
+            </div>
+            <div class="card"
+              style="border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05);text-align:center;padding:12px;">
+              <div class="mono" style="font-size:22px;font-weight:600;color:var(--amber);">11</div>
+              <div style="font-size:11.5px;color:var(--text3);margin-top:2px;">需要复核</div>
+            </div>
+            <div class="card" style="text-align:center;padding:12px;">
+              <div class="mono" style="font-size:22px;font-weight:600;color:var(--text2);">297</div>
+              <div style="font-size:11.5px;color:var(--text3);margin-top:2px;">不受影响</div>
+            </div>
+          </div>
+
+          <!-- MUST REWRITE -->
+          <div
+            style="font-size:11.5px;font-weight:600;color:var(--red);margin-bottom:8px;font-family:var(--mono);letter-spacing:.5px;">
+            🔴 需要重写（4条）</div>
+          <div class="card" style="padding:0;margin-bottom:14px;border-color:rgba(244,63,94,.2);">
+            <table class="tbl">
+              <tr>
+                <td style="padding:8px 12px;">
+                  <span class="mono" style="font-size:11px;color:var(--text3);">TC-089-003</span>
+                  <div style="font-size:12px;color:var(--text);">网络恢复后草稿同步到服务端</div>
+                  <div style="font-size:11px;color:var(--text3);">「30秒」硬编码需更新</div>
+                </td>
+                <td style="text-align:right;padding-right:12px;"><button class="btn btn-sm"
+                    style="color:var(--red);border-color:rgba(244,63,94,.3);font-size:11px;">重写</button></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px;">
+                  <span class="mono" style="font-size:11px;color:var(--text3);">TC-089-007</span>
+                  <div style="font-size:12px;color:var(--text);">正常自动保存触发验证（含时间断言）</div>
+                  <div style="font-size:11px;color:var(--text3);">步骤3"等待30秒"需改为10秒</div>
+                </td>
+                <td style="text-align:right;padding-right:12px;"><button class="btn btn-sm"
+                    style="color:var(--red);border-color:rgba(244,63,94,.3);font-size:11px;">重写</button></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px;">
+                  <span class="mono" style="font-size:11px;color:var(--text3);">TC-089-011</span>
+                  <div style="font-size:12px;color:var(--text);">保存间隔边界值（最大值验证）</div>
+                </td>
+                <td style="text-align:right;padding-right:12px;"><button class="btn btn-sm"
+                    style="color:var(--red);border-color:rgba(244,63,94,.3);font-size:11px;">重写</button></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px;">
+                  <span class="mono" style="font-size:11px;color:var(--text3);">TC-089-015</span>
+                  <div style="font-size:12px;color:var(--text);">保存失败提示文案准确性</div>
+                  <div style="font-size:11px;color:var(--text3);">文案内容发生变化</div>
+                </td>
+                <td style="text-align:right;padding-right:12px;"><button class="btn btn-sm"
+                    style="color:var(--red);border-color:rgba(244,63,94,.3);font-size:11px;">重写</button></td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- NEW TEST POINTS NEEDED -->
+          <div
+            style="font-size:11.5px;font-weight:600;color:var(--accent);margin-bottom:8px;font-family:var(--mono);letter-spacing:.5px;">
+            ✦ 新增功能需补充测试点（建议）</div>
+          <div class="card" style="border-color:rgba(0,217,163,.2);background:rgba(0,217,163,.03);padding:12px;">
+            <div style="font-size:12px;color:var(--text2);line-height:1.7;">
+              新增「用户自定义保存间隔」功能，建议补充以下测试点：<br><br>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="color:var(--accent);">+</span>
+                  <span>自定义间隔 5秒（最小值）时的保存频率验证</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="color:var(--accent);">+</span>
+                  <span>自定义间隔 120秒（最大值）时的边界验证</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="color:var(--accent);">+</span>
+                  <span>输入非法值（0/负数/超出范围）时的错误提示</span>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-primary" style="margin-top:10px;font-size:11.5px;">✦ 自动生成这些测试点</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="p8">
+    <div class="no-sidebar" style="max-width:1300px;margin:0 auto;">
+      <div class="topbar">
+        <div>
+          <div class="page-watermark">离线开发 · Sprint 3 · 质量看板</div>
+          <h1>质量分析看板</h1>
+        </div>
+        <div class="spacer"></div>
+        <select class="input" style="width:160px;font-size:12px;">
+          <option>离线开发 · Sprint 3</option>
+        </select>
+        <button class="btn btn-sm">⬇ 导出报告</button>
+      </div>
+
+      <!-- TOP STATS -->
+      <div class="grid-4" style="margin-bottom:20px;">
+        <div class="card" style="border-color:rgba(0,217,163,.25);background:rgba(0,217,163,.04);">
+          <div class="stat-val" style="color:var(--accent);">4.6</div>
+          <div class="stat-label">平均质量评分（满分5）</div>
+          <div style="margin-top:8px;display:flex;gap:2px;">
+            <div style="height:3px;flex:4.6;background:var(--accent);border-radius:2px;"></div>
+            <div style="height:3px;flex:.4;background:var(--bg3);border-radius:2px;"></div>
+          </div>
+          <div style="font-size:11px;color:var(--accent);margin-top:4px;">↑ 0.3 较上轮</div>
+        </div>
+        <div class="card">
+          <div class="stat-val">89<span style="font-size:16px;color:var(--text3);">%</span></div>
+          <div class="stat-label">需求覆盖率</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:89%;"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px;">1 个需求尚无用例</div>
+        </div>
+        <div class="card">
+          <div class="stat-val">312</div>
+          <div class="stat-label">本迭代用例总数</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:8px;">AI生成 264 · 手动 48</div>
+        </div>
+        <div class="card" style="border-color:rgba(244,63,94,.25);">
+          <div class="stat-val" style="color:var(--red);">15</div>
+          <div class="stat-label">待处理（重写+复核）</div>
+          <div style="font-size:11px;color:var(--red);margin-top:8px;">因 REQ-089 变更触发</div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="grid-2" style="margin-bottom:20px;">
+
+        <!-- COVERAGE TREND -->
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+            <div class="sec-title" style="font-size:13px;">覆盖率趋势</div>
+            <span style="font-size:11.5px;color:var(--text3);">近 6 个 Sprint</span>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:8px;height:80px;margin-bottom:8px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="flex:1;width:100%;background:var(--accent);border-radius:3px 3px 0 0;opacity:.4;height:58%;">
+              </div>
+              <div style="font-size:9px;color:var(--text3);">S1</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="flex:1;width:100%;background:var(--accent);border-radius:3px 3px 0 0;opacity:.5;height:70%;">
+              </div>
+              <div style="font-size:9px;color:var(--text3);">S2</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="flex:1;width:100%;background:var(--accent);border-radius:3px 3px 0 0;opacity:.6;height:75%;">
+              </div>
+              <div style="font-size:9px;color:var(--text3);">S3</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="flex:1;width:100%;background:var(--accent);border-radius:3px 3px 0 0;opacity:.7;height:80%;">
+              </div>
+              <div style="font-size:9px;color:var(--text3);">S4</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="flex:1;width:100%;background:var(--accent);border-radius:3px 3px 0 0;opacity:.85;height:85%;">
+              </div>
+              <div style="font-size:9px;color:var(--text3);">S5</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div style="flex:1;width:100%;background:var(--accent);border-radius:3px 3px 0 0;height:89%;"></div>
+              <div style="font-size:9px;color:var(--accent);font-weight:600;">S6▶</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);display:flex;gap:12px;">
+            <span>Sprint 1: 72% → Sprint 6: <span style="color:var(--accent);">89%</span></span>
+            <span style="color:var(--accent);">↑ 17% 稳步提升</span>
+          </div>
+        </div>
+
+        <!-- SCENARIO DISTRIBUTION -->
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+            <div class="sec-title" style="font-size:13px;">用例场景分布</div>
+            <span style="font-size:11.5px;color:var(--text3);">本迭代 312 条</span>
+          </div>
+          <div style="display:flex;gap:16px;align-items:center;">
+            <!-- DONUT PLACEHOLDER -->
+            <div
+              style="width:100px;height:100px;border-radius:50%;background:conic-gradient(var(--accent) 0deg 129deg, var(--amber) 129deg 226deg, var(--red) 226deg 280deg, var(--blue) 280deg 312deg, var(--text3) 312deg 360deg);flex-shrink:0;position:relative;">
+              <div
+                style="width:64px;height:64px;background:var(--bg1);border-radius:50%;position:absolute;top:18px;left:18px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text);">
+                312</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;">
+              <div style="display:flex;align-items:center;gap:6px;"><span
+                  style="width:10px;height:10px;border-radius:2px;background:var(--accent);flex-shrink:0;"></span><span
+                  style="color:var(--text2);">正常流程</span><span class="mono"
+                  style="margin-left:auto;color:var(--text);">36%</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span
+                  style="width:10px;height:10px;border-radius:2px;background:var(--amber);flex-shrink:0;"></span><span
+                  style="color:var(--text2);">异常场景</span><span class="mono"
+                  style="margin-left:auto;color:var(--text);">27%</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span
+                  style="width:10px;height:10px;border-radius:2px;background:var(--red);flex-shrink:0;"></span><span
+                  style="color:var(--text2);">边界值</span><span class="mono"
+                  style="margin-left:auto;color:var(--text);">17%</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span
+                  style="width:10px;height:10px;border-radius:2px;background:var(--blue);flex-shrink:0;"></span><span
+                  style="color:var(--text2);">并发场景</span><span class="mono"
+                  style="margin-left:auto;color:var(--text);">10%</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span
+                  style="width:10px;height:10px;border-radius:2px;background:var(--text3);flex-shrink:0;"></span><span
+                  style="color:var(--text2);">权限安全</span><span class="mono"
+                  style="margin-left:auto;color:var(--text);">10%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REQUIREMENT COVERAGE MATRIX (MINI) -->
+      <div class="card" style="margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <div class="sec-title" style="font-size:13px;">需求覆盖度矩阵（Sprint 3）</div>
+          <span style="font-size:11.5px;color:var(--text3);">7/8 需求有用例</span>
+          <div class="spacer"></div>
+          <button class="btn btn-sm">展开全部</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="border-collapse:collapse;font-family:var(--mono);font-size:11.5px;min-width:600px;">
+            <thead>
+              <tr>
+                <th style="text-align:left;padding:4px 8px;color:var(--text3);font-weight:500;width:100px;"></th>
+                <th style="padding:4px 8px;color:var(--text3);font-weight:500;">REQ-089</th>
+                <th style="padding:4px 8px;color:var(--text3);font-weight:500;">REQ-090</th>
+                <th style="padding:4px 8px;color:var(--text3);font-weight:500;">REQ-091</th>
+                <th style="padding:4px 8px;color:var(--text3);font-weight:500;">REQ-092</th>
+                <th style="padding:4px 8px;color:var(--text3);font-weight:500;">REQ-093</th>
+                <th
+                  style="padding:4px 8px;color:var(--text3);font-weight:500;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:4px;">
+                  REQ-094 ❌</th>
+                <th style="padding:4px 8px;color:var(--text3);font-weight:500;">REQ-095</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:3px 8px;color:var(--text3);">TC-089-xxx</td>
+                <td style="text-align:center;color:var(--accent);">✓</td>
+                <td style="text-align:center;color:var(--text3);">·</td>
+                <td style="text-align:center;color:var(--accent);">✓</td>
+                <td style="text-align:center;color:var(--text3);">·</td>
+                <td style="text-align:center;color:var(--text3);">·</td>
+                <td style="text-align:center;background:rgba(244,63,94,.04);">·</td>
+                <td style="text-align:center;color:var(--text3);">·</td>
+              </tr>
+              <tr>
+                <td style="padding:3px 8px;color:var(--text3);">TC-090-xxx</td>
+                <td style="text-align:center;color:var(--text3);">·</td>
+                <td style="text-align:center;color:var(--accent);">✓</td>
+                <td style="text-align:center;color:var(--text3);">·</td>
+                <td style="text-align:center;color:var(--accent);">✓</td>
+                <td style="text-align:center;color:var(--text3);">·</td>
+                <td style="text-align:center;background:rgba(244,63,94,.04);">·</td>
+                <td style="text-align:center;color:var(--text3);">·</td>
+              </tr>
+              <tr>
+                <td style="padding:3px 8px;color:var(--text3);">TC-091-xxx</td>
+                <td style="text-align:center;color:var(--text3);">·</td>
+                <td style="text-align:center;color:var(--text3);">·</td>
+                <td style="text-align:center;color:var(--accent);">✓</td>
+                <td style="text-align:center;color:var(--accent);">✓</td>
+                <td style="text-align:center;color:var(--accent);">✓</td>
+                <td style="text-align:center;background:rgba(244,63,94,.04);">·</td>
+                <td style="text-align:center;color:var(--text3);">·</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div
+          style="margin-top:10px;padding:8px 10px;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.3);border-radius:6px;display:flex;align-items:center;gap:10px;">
+          <span style="color:var(--red);">❌</span>
+          <span style="font-size:12px;color:var(--text2);">REQ-094「权限继承逻辑」尚未生成任何测试点或用例</span>
+          <div class="spacer"></div>
+          <button class="btn btn-sm"
+            style="color:var(--accent);border-color:rgba(0,217,163,.3);font-size:11.5px;">一键生成测试点 →</button>
+        </div>
+      </div>
+
+      <!-- BOTTOM ROW: QUALITY SCORES + ACTIVITY -->
+      <div class="grid-2">
+        <!-- AI QUALITY SCORING -->
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+            <div class="sec-title" style="font-size:13px;">AI 质量评分分布</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;color:var(--text2);width:40px;">5.0</span>
+              <div style="flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;">
+                <div style="width:22%;height:100%;background:var(--accent);border-radius:4px;"></div>
+              </div>
+              <span class="mono" style="font-size:11px;color:var(--text3);width:30px;">68条</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;color:var(--text2);width:40px;">4.5</span>
+              <div style="flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;">
+                <div style="width:42%;height:100%;background:var(--accent);border-radius:4px;opacity:.8;"></div>
+              </div>
+              <span class="mono" style="font-size:11px;color:var(--text3);width:30px;">131条</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;color:var(--text2);width:40px;">4.0</span>
+              <div style="flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;">
+                <div style="width:29%;height:100%;background:var(--amber);border-radius:4px;opacity:.8;"></div>
+              </div>
+              <span class="mono" style="font-size:11px;color:var(--text3);width:30px;">90条</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;color:var(--text2);width:40px;">3.5</span>
+              <div style="flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;">
+                <div style="width:7%;height:100%;background:var(--amber);border-radius:4px;"></div>
+              </div>
+              <span class="mono" style="font-size:11px;color:var(--text3);width:30px;">23条</span>
+            </div>
+          </div>
+          <div
+            style="margin-top:12px;padding:8px;background:var(--accent-d);border-radius:6px;font-size:11.5px;color:var(--text2);">
+            ✨ 评分≥4.5 的 <span class="mono" style="color:var(--accent);">199条</span>已自动进入优质用例库，下轮生成时优先引用
+          </div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+            <div class="sec-title" style="font-size:13px;">执行回流记录</div>
+            <span style="font-size:11.5px;color:var(--text3);">最近 7 天</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div
+              style="display:flex;align-items:flex-start;gap:10px;padding:8px;background:var(--bg2);border-radius:6px;">
+              <span style="font-size:14px;">⭐</span>
+              <div>
+                <div style="font-size:12.5px;color:var(--text);">TC-089-002 评分 5.0，进入优质库</div>
+                <div style="font-size:11px;color:var(--text3);">网络断开 localStorage 暂存 · 14:30</div>
+              </div>
+            </div>
+            <div
+              style="display:flex;align-items:flex-start;gap:10px;padding:8px;background:var(--bg2);border-radius:6px;">
+              <span style="font-size:14px;">✏️</span>
+              <div>
+                <div style="font-size:12.5px;color:var(--text);">TC-089-007 步骤描述被修改</div>
+                <div style="font-size:11px;color:var(--text3);">"等待30秒"表述不够精确 → AI将优化同类步骤</div>
+              </div>
+            </div>
+            <div
+              style="display:flex;align-items:flex-start;gap:10px;padding:8px;background:var(--bg2);border-radius:6px;">
+              <span style="font-size:14px;">🗑</span>
+              <div>
+                <div style="font-size:12.5px;color:var(--text);">TC-089-019 被删除</div>
+                <div style="font-size:11px;color:var(--text3);">原因：场景不存在 → 此类场景权重降低</div>
+              </div>
+            </div>
+            <div
+              style="display:flex;align-items:flex-start;gap:10px;padding:8px;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.2);border-radius:6px;">
+              <span style="font-size:14px;">❌</span>
+              <div>
+                <div style="font-size:12.5px;color:var(--text);">TC-089-003 执行失败</div>
+                <div style="font-size:11px;color:var(--text3);">原因：预期结果描述歧义 → 已标记重写</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="p9">
+    <div class="sidebar">
+      <div class="sb-section">
+        <div class="sb-item active"><span>🤖</span>AI 模型配置</div>
+        <div class="sb-item"><span>🔌</span>外部系统集成</div>
+        <div class="sb-item"><span>👥</span>团队与权限</div>
+        <div class="sb-item"><span>📋</span>必问清单管理</div>
+        <div class="sb-item"><span>🏭</span>模板库管理</div>
+        <div class="sb-item"><span>📂</span>知识库管理</div>
+        <div class="sb-item"><span>🔒</span>安全与审计</div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <div class="page-watermark">系统设置 · AI 模型配置</div>
+          <h1>AI 模型配置</h1>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn btn-sm btn-primary">保存配置</button>
+      </div>
+
+      <!-- ACTIVE MODEL -->
+      <div class="card" style="margin-bottom:16px;border-color:rgba(0,217,163,.25);background:rgba(0,217,163,.03);">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="sec-title" style="font-size:13px;">当前激活模型</div>
+          <span class="pill pill-green">运行中</span>
+          <span class="mono" style="font-size:11px;color:var(--text3);margin-left:auto;">延迟: 1.2s · 本月调用: 12,847次</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;">
+          <!-- MODEL CARD: ACTIVE -->
+          <div
+            style="padding:12px;background:var(--accent-d);border:1.5px solid rgba(0,217,163,.4);border-radius:8px;cursor:pointer;position:relative;">
+            <div
+              style="position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--accent);">
+            </div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:2px;color:var(--text);">GPT-4o</div>
+            <div style="font-size:11.5px;color:var(--text3);">OpenAI · 云端</div>
+            <div style="margin-top:8px;font-size:11px;color:var(--text2);">生成质量 ⭐⭐⭐⭐⭐</div>
+            <div style="font-size:11px;color:var(--text2);">速度 ⭐⭐⭐⭐</div>
+            <div style="font-size:11px;color:var(--text2);">¥0.12 / 千tokens</div>
+          </div>
+
+          <!-- MODEL CARD -->
+          <div
+            style="padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer;">
+            <div style="font-weight:600;font-size:13px;margin-bottom:2px;color:var(--text);">Claude Sonnet 4.5</div>
+            <div style="font-size:11.5px;color:var(--text3);">Anthropic · 云端</div>
+            <div style="margin-top:8px;font-size:11px;color:var(--text2);">生成质量 ⭐⭐⭐⭐⭐</div>
+            <div style="font-size:11px;color:var(--text2);">速度 ⭐⭐⭐⭐⭐</div>
+            <div style="font-size:11px;color:var(--text2);">¥0.09 / 千tokens</div>
+          </div>
+
+          <!-- MODEL CARD: PRIVATE -->
+          <div
+            style="padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <div style="font-weight:600;font-size:13px;color:var(--text);">Qwen2.5-72B</div>
+              <span class="tag" style="font-size:10px;padding:1px 5px;">私有化</span>
+            </div>
+            <div style="font-size:11.5px;color:var(--text3);">Ollama · 内网部署</div>
+            <div style="margin-top:8px;font-size:11px;color:var(--text2);">生成质量 ⭐⭐⭐⭐</div>
+            <div style="font-size:11px;color:var(--text2);">速度 ⭐⭐⭐</div>
+            <div style="font-size:11px;color:var(--accent);">数据不出内网 🔒</div>
+          </div>
+        </div>
+
+        <!-- PARAMS -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+          <div>
+            <div style="font-size:11.5px;color:var(--text3);margin-bottom:6px;">Temperature（创意度）</div>
+            <input type="range" min="0" max="1" step="0.1" value="0.3" style="width:100%;accent-color:var(--accent);">
+            <div
+              style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--text3);margin-top:2px;">
+              <span>0 严格</span><span style="color:var(--accent);">0.3</span><span>1 自由</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11.5px;color:var(--text3);margin-bottom:6px;">Max Tokens / 请求</div>
+            <input class="input" value="4096" style="width:100%;font-family:var(--mono);">
+          </div>
+          <div>
+            <div style="font-size:11.5px;color:var(--text3);margin-bottom:6px;">并发请求数</div>
+            <input class="input" value="5" style="width:100%;font-family:var(--mono);">
+          </div>
+        </div>
+      </div>
+
+      <!-- INTEGRATIONS -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="sec-title" style="font-size:13px;margin-bottom:14px;">外部系统集成</div>
+        <div style="display:flex;flex-direction:column;gap:0;">
+
+          <div class="setting-row">
+            <div style="flex:1;">
+              <div class="setting-label">Jira / Xray</div>
+              <div class="setting-desc">用例自动同步到 Jira，执行结果回写</div>
+              <div style="margin-top:4px;display:flex;gap:6px;">
+                <input class="input" placeholder="Jira URL" style="width:200px;font-size:12px;">
+                <input class="input" placeholder="API Token"
+                  style="width:160px;font-size:12px;font-family:var(--mono);">
+                <button class="btn btn-sm" style="font-size:11.5px;">测试连接</button>
+              </div>
+            </div>
+            <div class="toggle" style="margin-left:16px;"></div>
+          </div>
+
+          <div class="setting-row">
+            <div style="flex:1;">
+              <div class="setting-label">Confluence</div>
+              <div class="setting-desc">自动抓取 Confluence 文档和图片内容，归档至 MinIO</div>
+              <div style="margin-top:4px;font-size:11.5px;color:var(--accent);">✓ 已连接 · company.atlassian.net · 上次同步
+                14:30</div>
+            </div>
+            <div class="toggle" style="margin-left:16px;"></div>
+          </div>
+
+          <div class="setting-row">
+            <div style="flex:1;">
+              <div class="setting-label">飞书文档</div>
+              <div class="setting-desc">支持从飞书文档直接导入需求内容</div>
+            </div>
+            <div class="toggle off" style="margin-left:16px;"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FEATURE SWITCHES -->
+      <div class="card">
+        <div class="sec-title" style="font-size:13px;margin-bottom:14px;">功能开关</div>
+        <div style="display:flex;flex-direction:column;gap:0;">
+          <div class="setting-row">
+            <div style="flex:1;">
+              <div class="setting-label">需求健康诊断（上传后自动触发）</div>
+              <div class="setting-desc">文档上传后自动扫描6类遗漏，生成健康报告</div>
+            </div>
+            <div class="toggle" style="margin-left:16px;"></div>
+          </div>
+          <div class="setting-row">
+            <div style="flex:1;">
+              <div class="setting-label">外链图片自动归档</div>
+              <div class="setting-desc">抓取需求文档中的网络图片链接，存入 MinIO 防止失效</div>
+            </div>
+            <div class="toggle" style="margin-left:16px;"></div>
+          </div>
+          <div class="setting-row">
+            <div style="flex:1;">
+              <div class="setting-label">需求变更自动 Diff 通知</div>
+              <div class="setting-desc">需求更新时自动计算影响用例，发送站内通知和邮件</div>
+            </div>
+            <div class="toggle" style="margin-left:16px;"></div>
+          </div>
+          <div class="setting-row">
+            <div style="flex:1;">
+              <div class="setting-label">执行结果自动回流</div>
+              <div class="setting-desc">用例执行结果同步回知识库，持续优化生成质量</div>
+            </div>
+            <div class="toggle" style="margin-left:16px;"></div>
+          </div>
+          <div class="setting-row" style="border-bottom:none;">
+            <div style="flex:1;">
+              <div class="setting-label">私有化模式（数据不出内网）</div>
+              <div class="setting-desc">强制使用本地 Ollama 模型，禁止调用外部 API</div>
+            </div>
+            <div class="toggle off" style="margin-left:16px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function show(id, tab) {
+      document.querySelectorAll('.page').forEach(function (p) {
+        p.style.display = 'none';
+        p.classList.remove('active');
+      });
+      document.querySelectorAll('.tab').forEach(function (t) {
+        t.classList.remove('active');
+      });
+      var el = document.getElementById(id);
+      // p5 (generation workspace) uses flex layout
+      el.style.display = (id === 'p5') ? 'flex' : 'block';
+      el.classList.add('active');
+      if (tab) tab.classList.add('active');
+    }
+
+    // Show first page on load
+    window.addEventListener('DOMContentLoaded', function () {
+      var first = document.getElementById('p1');
+      first.style.display = 'block';
+      first.classList.add('active');
+      document.querySelector('.tab').classList.add('active');
+    });
+  </script>
+
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+     PAGE 10: KNOWLEDGE BASE
+═══════════════════════════════════════════════════════════ -->
+  <div class="page" id="p10">
+    <div class="sidebar">
+      <div class="sb-section">
+        <div class="sb-label">知识库分类</div>
+        <div class="sb-item active"><span class="icon">📋</span>企业测试规范<span class="sb-count">12</span></div>
+        <div class="sb-item"><span class="icon">⚙️</span>数据中台通用规则<span class="sb-count">8</span></div>
+        <div class="sb-item"><span class="icon">🔁</span>行业必问清单<span class="sb-count">32</span></div>
+        <div class="sb-item"><span class="icon">📂</span>历史优质用例库<span class="sb-count">199</span></div>
+        <div class="sb-item"><span class="icon">🧩</span>自定义规则<span class="sb-count">5</span></div>
+      </div>
+      <hr class="divider" style="margin:4px 0;">
+      <div class="sb-section">
+        <div class="sb-label">RAG 状态</div>
+        <div style="padding:8px;background:var(--bg2);border-radius:6px;font-size:12px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="color:var(--text3);">向量化进度</span>
+            <span class="mono" style="color:var(--accent);">100%</span>
+          </div>
+          <div style="height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:8px;">
+            <div style="width:100%;height:100%;background:var(--accent);border-radius:2px;"></div>
+          </div>
+          <div style="color:var(--text3);font-size:11px;">256 条文档已向量化</div>
+          <div style="color:var(--text3);font-size:11px;margin-top:2px;">上次更新：10分钟前</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <div class="page-watermark">知识库管理</div>
+          <h1>知识库</h1>
+          <div class="sub">256 条文档 · RAG 检索增强 · 覆盖企业规范 + 行业最佳实践</div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn btn-sm">🔍 命中率测试</button>
+        <button class="btn btn-sm">⚙ 重新向量化</button>
+        <button class="btn btn-sm btn-primary">＋ 上传文档</button>
+      </div>
+
+      <!-- RAG TEST BANNER -->
+      <div
+        style="padding:10px 14px;background:rgba(0,217,163,.06);border:1px solid rgba(0,217,163,.25);border-radius:8px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:18px;">✦</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);">RAG 检索增强已激活</div>
+          <div style="font-size:11.5px;color:var(--text3);">生成用例时自动检索相关规范，本周命中率 <span class="mono"
+              style="color:var(--accent);">87.3%</span>，平均召回 <span class="mono" style="color:var(--accent);">4.2</span>
+            条相关片段/次</div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn btn-sm" style="color:var(--accent);border-color:rgba(0,217,163,.3);">查看命中日志</button>
+      </div>
+
+      <!-- STATS ROW -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+        <div class="card" style="border-color:rgba(0,217,163,.2);background:rgba(0,217,163,.04);">
+          <div class="stat-val" style="color:var(--accent);">256</div>
+          <div class="stat-label">知识库文档总数</div>
+        </div>
+        <div class="card">
+          <div class="stat-val">87<span style="font-size:16px;color:var(--text3);">%</span></div>
+          <div class="stat-label">本周 RAG 命中率</div>
+          <div style="height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-top:6px;">
+            <div style="width:87%;height:100%;background:var(--accent);border-radius:2px;"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="stat-val">199</div>
+          <div class="stat-label">优质用例（评分≥4.5）</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">自动从执行回流积累</div>
+        </div>
+        <div class="card">
+          <div class="stat-val">32</div>
+          <div class="stat-label">行业必问清单条目</div>
+          <div style="font-size:11px;color:var(--accent);margin-top:6px;">6大类 · 数据中台专项</div>
+        </div>
+      </div>
+
+      <!-- DOC LIST -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <!-- TOOLBAR -->
+        <div
+          style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--bg1);">
+          <div class="sec-title" style="font-size:13px;">企业测试规范</div>
+          <span class="mono" style="font-size:11px;color:var(--text3);">12 条</span>
+          <div class="spacer"></div>
+          <input class="input" placeholder="🔍 搜索..." style="width:200px;font-size:12px;">
+          <button class="btn btn-sm">⬇ 全量导出</button>
+        </div>
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>文档名称</th>
+              <th>类型</th>
+              <th>片段数</th>
+              <th>向量化</th>
+              <th>命中次数</th>
+              <th>上传时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div style="font-weight:500;color:var(--text);">数据中台测试规范 v3.2</div>
+                <div style="font-size:11px;color:var(--text3);">覆盖离线/实时/资产全模块通用规则</div>
+              </td>
+              <td><span class="tag" style="font-size:10.5px;">规范文档</span></td>
+              <td class="mono" style="color:var(--text);">48</td>
+              <td><span class="pill pill-green" style="font-size:10px;">✓ 完成</span></td>
+              <td class="mono" style="color:var(--accent);">1,247</td>
+              <td style="color:var(--text3);font-size:12px;">2025-05-10</td>
+              <td>
+                <div style="display:flex;gap:4px;">
+                  <button class="btn btn-sm btn-ghost" style="font-size:11px;">查看</button>
+                  <button class="btn btn-sm btn-ghost" style="font-size:11px;">重建索引</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:500;color:var(--text);">离线任务异常处理规范</div>
+                <div style="font-size:11px;color:var(--text3);">重试策略、错误码、告警配置</div>
+              </td>
+              <td><span class="tag" style="font-size:10.5px;">规范文档</span></td>
+              <td class="mono" style="color:var(--text);">23</td>
+              <td><span class="pill pill-green" style="font-size:10px;">✓ 完成</span></td>
+              <td class="mono" style="color:var(--accent);">892</td>
+              <td style="color:var(--text3);font-size:12px;">2025-04-22</td>
+              <td>
+                <div style="display:flex;gap:4px;">
+                  <button class="btn btn-sm btn-ghost" style="font-size:11px;">查看</button>
+                  <button class="btn btn-sm btn-ghost" style="font-size:11px;">重建索引</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:500;color:var(--text);">数据一致性校验标准</div>
+                <div style="font-size:11px;color:var(--text3);">跨源对比、脏数据检测方法论</div>
+              </td>
+              <td><span class="tag" style="font-size:10.5px;">方法论</span></td>
+              <td class="mono" style="color:var(--text);">31</td>
+              <td><span class="pill pill-green" style="font-size:10px;">✓ 完成</span></td>
+              <td class="mono" style="color:var(--accent);">654</td>
+              <td style="color:var(--text3);font-size:12px;">2025-03-15</td>
+              <td>
+                <div style="display:flex;gap:4px;">
+                  <button class="btn btn-sm btn-ghost" style="font-size:11px;">查看</button>
+                  <button class="btn btn-sm btn-ghost" style="font-size:11px;">重建索引</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="font-weight:500;color:var(--text);">实时流计算测试指南</div>
+                <div style="font-size:11px;color:var(--text3);">Flink 窗口/时间语义/背压测试</div>
+              </td>
+              <td><span class="tag" style="font-size:10.5px;">技术指南</span></td>
+              <td class="mono" style="color:var(--text);">19</td>
+              <td><span class="pill pill-amber" style="font-size:10px;">⚡ 向量化中</span></td>
+              <td class="mono" style="color:var(--text3);">—</td>
+              <td style="color:var(--text3);font-size:12px;">2025-06-11</td>
+              <td>
+                <div style="display:flex;gap:4px;">
+                  <button class="btn btn-sm btn-ghost" style="font-size:11px;">查看</button>
+                  <button class="btn btn-sm btn-ghost" style="font-size:11px;opacity:.4;" disabled>重建索引</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div>
+                    <div style="font-weight:500;color:var(--text);">Sprint 2 优质用例集（自动归档）</div>
+                    <div style="font-size:11px;color:var(--text3);">评分≥4.5 · 执行回流自动积累</div>
+                  </div>
+                  <span class="pill pill-blue" style="font-size:10px;">自动</span>
+                </div>
+              </td>
+              <td><span class="tag"
+                  style="font-size:10.5px;border-color:rgba(59,130,246,.3);color:var(--blue);">历史用例</span></td>
+              <td class="mono" style="color:var(--text);">199</td>
+              <td><span class="pill pill-green" style="font-size:10px;">✓ 完成</span></td>
+              <td class="mono" style="color:var(--accent);">3,102</td>
+              <td style="color:var(--text3);font-size:12px;">自动更新</td>
+              <td>
+                <div style="display:flex;gap:4px;">
+                  <button class="btn btn-sm btn-ghost" style="font-size:11px;">查看</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- RAG TEST PANEL -->
+      <div class="card" style="margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <div class="sec-title" style="font-size:13px;">RAG 命中率测试</div>
+          <span class="pill pill-gray" style="font-size:10px;">测试模式</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <div style="font-size:11.5px;color:var(--text3);margin-bottom:6px;">输入测试查询语句</div>
+            <textarea class="input" style="width:100%;height:72px;resize:none;font-size:12.5px;"
+              placeholder="例如：数据同步任务在网络中断时的重试策略是什么？"></textarea>
+            <button class="btn btn-sm btn-primary" style="margin-top:8px;">🔍 测试检索</button>
+          </div>
+          <div>
+            <div style="font-size:11.5px;color:var(--text3);margin-bottom:6px;">检索结果预览（Top 3）</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div
+                style="padding:8px 10px;background:var(--bg2);border:1px solid rgba(0,217,163,.25);border-radius:6px;">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+                  <span class="mono" style="font-size:10px;color:var(--accent);">相似度 0.94</span>
+                  <span class="tag" style="font-size:10px;">离线任务异常处理规范</span>
+                </div>
+                <div style="font-size:12px;color:var(--text2);">网络中断时，任务状态转为 WAITING_RETRY，默认重试 3 次，间隔指数退避...</div>
+              </div>
+              <div style="padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+                  <span class="mono" style="font-size:10px;color:var(--text3);">相似度 0.87</span>
+                  <span class="tag" style="font-size:10px;">数据中台测试规范 v3.2</span>
+                </div>
+                <div style="font-size:12px;color:var(--text3);">断点续传场景下需验证幂等性，避免重试导致数据重复写入...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+     PAGE 11: TEMPLATE LIBRARY
+═══════════════════════════════════════════════════════════ -->
+  <div class="page" id="p11">
+    <div class="sidebar">
+      <div class="sb-section">
+        <div class="sb-label">模板分类</div>
+        <div class="sb-item active"><span class="icon">⚡</span>离线计算<span class="sb-count">3</span></div>
+        <div class="sb-item"><span class="icon">🔴</span>实时流计算<span class="sb-count">2</span></div>
+        <div class="sb-item"><span class="icon">🗂</span>数据资产<span class="sb-count">2</span></div>
+        <div class="sb-item"><span class="icon">🔌</span>数据集成/同步<span class="sb-count">3</span></div>
+        <div class="sb-item"><span class="icon">🛡</span>数据质量<span class="sb-count">2</span></div>
+        <div class="sb-item"><span class="icon">📊</span>报表/BI<span class="sb-count">1</span></div>
+        <div class="sb-item"><span class="icon">👤</span>我的模板<span class="sb-count">2</span></div>
+      </div>
+      <hr class="divider" style="margin:4px 0;">
+      <div class="sb-section">
+        <div class="sb-item" style="border-style:dashed;justify-content:center;color:var(--accent);">
+          <span>＋ 创建新模板</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <div class="page-watermark">模板库 · 离线计算</div>
+          <h1>用例模板库</h1>
+          <div class="sub">15 个模板 · 数据中台 7 大专项场景 · 开箱即用</div>
+        </div>
+        <div class="spacer"></div>
+        <input class="input" placeholder="🔍 搜索模板..." style="width:200px;">
+        <button class="btn btn-sm btn-primary">＋ 创建模板</button>
+      </div>
+
+      <!-- TEMPLATE GRID -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+
+        <!-- TEMPLATE CARD 1 -->
+        <div class="card"
+          style="cursor:pointer;transition:border-color .15s,transform .15s;border-color:rgba(0,217,163,.25);background:rgba(0,217,163,.03);"
+          onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+            <div
+              style="width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,rgba(0,217,163,.25),rgba(59,130,246,.15));border:1px solid rgba(0,217,163,.3);display:flex;align-items:center;justify-content:center;font-size:18px;">
+              ⚡</div>
+            <span class="pill pill-green" style="font-size:10px;">官方</span>
+          </div>
+          <div style="font-weight:600;font-size:13.5px;margin-bottom:4px;">离线任务全链路测试</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.6;">
+            覆盖任务创建→调度→执行→监控→告警全流程，含幂等性和断点续传专项</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+            <span class="tag" style="font-size:10.5px;">幂等性</span>
+            <span class="tag" style="font-size:10.5px;">断点续传</span>
+            <span class="tag" style="font-size:10.5px;">调度触发</span>
+            <span class="tag" style="font-size:10.5px;">异常重试</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);">
+            <span class="mono">~45 条用例</span>
+            <span>·</span>
+            <span>使用 1,024 次</span>
+            <div class="spacer"></div>
+            <button class="btn btn-sm btn-primary" style="font-size:11px;">使用</button>
+          </div>
+        </div>
+
+        <!-- TEMPLATE CARD 2 -->
+        <div class="card" style="cursor:pointer;transition:border-color .15s,transform .15s;"
+          onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+            <div
+              style="width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(234,179,8,.1));border:1px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;font-size:18px;">
+              🔄</div>
+            <span class="pill pill-green" style="font-size:10px;">官方</span>
+          </div>
+          <div style="font-weight:600;font-size:13.5px;margin-bottom:4px;">数据源连接配置测试</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.6;">多数据库类型连接参数验证，SSL/TLS
+            安全配置，连接池边界值</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+            <span class="tag" style="font-size:10.5px;">MySQL</span>
+            <span class="tag" style="font-size:10.5px;">Oracle</span>
+            <span class="tag" style="font-size:10.5px;">PostgreSQL</span>
+            <span class="tag" style="font-size:10.5px;">SSL配置</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);">
+            <span class="mono">~28 条用例</span>
+            <span>·</span>
+            <span>使用 876 次</span>
+            <div class="spacer"></div>
+            <button class="btn btn-sm btn-primary" style="font-size:11px;">使用</button>
+          </div>
+        </div>
+
+        <!-- TEMPLATE CARD 3 -->
+        <div class="card" style="cursor:pointer;transition:border-color .15s,transform .15s;"
+          onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+            <div
+              style="width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(244,63,94,.1));border:1px solid rgba(168,85,247,.3);display:flex;align-items:center;justify-content:center;font-size:18px;">
+              🛡</div>
+            <span class="pill pill-green" style="font-size:10px;">官方</span>
+          </div>
+          <div style="font-weight:600;font-size:13.5px;margin-bottom:4px;">权限与数据隔离测试</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.6;">RBAC
+            权限验证、行列级数据隔离、越权访问拦截、API 限流</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+            <span class="tag" style="font-size:10.5px;">RBAC</span>
+            <span class="tag" style="font-size:10.5px;">数据隔离</span>
+            <span class="tag" style="font-size:10.5px;">越权检测</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);">
+            <span class="mono">~32 条用例</span>
+            <span>·</span>
+            <span>使用 643 次</span>
+            <div class="spacer"></div>
+            <button class="btn btn-sm btn-primary" style="font-size:11px;">使用</button>
+          </div>
+        </div>
+
+        <!-- TEMPLATE CARD 4: REALTIME -->
+        <div class="card" style="cursor:pointer;transition:border-color .15s,transform .15s;"
+          onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+            <div
+              style="width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,rgba(244,63,94,.2),rgba(168,85,247,.1));border:1px solid rgba(244,63,94,.3);display:flex;align-items:center;justify-content:center;font-size:18px;">
+              🔴</div>
+            <span class="pill pill-green" style="font-size:10px;">官方</span>
+          </div>
+          <div style="font-weight:600;font-size:13.5px;margin-bottom:4px;">Flink 实时流作业测试</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.6;">窗口聚合、时间语义、背压处理、Checkpoint
+            恢复、乱序事件处理</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+            <span class="tag" style="font-size:10.5px;">Tumbling窗口</span>
+            <span class="tag" style="font-size:10.5px;">Watermark</span>
+            <span class="tag" style="font-size:10.5px;">Checkpoint</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);">
+            <span class="mono">~38 条用例</span>
+            <span>·</span>
+            <span>使用 512 次</span>
+            <div class="spacer"></div>
+            <button class="btn btn-sm btn-primary" style="font-size:11px;">使用</button>
+          </div>
+        </div>
+
+        <!-- TEMPLATE CARD 5: DATA QUALITY -->
+        <div class="card" style="cursor:pointer;transition:border-color .15s,transform .15s;"
+          onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+            <div
+              style="width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(0,217,163,.1));border:1px solid rgba(59,130,246,.3);display:flex;align-items:center;justify-content:center;font-size:18px;">
+              ✅</div>
+            <span class="pill pill-green" style="font-size:10px;">官方</span>
+          </div>
+          <div style="font-weight:600;font-size:13.5px;margin-bottom:4px;">数据质量规则测试</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.6;">
+            完整性/唯一性/准确性/一致性四大质量维度，告警阈值验证</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+            <span class="tag" style="font-size:10.5px;">完整性</span>
+            <span class="tag" style="font-size:10.5px;">唯一性</span>
+            <span class="tag" style="font-size:10.5px;">一致性</span>
+            <span class="tag" style="font-size:10.5px;">告警</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);">
+            <span class="mono">~24 条用例</span>
+            <span>·</span>
+            <span>使用 389 次</span>
+            <div class="spacer"></div>
+            <button class="btn btn-sm btn-primary" style="font-size:11px;">使用</button>
+          </div>
+        </div>
+
+        <!-- TEMPLATE CARD 6: CUSTOM -->
+        <div class="card"
+          style="cursor:pointer;border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;gap:10px;color:var(--text3);transition:all .2s;"
+          onmouseover="this.style.borderColor='rgba(0,217,163,.4)';this.style.color='var(--accent)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text3)'">
+          <div style="font-size:28px;opacity:.4;">＋</div>
+          <div style="font-size:13px;font-weight:500;">创建自定义模板</div>
+          <div style="font-size:11.5px;text-align:center;padding:0 20px;">从现有用例提炼，或从头定义变量模板</div>
+        </div>
+
+      </div>
+
+      <!-- TEMPLATE DETAIL (inline preview) -->
+      <div class="card" style="margin-top:20px;border-color:rgba(0,217,163,.2);background:rgba(0,217,163,.03);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="font-size:20px;">⚡</div>
+          <div class="sec-title" style="font-size:13.5px;">离线任务全链路测试 <span
+              style="font-weight:400;color:var(--text3);font-size:12px;">· 模板预览</span></div>
+          <div class="spacer"></div>
+          <button class="btn btn-sm">✏️ 编辑模板</button>
+          <button class="btn btn-sm btn-primary">使用此模板生成用例 →</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <div style="font-size:11.5px;color:var(--text3);margin-bottom:8px;font-family:var(--mono);">模板变量（填写后批量替换）
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="mono" style="font-size:11.5px;color:var(--accent);width:120px;">{{task_name}}</span>
+                <input class="input" placeholder="任务名称，如：用户日志同步" style="flex:1;font-size:12px;">
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="mono" style="font-size:11.5px;color:var(--accent);width:120px;">{{source_db}}</span>
+                <input class="input" placeholder="源数据库类型，如：MySQL" style="flex:1;font-size:12px;">
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="mono" style="font-size:11.5px;color:var(--accent);width:120px;">{{schedule_cron}}</span>
+                <input class="input" placeholder="调度表达式，如：0 2 * * *"
+                  style="flex:1;font-size:12px;font-family:var(--mono);">
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="mono" style="font-size:11.5px;color:var(--accent);width:120px;">{{max_retry}}</span>
+                <input class="input" placeholder="最大重试次数，如：3" style="flex:1;font-size:12px;font-family:var(--mono);">
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11.5px;color:var(--text3);margin-bottom:8px;font-family:var(--mono);">模板用例结构（共 45 条）
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div
+                style="padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;font-size:12px;display:flex;align-items:center;gap:8px;">
+                <span class="pill pill-red" style="font-size:9px;padding:1px 5px;">P0</span>
+                <span style="color:var(--text2);">{{task_name}} 正常调度触发执行</span>
+                <span class="mono" style="margin-left:auto;font-size:10px;color:var(--text3);">4步骤</span>
+              </div>
+              <div
+                style="padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;font-size:12px;display:flex;align-items:center;gap:8px;">
+                <span class="pill pill-red" style="font-size:9px;padding:1px 5px;">P0</span>
+                <span style="color:var(--text2);">{{source_db}} 连接中断时任务状态</span>
+                <span class="mono" style="margin-left:auto;font-size:10px;color:var(--text3);">5步骤</span>
+              </div>
+              <div
+                style="padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;font-size:12px;display:flex;align-items:center;gap:8px;">
+                <span class="pill pill-amber" style="font-size:9px;padding:1px 5px;">P1</span>
+                <span style="color:var(--text2);">达到 {{max_retry}} 次重试后告警触发</span>
+                <span class="mono" style="margin-left:auto;font-size:10px;color:var(--text3);">4步骤</span>
+              </div>
+              <div
+                style="padding:6px 10px;background:var(--bg3);border:1px dashed var(--border);border-radius:5px;font-size:11.5px;color:var(--text3);text-align:center;">
+                … 还有 42 条模板用例</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
