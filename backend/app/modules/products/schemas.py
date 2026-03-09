@@ -1,4 +1,5 @@
 import uuid
+from datetime import date
 
 from app.shared.base_schema import BaseResponse, BaseSchema
 
@@ -18,15 +19,15 @@ class ProductResponse(BaseResponse):
 class IterationCreate(BaseSchema):
     product_id: uuid.UUID
     name: str
-    start_date: str | None = None
-    end_date: str | None = None
+    start_date: date | str | None = None
+    end_date: date | str | None = None
 
 
 class IterationResponse(BaseResponse):
     product_id: uuid.UUID
     name: str
-    start_date: str | None
-    end_date: str | None
+    start_date: date | None
+    end_date: date | None
     status: str
 
 
@@ -44,3 +45,4 @@ class RequirementResponse(BaseResponse):
     title: str
     status: str
     version: int
+    content_ast: dict | None = None
