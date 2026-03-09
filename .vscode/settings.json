@@ -6,6 +6,7 @@
     "asyncio",
     "asyncpg",
     "autodiscover",
+    "bunfig",
     "bunx",
     "celerybeat",
     "codz",
@@ -19,7 +20,9 @@
     "datefmt",
     "dbname",
     "dmypy",
+    "elif",
     "envrc",
+    "fastapi",
     "frontmatter",
     "healthcheck",
     "healthchecks",
@@ -43,6 +46,7 @@
     "onupdate",
     "passlib",
     "pathsep",
+    "pdfplumber",
     "pids",
     "pipefail",
     "pipenv",
@@ -65,6 +69,7 @@
     "scrapy",
     "sdist",
     "sessionmaker",
+    "SMALLINT",
     "Spyder",
     "spyderproject",
     "spyproject",
@@ -76,8 +81,13 @@
     "timedelta",
     "TIMESTAMPTZ",
     "tzdata",
+    "utcnow",
     "uvicorn",
+    "VARCHAR",
     "venv",
-    "webassets"
+    "webassets",
+    "xmind",
+    "zhipu",
+    "zhipuai"
   ]
 }
