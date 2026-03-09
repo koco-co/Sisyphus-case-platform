@@ -3,7 +3,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SidebarItem, SidebarSection } from '@/components/ui';
 
-const navItems = [
+type NavLink = { href: string; icon: string; label: string };
+type NavSection = { section: string };
+type NavItem = NavLink | NavSection;
+
+const navItems: NavItem[] = [
   { href: '/', icon: '🏠', label: '项目总览' },
   { section: '测试流程' },
   { href: '/requirements', icon: '📄', label: '需求管理' },
