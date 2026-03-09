@@ -1,202 +1,327 @@
-# CLAUDE.md
+---
 
 ## 项目概述
 
-Sisyphus-case-platform 是 AI 驱动的企业级功能测试用例自动生成平台，面向数据中台场景，覆盖需求录入 → 健康诊断 → 测试点分析 → 用例生成 → 执行回流的完整测试生命周期。
+**Sisyphus-case-platform**（代号 Sisyphus-Y）是 AI 驱动的企业级功能测试用例自动生成平台，面向数据中台场景。
 
-核心理念：显式拆分「测什么」（测试点/场景地图）和「怎么测」（用例步骤），通过评审节点前置拦截方向错误。
+核心理念：显式拆分「测什么」（M04 测试点/场景地图）和「怎么测」（M05 用例步骤），通过评审节点前置拦截方向错误，构建 需求录入 → 健康诊断 → 测试点确认 → 用例生成 → 执行回流 的完整测试生命周期。
 
-## 架构
+---
 
-- **后端**: FastAPI (Python 3.12) — DDD 模块化架构，21 个业务模块在 `backend/app/modules/`
-- **前端**: Next.js 16 App Router (TypeScript) — 页面与后端模块对应，在 `frontend/src/app/(main)/`
-- **AI 引擎**: LangChain + LangGraph，支持 GPT-4o / Claude / Ollama 多模型切换
-- **存储**: PostgreSQL (业务) + Redis (缓存/队列) + Qdrant (向量) + MinIO (文件)
-- **异步任务**: Celery + Redis
+## 技术栈
+
+| 层级              | 技术                                                     | 版本     |
+| ----------------- | -------------------------------------------------------- | -------- |
+| 前端框架          | **Next.js App Router** + TypeScript                      | **16**   |
+| 样式方案          | Tailwind CSS（扩展 `sy-*` 颜色 token）                   | v3       |
+| 组件库            | shadcn/ui                                                | latest   |
+| 图标库            | lucide-react（**禁止用 emoji 作 UI 元素**）              | latest   |
+| 状态管理          | Zustand                                                  | latest   |
+| 可视化            | React Flow（场景地图）/ Recharts（看板）                 | latest   |
+| **后端框架**      | **FastAPI** + Python                                     | **3.12** |
+| ORM               | SQLAlchemy 2.0（async，asyncpg 驱动）                    | 2.0      |
+| AI 引擎           | LangChain + LangGraph                                    | latest   |
+| 默认模型          | 智谱 GLM-4-Flash（诊断/追问）/ 阿里 Qwen-Max（用例生成） | —        |
+| 向量库            | Qdrant                                                   | latest   |
+| 关系数据库        | PostgreSQL                                               | 15       |
+| 缓存/队列         | Redis                                                    | 7        |
+| 异步任务          | Celery + Redis                                           | latest   |
+| 文档解析          | python-docx / PyMuPDF / pypdf / PaddleOCR                | latest   |
+| 对象存储          | MinIO                                                    | latest   |
+| **Python 包管理** | **uv**（禁止 pip / conda / poetry）                      | latest   |
+| **前端包管理**    | **bun**（禁止 npm / yarn / pnpm）                        | latest   |
+
+---
+
+## 项目目录结构
+
+```
+项目根/
+├── CLAUDE.md                   ← 本文件（Claude Code 上下文）
+├── docs/
+├── backend/
+│   └── app/
+│       ├── core/               # 基础设施（db, redis, minio, config）
+│       ├── modules/            # 21 个业务模块（见模块对照表）
+│       │   └── <name>/
+│       │       ├── __init__.py
+│       │       ├── router.py   # 只做参数校验，调用 service，禁止写 Prompt
+│       │       ├── models.py   # SQLAlchemy ORM 模型
+│       │       ├── schemas.py  # Pydantic 请求/响应模型
+│       │       └── service.py  # 业务逻辑，接收 AsyncSession 参数
+│       └── engine/             # AI 引擎（所有 Prompt 只能写在此层）
+│           ├── uda/            # 文档解析（docx/pdf/md + 图片 OCR）
+│           ├── diagnosis/      # 诊断引擎（扫描/追问/清单）
+│           ├── scene_map/      # 场景地图生成
+│           ├── case_gen/       # 用例生成（含 SSE 流式）
+│           ├── diff/           # Myers Diff + LLM 语义分析
+│           └── rag/            # 向量嵌入与检索
+└── frontend/
+    └── src/
+        └── app/
+            ├── (auth)/         # 登录等无鉴权页面
+            └── (main)/         # 主业务页面（见模块对照表）
+```
+
+---
 
 ## 模块对照表
 
-| 后端模块 | 前端页面 | 职责 |
-|---|---|---|
-| `modules/auth/` | `(auth)/login/` | 认证与权限 |
-| `modules/products/` | `(main)/products/`, `iterations/`, `requirements/` | 子产品/迭代/需求三级管理 (M00) |
-| `modules/uda/` | — | 文档解析引擎，UDA 层 (M01) |
-| `modules/import_clean/` | — | 历史数据导入清洗 (M02) |
-| `modules/diagnosis/` | `(main)/diagnosis/` | 需求健康诊断 (M03) |
-| `modules/scene_map/` | `(main)/scene-map/` | 测试点分析 & 场景地图 (M04) |
-| `modules/generation/` | `(main)/workbench/` | 对话式用例生成工作台 (M05) |
-| `modules/testcases/` | `(main)/testcases/` | 用例管理中心 (M06) |
-| `modules/diff/` | `(main)/diff/` | 需求 Diff & 变更影响 (M07) |
-| `modules/coverage/` | `(main)/coverage/` | 需求覆盖度矩阵 (M08) |
-| `modules/test_plan/` | — | 迭代测试计划 (M09) |
-| `modules/templates/` | — | 用例模板库 (M10) |
-| `modules/knowledge/` | `(main)/knowledge/` | 知识库管理 (M11) |
-| `modules/export/` | — | 用例导出与集成 (M12) |
-| `modules/execution/` | — | 执行结果回流 (M13) |
-| `modules/analytics/` | `(main)/analytics/` | 质量分析看板 (M14) |
-| `modules/notification/` | — | 通知系统 (M16) |
-| `modules/search/` | — | 全局搜索 (M17) |
-| `modules/collaboration/` | — | 协作功能 (M18) |
-| `modules/dashboard/` | `(main)/` | 首页仪表盘 (M19) |
-| `modules/audit/` | — | 操作审计日志 (M20) |
-| `modules/recycle/` | — | 回收站 (M21) |
+| 编号 | 后端 `modules/`  | 前端 `(main)/`                            | 职责                     |
+| ---- | ---------------- | ----------------------------------------- | ------------------------ |
+| M00  | `products/`      | `products/` `iterations/` `requirements/` | 子产品/迭代/需求三级管理 |
+| M01  | `uda/`           | —                                         | 文档解析引擎，UDA 层     |
+| M02  | `import_clean/`  | —                                         | 历史数据导入清洗         |
+| M03  | `diagnosis/`     | `diagnosis/`                              | 需求健康诊断             |
+| M04  | `scene_map/`     | `scene-map/`                              | 测试点分析 & 场景地图    |
+| M05  | `generation/`    | `workbench/`                              | 对话式用例生成工作台     |
+| M06  | `testcases/`     | `testcases/`                              | 用例管理中心             |
+| M07  | `diff/`          | `diff/`                                   | 需求 Diff & 变更影响     |
+| M08  | `coverage/`      | `coverage/`                               | 需求覆盖度矩阵           |
+| M09  | `test_plan/`     | —                                         | 迭代测试计划             |
+| M10  | `templates/`     | —                                         | 用例模板库               |
+| M11  | `knowledge/`     | `knowledge/`                              | 知识库管理（RAG）        |
+| M12  | `export/`        | —                                         | 用例导出与集成           |
+| M13  | `execution/`     | —                                         | 执行结果回流             |
+| M14  | `analytics/`     | `analytics/`                              | 质量分析看板             |
+| M16  | `notification/`  | —                                         | 通知系统                 |
+| M17  | `search/`        | —                                         | 全局搜索                 |
+| M18  | `collaboration/` | —                                         | 协作功能                 |
+| M19  | `dashboard/`     | `(main)/`                                 | 首页仪表盘               |
+| M20  | `audit/`         | —                                         | 操作审计日志             |
+| M21  | `recycle/`       | —                                         | 回收站（软删除）         |
+
+---
 
 ## 开发规范
 
-### 环境管理
+### 代码质量工具
 
-- Python 环境: **uv**（不使用 pip/conda/poetry）
-- 前端包管理: **bun**（不使用 npm/yarn/pnpm）
+```bash
+# Python（每次提交前必须全部通过）
+uv run ruff check .            # lint
+uv run ruff format .           # 格式化
+uv run pyright app/            # 类型检查（standard 模式）
 
-### 代码质量
-
-- Python lint/format: **ruff** (`uv run ruff check .` + `uv run ruff format .`)
-- Python 类型检查: **pyright** (`uv run pyright app/`，standard 模式)
-- 前端 lint/format: **Biome** (`bunx biome check .`)
-- 前端类型检查: **tsc** (`bunx tsc --noEmit`)
+# 前端（每次提交前必须全部通过）
+bunx biome check .             # lint + format 检查
+bunx biome check --write .     # 自动修复
+bunx tsc --noEmit              # 类型检查
+```
 
 ### 命名约定
 
-- Python: `snake_case`（文件、变量、函数），`PascalCase`（类）
-- TypeScript: `camelCase`（变量、函数），`PascalCase`（组件、类型）
-- API 路由: `kebab-case`（`/api/scene-map/generate`）
-- 数据库表名: `snake_case` 复数（`test_cases`，`scene_nodes`）
+| 场景                  | 规范              | 示例                         |
+| --------------------- | ----------------- | ---------------------------- |
+| Python 文件/变量/函数 | `snake_case`      | `scene_map_service.py`       |
+| Python 类             | `PascalCase`      | `SceneMapService`            |
+| TypeScript 变量/函数  | `camelCase`       | `fetchTestCases`             |
+| TypeScript 组件/类型  | `PascalCase`      | `CaseCard` / `TestCase`      |
+| API 路由              | `kebab-case`      | `/api/scene-map/generate`    |
+| 数据库表名            | `snake_case` 复数 | `test_cases` / `scene_nodes` |
+| 数据库字段            | `snake_case`      | `created_at` / `req_id`      |
 
-### 后端模块结构
+### 软删除（所有核心业务表）
 
-每个业务模块必须包含：
+通过 `SoftDeleteMixin` 实现，字段为 `deleted_at`（`DateTime | None`）。
 
-```
-modules/<name>/
-├── __init__.py
-├── router.py    # API 路由，只做参数校验和调用 service
-├── models.py    # SQLAlchemy ORM 模型
-├── schemas.py   # Pydantic 请求/响应模型
-└── service.py   # 业务逻辑，接收 AsyncSession 作为参数
+```python
+# 所有查询必须过滤，禁止直接查全表
+.where(Model.deleted_at.is_(None))
 ```
 
 ### Git 规范
 
-- 分支: `feat/<module>-<desc>`, `fix/<desc>`, `docs/<desc>`
-- Commit: Conventional Commits（`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`）
-- PR 到 main 必须更新 `CHANGELOG.md`
+- 分支：`feat/<module>-<desc>` / `fix/<desc>` / `docs/<desc>` / `refactor/<desc>`
+- Commit：Conventional Commits（`feat:` `fix:` `docs:` `refactor:` `test:` `chore:`）
+- PR 合并前必须：① lint/type check 通过，② 更新 `CHANGELOG.md`
 
-### 测试
+### 测试规范
 
-- 后端: pytest + pytest-asyncio，`asyncio_mode = "auto"`
-- 命名: `tests/unit/test_<module>/test_<feature>.py`
-- Fixture: 公共放 `tests/conftest.py`，模块级放模块测试目录内
+- 框架：pytest + pytest-asyncio（`asyncio_mode = "auto"`）
+- 路径：`tests/unit/test_<module>/test_<feature>.py`
+- 公共 Fixture 放 `tests/conftest.py`，模块级 Fixture 放模块测试目录内
 
-### 软删除
-
-所有核心业务表均通过 `SoftDeleteMixin` 支持软删除（`deleted_at` 字段）。查询时必须过滤 `WHERE deleted_at IS NULL`。
+---
 
 ## 常用命令
 
 ```bash
-# 一键启动开发环境$$
+# 一键启动开发环境
 ./init.sh
 
-# 后端
+# ── 后端 ──────────────────────────────────────────────────────────────
 cd backend
-uv sync --all-extras           # 安装依赖
-uv run ruff check .            # lint 检查
-uv run ruff format .           # 格式化
-uv run pyright app/            # 类型检查
-uv run pytest -v               # 运行测试
-uv run pytest --cov=app        # 测试 + 覆盖率
-uv run alembic upgrade head    # 数据库迁移
-uv run alembic revision --autogenerate -m "描述"  # 生成迁移文件
-uv run uvicorn app.main:app --reload --port 8000  # 启动开发服务器
+uv sync --all-extras                               # 安装所有依赖（含 extras）
+uv run uvicorn app.main:app --reload --port 8000   # 启动开发服务器
+uv run alembic upgrade head                        # 执行数据库迁移
+uv run alembic revision --autogenerate -m "描述"   # 生成迁移文件
+uv run pytest -v                                   # 运行测试
+uv run pytest --cov=app                            # 测试 + 覆盖率报告
 
-# 前端
+# ── 前端 ──────────────────────────────────────────────────────────────
 cd frontend
-bun install                    # 安装依赖
-bunx biome check .             # lint + format 检查
-bunx biome check --write .     # 自动修复
-bunx tsc --noEmit              # 类型检查
-bun run build                  # 生产构建
-bun dev                        # 启动开发服务器
+bun install                                        # 安装依赖
+bun dev                                            # 启动开发服务器（:3000）
+bun run build                                      # 生产构建
 
-# Docker
-docker compose -f docker/docker-compose.yml up -d    # 启动基础设施
-docker compose -f docker/docker-compose.yml down     # 停止
-docker compose -f docker/docker-compose.yml logs -f  # 查看日志
+# ── 基础设施（Docker）────────────────────────────────────────────────
+docker compose -f docker/docker-compose.yml up -d     # 启动 PG/Redis/Qdrant/MinIO
+docker compose -f docker/docker-compose.yml down
+docker compose -f docker/docker-compose.yml logs -f
 ```
 
-## 关键设计决策
+---
 
-1. **DDD 模块化**：21 个业务模块各自包含 router/models/schemas/service，后端边界清晰
-2. **懒加载 DB 引擎**：`database.py` 使用 `@lru_cache` 延迟创建引擎，避免导入时连接
-3. **软删除统一**：所有业务表通过 `SoftDeleteMixin` 支持 `deleted_at`，不硬删除数据
-4. **测试点先于用例**：核心流程先确认「测什么」（M04），再生成「怎么测」（M05）
-5. **两阶段 Diff**：文本级（Myers）+ 语义级（LLM），防止业务影响被误判
+## UI 设计规范
 
-## UI 设计规范（来自原型图）
+### 设计 Token（Tailwind 扩展，`tailwind.config.ts` 中必须配置）
 
-### 设计令牌 (CSS Variables)
-
-```css
-/* 深色主题（默认） */
---bg: #0d0f12;        --bg1: #131619;     --bg2: #1a1e24;     --bg3: #212730;
---accent: #00d9a3;    --accent2: #00b386; --accent-d: rgba(0, 217, 163, .1);
---text: #e2e8f0;      --text2: #94a3b8;   --text3: #566577;
---border: #2a313d;    --border2: #353d4a;
---red: #f43f5e;       --amber: #f59e0b;   --yellow: #eab308;
---blue: #3b82f6;      --purple: #a855f7;
---sans: 'DM Sans';    --display: 'Syne';  --mono: 'JetBrains Mono';
+```ts
+// 禁止在任何组件中硬编码色值，统一通过 class 引用
+colors: {
+  'sy-bg':       '#0d0f12',   // 最底层页面背景
+  'sy-bg-1':     '#131619',   // 侧边栏/顶栏/一级卡片
+  'sy-bg-2':     '#1a1e24',   // 输入框/hover/二级卡片
+  'sy-bg-3':     '#212730',   // 标签/徽章/三级容器
+  'sy-border':   '#2a313d',
+  'sy-border-2': '#353d4a',
+  'sy-text':     '#e2e8f0',   // 主文字
+  'sy-text-2':   '#94a3b8',   // 次要文字
+  'sy-text-3':   '#566577',   // 辅助文字/占位符
+  'sy-accent':   '#00d9a3',   // 品牌色
+  'sy-accent-2': '#00b386',   // 品牌色 hover
+  'sy-warn':     '#f59e0b',
+  'sy-danger':   '#f43f5e',
+  'sy-info':     '#3b82f6',
+  'sy-purple':   '#a855f7',
+},
+fontFamily: {
+  sans:    ['DM Sans', 'sans-serif'],
+  mono:    ['JetBrains Mono', 'monospace'],
+  display: ['Syne', 'sans-serif'],
+},
+keyframes: {
+  blink: { '0%,100%': { opacity: '1' }, '50%': { opacity: '0' } },
+},
+animation: { blink: 'blink 0.8s infinite' },
 ```
+
+**硬编码报错示例**：`style={{ color: '#00d9a3' }}` / `className="text-[#00d9a3]"` → 改为 `className="text-sy-accent"`。
 
 ### 布局架构
 
-- **三栏布局**: `col-left`（需求导航树） + `col-mid`（AI 工作台） + `col-right`（辅助信息栏）
-- **全局侧边栏**: `sidebar` 导航 + `topbar` 顶栏
-- **组件类**: `.card` / `.card-hover` / `.btn` / `.btn-primary` / `.btn-ghost` / `.pill` / `.tag`
-- **场景点颜色编码**: `.dot-green`(已覆盖) / `.dot-yellow`(AI补充) / `.dot-red`(待处理) / `.dot-gray`(待确认)
-- **进度步骤**: `.prog-steps` > `.prog-step.done` / `.prog-step.active`
-- **对话气泡**: `.chat-bubble` / `.chat-bubble.ai-bubble` + `.chat-avatar`
+- **全局框架**：左侧 `sidebar`（固定导航）+ 顶部 `topbar`（高度 49px）
+- **三栏工作台**（生成工作台/诊断/测试点确认）：
+  - `col-left`（固定宽）：需求导航 / 报告列表
+  - `col-mid`（`flex-1`）：AI 主区域（对话 + 流式输出）
+  - `col-right`（固定宽）：辅助信息（用例预览 / 场景地图）
+  - 三栏各自独立 `overflow-y-auto`，高度 `calc(100vh - 49px - subNavHeight)`
+- **原型文件**：`Sisyphus-Y.html`（项目根目录），是所有 UI 决策的唯一视觉标准
+
+### 核心复用组件
+
+| 组件             | 路径                                    | 规格                                                       |
+| ---------------- | --------------------------------------- | ---------------------------------------------------------- |
+| `StatusBadge`    | `components/ui/StatusBadge.tsx`         | `font-mono text-[11px] rounded-full px-2 py-0.5`，5 种变体 |
+| `CaseCard`       | `components/workspace/CaseCard.tsx`     | steps 数组逐条渲染，**绝对禁止 JSON.stringify**            |
+| `StreamCursor`   | `components/workspace/StreamCursor.tsx` | `w-0.5 h-3.5 bg-sy-warn animate-blink`                     |
+| `ThreeColLayout` | `components/layout/ThreeColLayout.tsx`  | 三栏固定高布局，各列独立滚动                               |
+
+### 场景节点颜色编码
+
+| 状态                    | Tailwind class                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| 已覆盖（document）      | `bg-sy-accent/10 border border-sy-accent/35 text-sy-accent`                    |
+| AI 补全（supplemented） | `bg-sy-warn/10 border border-sy-warn/35 text-sy-warn`                          |
+| 缺失/高风险（missing）  | `bg-sy-danger/10 border-[1.5px] border-sy-danger text-sy-danger font-semibold` |
+| 待确认（pending）       | `bg-sy-bg-3 border border-dashed border-sy-border-2 text-sy-text-3`            |
 
 ### 微交互要求
 
-- SSE 流式输出动画（打字机效果 + 思考过程折叠）
-- 按钮 Loading 状态（Spinner + 文字变化）
-- 暗黑模式下毛玻璃效果 (`backdrop-filter: blur`)
-- 卡片 hover 效果 (`.card-hover` 微上浮 + 阴影)
+- SSE 流式输出：`StreamCursor` 动画 + 思考过程可折叠
+- 按钮 Loading：`<Loader2 className="animate-spin" />` + 文字切换
+- 卡片 hover：`hover:-translate-y-px hover:border-sy-border-2 transition-all`
+- 毛玻璃（需要时）：`backdrop-blur-md`
 
-## 数据持久化要求（关键）
+---
 
-### 核心原则：所有 AI 生成结果必须持久化到 PostgreSQL
+## 数据持久化要求（关键约束）
 
-1. **诊断结果持久化**: AI 诊断响应 → `DiagnosisChatMessage` 表（role=assistant）+ 自动解析风险 → `DiagnosisRisk` 表
-2. **测试点持久化**: AI 生成的测试点 → 自动解析 → `TestPoint` 表（关联 SceneMap）
-3. **用例生成持久化**: AI 生成的用例 → `GenerationMessage` 表 + 自动解析 → `TestCase` 表
-4. **Session 管理**: 每次 AI 交互必须关联 `session_id`，支持历史回溯（最近 100 条）
+**核心原则：所有 AI 生成结果必须持久化到 PostgreSQL，页面刷新后必须能完整恢复。**
 
-### 禁止"刷新即消失"
+| AI 生成内容      | 持久化目标表                                                         |
+| ---------------- | -------------------------------------------------------------------- |
+| 诊断对话 AI 响应 | `DiagnosisChatMessage`（role=assistant）→ 自动解析 → `DiagnosisRisk` |
+| 测试点草稿       | `GenerationMessage` → 自动解析 → `TestPoint`（关联 SceneMap）        |
+| 用例生成流       | `GenerationMessage` → SSE 完成后 → 自动解析 → `TestCase`             |
+| 所有 AI 交互     | 关联 `session_id`，支持历史回溯（最近 100 条）                       |
 
-- 前端页面刷新后，必须能从 API 重新加载完整的历史对话和生成结果
-- 所有 SSE 流式输出完成后，后端必须自动保存完整响应到数据库
+SSE 流完成后，后端必须自动将完整响应保存到数据库，前端不负责持久化。
 
-## AI 多模型策略
+---
+
+## AI 引擎约束
 
 ### 模型分工
 
-| 模型 | 用途 | 特点 |
-|---|---|---|
-| **智谱 GLM-4-Flash** | 需求诊断 + 苏格拉底追问 | 中文理解强，速度快 |
-| **阿里百炼 Qwen-Max** | 复杂测试用例 CoT 生成 | 推理能力强，适合结构化输出 |
+| 模型             | 场景                   | 原因                       |
+| ---------------- | ---------------------- | -------------------------- |
+| 智谱 GLM-4-Flash | 需求诊断、苏格拉底追问 | 中文理解强，响应快         |
+| 阿里 Qwen-Max    | 复杂用例 CoT 生成      | 推理能力强，结构化输出稳定 |
 
 ### 容错降级
 
-- 主模型调用失败 → 自动重试 2 次（指数退避）
-- 重试失败 → 降级到备用模型（如 Qwen 失败降级 GLM）
-- 所有 LLM 调用使用 `trust_env=False` 绕过系统代理
+1. 主模型失败 → 重试 2 次（指数退避：1s / 2s）
+2. 重试失败 → 自动降级备用模型
+3. 所有 LLM 调用设置 `trust_env=False`（绕过系统代理）
 
-### API 密钥配置
+### JSON 安全提取（强制规范）
+
+```python
+# 禁止直接 json.loads(result.content)，必须安全提取
+import re, json
+
+content = result.content
+match = re.search(r'\{.*\}', content, re.DOTALL)   # 对象
+# 或
+match = re.search(r'\[.*\]', content, re.DOTALL)   # 数组
+if not match:
+    raise ValueError(f"LLM 返回格式异常，无法提取 JSON: {content[:200]}")
+data = json.loads(match.group())
+```
+
+### Prompt 层级规范
+
+所有 Prompt 必须在 `engine/` 层实现，禁止在 `modules/` 层写任何 LLM 调用逻辑。
+完整的 Prompt 体系（System Prompt / Rules / 用户可配置 Prompt）见 `docs/PROMPT_RULES.md`。
+
+### 环境变量
 
 ```env
-LLM_PROVIDER=zhipu                    # 默认提供商
-ZHIPU_API_KEY=<zhipu-key>             # 智谱 API Key
-DASHSCOPE_API_KEY=<dashscope-key>     # 阿里百炼 API Key
-DASHSCOPE_MODEL=qwen-max              # 阿里百炼模型
+LLM_PROVIDER=zhipu
+ZHIPU_API_KEY=<key>
+DASHSCOPE_API_KEY=<key>
+DASHSCOPE_MODEL=qwen-max
+DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/sisyphus_y
+REDIS_URL=redis://localhost:6379/0
+CELERY_BROKER_URL=redis://localhost:6379/1
+MINIO_ENDPOINT=localhost:9000
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
+QDRANT_URL=http://localhost:6333
 ```
+
+---
+
+## 关键设计决策
+
+| 决策                | 说明                                                                 |
+| ------------------- | -------------------------------------------------------------------- |
+| DDD 模块化          | 21 个模块各自封装，禁止跨模块直接调用 model 层                       |
+| Prompt 在 engine 层 | router/service 不感知 Prompt 内容，engine 层统一管理                 |
+| 懒加载 DB 引擎      | `database.py` 用 `@lru_cache` 延迟建立连接，避免导入时连接数据库     |
+| 软删除统一          | 通过 `SoftDeleteMixin` 实现，禁止物理删除核心业务数据                |
+| 测试点先于用例      | M04 确认「测什么」后才能进入 M05，前端确认按钮有未处理红色节点时置灰 |
+| 两阶段 Diff         | 文本级（Myers / difflib）+ 语义级（LLM），防止业务影响被误判         |
+| 幂等性保障          | 所有写入操作设计幂等，重试不产生重复数据，使用 upsert 而非 insert    |
