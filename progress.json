@@ -68,11 +68,28 @@
     },
     {
       "id": "phase-6",
-      "name": "UI 抛光与验收",
+      "name": "数据持久化与 AI 增强",
+      "status": "done",
+      "modules": [
+        { "id": "sse-collector", "name": "SSE 收集器(流式+持久化)", "status": "done" },
+        { "id": "ai-parser", "name": "AI 输出解析器(JSON+MD)", "status": "done" },
+        { "id": "ai-fallback", "name": "多模型重试与降级", "status": "done" },
+        { "id": "diagnosis-persist", "name": "诊断结果持久化", "status": "done" },
+        { "id": "scenemap-persist", "name": "测试点自动保存", "status": "done" },
+        { "id": "generation-persist", "name": "用例生成持久化", "status": "done" }
+      ]
+    },
+    {
+      "id": "phase-7",
+      "name": "前端增强与全链路打通",
       "status": "in_progress",
       "modules": [
-        { "id": "ui-polish", "name": "UI 对齐原型图", "status": "in_progress" },
-        { "id": "e2e-test", "name": "E2E 自动化验收", "status": "pending" }
+        { "id": "sse-hooks", "name": "SSE Hook 统一封装", "status": "done" },
+        { "id": "api-client", "name": "API Client 增强", "status": "done" },
+        { "id": "layout-refactor", "name": "导航栏分组重构", "status": "done" },
+        { "id": "core-pages-ui", "name": "核心页面 UI 重构", "status": "in_progress" },
+        { "id": "flow-linkage", "name": "全链路业务联动", "status": "pending" },
+        { "id": "quality-check", "name": "质量检查与收尾", "status": "pending" }
       ]
     }
   ]

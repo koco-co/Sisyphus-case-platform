@@ -20,21 +20,12 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useRequirementTree } from '@/hooks/useRequirementTree';
+import { useSSE } from '@/hooks/useSSE';
+import type { Requirement } from '@/lib/api';
+
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-interface Product {
-  id: string;
-  name: string;
-}
-interface Iteration {
-  id: string;
-  name: string;
-}
-interface Requirement {
-  id: string;
-  req_id: string;
-  title: string;
-}
 interface GenSession {
   id: string;
   mode: string;
@@ -57,6 +48,18 @@ interface TestCaseItem {
   source: string;
 }
 
+function renderMarkdown(text: string): string {
+  return text
+    .replace(/### (.+)/g, '<h3>$1</h3>')
+    .replace(/## (.+)/g, '<h2>$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>[\s\S]*<\/li>)/g, '<ul>$1</ul>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br/>');
+}
+
 const MODES = [
   { value: 'test_point_driven', label: '测试点驱动', icon: Target },
   { value: 'exploratory', label: '探索式', icon: Zap },
@@ -65,72 +68,21 @@ const MODES = [
 ];
 
 export default function WorkbenchPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
-  const [iterations, setIterations] = useState<Record<string, Iteration[]>>({});
-  const [expandedIterations, setExpandedIterations] = useState<Set<string>>(new Set());
-  const [requirements, setRequirements] = useState<Record<string, Requirement[]>>({});
+  const tree = useRequirementTree();
+  const sse = useSSE();
 
-  const [selectedReqId, setSelectedReqId] = useState<string | null>(null);
-  const [_selectedReqTitle, setSelectedReqTitle] = useState('');
   const [sessions, setSessions] = useState<GenSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [testCases, setTestCases] = useState<TestCaseItem[]>([]);
 
   const [inputText, setInputText] = useState('');
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [streamingContent, setStreamingContent] = useState('');
   const [selectedMode, setSelectedMode] = useState('test_point_driven');
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    fetch(`${API}/products/`)
-      .then((r) => r.json())
-      .then((data) => setProducts(Array.isArray(data) ? data : data.items || []))
-      .catch(console.error);
-  }, []);
-
-  const toggleProduct = async (pid: string) => {
-    const next = new Set(expandedProducts);
-    if (next.has(pid)) {
-      next.delete(pid);
-    } else {
-      next.add(pid);
-      if (!iterations[pid]) {
-        const res = await fetch(`${API}/products/${pid}/iterations`);
-        const data = await res.json();
-        setIterations((p) => ({
-          ...p,
-          [pid]: Array.isArray(data) ? data : data.items || [],
-        }));
-      }
-    }
-    setExpandedProducts(next);
-  };
-
-  const toggleIteration = async (productId: string, iid: string) => {
-    const next = new Set(expandedIterations);
-    if (next.has(iid)) {
-      next.delete(iid);
-    } else {
-      next.add(iid);
-      if (!requirements[iid]) {
-        const res = await fetch(`${API}/products/${productId}/iterations/${iid}/requirements`);
-        const data = await res.json();
-        setRequirements((p) => ({
-          ...p,
-          [iid]: Array.isArray(data) ? data : data.items || [],
-        }));
-      }
-    }
-    setExpandedIterations(next);
-  };
-
   const selectRequirement = async (req: Requirement) => {
-    setSelectedReqId(req.id);
-    setSelectedReqTitle(req.title || req.req_id);
+    tree.selectRequirement(req);
     setActiveSessionId(null);
     setMessages([]);
 
@@ -153,13 +105,13 @@ export default function WorkbenchPage() {
   };
 
   const createSession = async () => {
-    if (!selectedReqId) return;
+    if (!tree.selectedReqId) return;
     try {
       const res = await fetch(`${API}/generation/sessions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          requirement_id: selectedReqId,
+          requirement_id: tree.selectedReqId,
           mode: selectedMode,
         }),
       });
@@ -194,94 +146,64 @@ export default function WorkbenchPage() {
   };
 
   const sendMessage = useCallback(async () => {
-    if (!inputText.trim() || !activeSessionId || isStreaming) return;
+    if (!inputText.trim() || !activeSessionId || sse.isStreaming) return;
     const userMsg = inputText.trim();
     setInputText('');
     setMessages((prev) => [
       ...prev,
       {
-        id: `u-${Date.now()}`,
+        id: `user-${Date.now()}`,
         role: 'user',
         content: userMsg,
         created_at: new Date().toISOString(),
       },
     ]);
-    setIsStreaming(true);
-    setStreamingContent('');
 
-    try {
-      const res = await fetch(`${API}/generation/sessions/${activeSessionId}/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMsg }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const fullText = await sse.startStream(`/generation/sessions/${activeSessionId}/chat`, {
+      body: { message: userMsg },
+    });
 
-      const reader = res.body?.getReader();
-      if (!reader) throw new Error('No reader');
-      const decoder = new TextDecoder();
-      let full = '';
-
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        for (const line of chunk.split('\n')) {
-          if (line.startsWith('data: ')) {
-            try {
-              const d = JSON.parse(line.slice(6));
-              if (d.delta) {
-                full += d.delta;
-                setStreamingContent(full);
-              }
-            } catch {
-              const t = line.slice(6);
-              if (t && t !== '[DONE]') {
-                full += t;
-                setStreamingContent(full);
-              }
-            }
-          }
+    // After streaming, reload messages from server to get persisted versions
+    if (fullText) {
+      try {
+        const res = await fetch(`${API}/generation/sessions/${activeSessionId}/messages`);
+        if (res.ok) {
+          const data = await res.json();
+          setMessages(data);
         }
+      } catch (e) {
+        console.error(e);
       }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `ai-${Date.now()}`,
-          role: 'assistant',
-          content: full || '生成完成',
-          created_at: new Date().toISOString(),
-        },
-      ]);
-    } catch (e: unknown) {
-      const errMsg = e instanceof Error ? e.message : '未知错误';
+    } else {
       setMessages((prev) => [
         ...prev,
         {
           id: `err-${Date.now()}`,
           role: 'assistant',
-          content: `错误: ${errMsg}`,
+          content: sse.error ? `错误: ${sse.error}` : '生成完成',
           created_at: new Date().toISOString(),
         },
       ]);
-    } finally {
-      setIsStreaming(false);
-      setStreamingContent('');
-      if (selectedReqId) {
-        const tcRes = await fetch(`${API}/testcases/?requirement_id=${selectedReqId}`);
+    }
+
+    // Refresh test cases
+    if (tree.selectedReqId) {
+      try {
+        const tcRes = await fetch(`${API}/testcases/?requirement_id=${tree.selectedReqId}`);
         if (tcRes.ok) {
           const d = await tcRes.json();
           setTestCases(d.items || []);
         }
+      } catch (e) {
+        console.error(e);
       }
     }
-  }, [inputText, activeSessionId, isStreaming, selectedReqId]);
+  }, [inputText, activeSessionId, sse, tree.selectedReqId]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: scroll must trigger on messages/streamingContent changes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: scroll must trigger on messages/streaming changes
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, streamingContent]);
+  }, [messages, sse.content]);
 
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 64px)' }}>
@@ -315,11 +237,11 @@ export default function WorkbenchPage() {
           </h3>
         </div>
         <div style={{ flex: 1, overflow: 'auto', padding: 8 }}>
-          {products.map((p) => (
+          {tree.products.map((p) => (
             <div key={p.id}>
               <button
                 type="button"
-                onClick={() => toggleProduct(p.id)}
+                onClick={() => tree.toggleProduct(p.id)}
                 className="card-hover"
                 style={{
                   padding: '8px 12px',
@@ -336,7 +258,7 @@ export default function WorkbenchPage() {
                   textAlign: 'left',
                 }}
               >
-                {expandedProducts.has(p.id) ? (
+                {tree.expandedProducts.has(p.id) ? (
                   <ChevronDown size={14} />
                 ) : (
                   <ChevronRight size={14} />
@@ -344,12 +266,12 @@ export default function WorkbenchPage() {
                 <FolderOpen size={14} style={{ color: 'var(--accent)' }} />
                 {p.name}
               </button>
-              {expandedProducts.has(p.id) &&
-                (iterations[p.id] || []).map((it) => (
+              {tree.expandedProducts.has(p.id) &&
+                (tree.iterations[p.id] || []).map((it) => (
                   <div key={it.id} style={{ paddingLeft: 20 }}>
                     <button
                       type="button"
-                      onClick={() => toggleIteration(p.id, it.id)}
+                      onClick={() => tree.toggleIteration(p.id, it.id)}
                       className="card-hover"
                       style={{
                         padding: '6px 12px',
@@ -366,7 +288,7 @@ export default function WorkbenchPage() {
                         textAlign: 'left',
                       }}
                     >
-                      {expandedIterations.has(it.id) ? (
+                      {tree.expandedIterations.has(it.id) ? (
                         <ChevronDown size={12} />
                       ) : (
                         <ChevronRight size={12} />
@@ -374,8 +296,8 @@ export default function WorkbenchPage() {
                       <IterationCw size={12} />
                       {it.name}
                     </button>
-                    {expandedIterations.has(it.id) &&
-                      (requirements[it.id] || []).map((r) => (
+                    {tree.expandedIterations.has(it.id) &&
+                      (tree.requirements[it.id] || []).map((r) => (
                         <button
                           type="button"
                           key={r.id}
@@ -390,8 +312,8 @@ export default function WorkbenchPage() {
                             gap: 6,
                             borderRadius: 6,
                             fontSize: 12,
-                            background: selectedReqId === r.id ? 'var(--accent-d)' : undefined,
-                            color: selectedReqId === r.id ? 'var(--accent)' : 'var(--text2)',
+                            background: tree.selectedReqId === r.id ? 'var(--accent-d)' : undefined,
+                            color: tree.selectedReqId === r.id ? 'var(--accent)' : 'var(--text2)',
                             border: 'none',
                             width: '100%',
                             textAlign: 'left',
@@ -407,7 +329,7 @@ export default function WorkbenchPage() {
           ))}
         </div>
         {/* Sessions */}
-        {selectedReqId && (
+        {tree.selectedReqId && (
           <div
             style={{
               borderTop: '1px solid var(--border)',
@@ -531,7 +453,7 @@ export default function WorkbenchPage() {
               ))}
             </div>
             <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
-              {messages.length === 0 && !isStreaming && (
+              {messages.length === 0 && !sse.isStreaming && (
                 <div
                   style={{
                     textAlign: 'center',
@@ -547,6 +469,7 @@ export default function WorkbenchPage() {
               {messages.map((msg) => (
                 <div
                   key={msg.id}
+                  className="chat-msg"
                   style={{
                     display: 'flex',
                     justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
@@ -554,7 +477,7 @@ export default function WorkbenchPage() {
                   }}
                 >
                   <div
-                    className="card"
+                    className={`chat-bubble ${msg.role === 'assistant' ? 'ai-bubble' : ''}`}
                     style={{
                       maxWidth: '75%',
                       padding: '10px 14px',
@@ -564,15 +487,20 @@ export default function WorkbenchPage() {
                         msg.role === 'user' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
                       fontSize: 13,
                       lineHeight: 1.6,
-                      whiteSpace: 'pre-wrap',
                     }}
                   >
-                    {msg.content}
+                    {msg.role === 'assistant' ? (
+                      // biome-ignore lint/security/noDangerouslySetInnerHtml: renderMarkdown sanitizes AI content
+                      <div dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} />
+                    ) : (
+                      <span style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</span>
+                    )}
                   </div>
                 </div>
               ))}
-              {isStreaming && streamingContent && (
+              {sse.isStreaming && sse.content && (
                 <div
+                  className="chat-msg"
                   style={{
                     display: 'flex',
                     justifyContent: 'flex-start',
@@ -580,7 +508,7 @@ export default function WorkbenchPage() {
                   }}
                 >
                   <div
-                    className="card"
+                    className="chat-bubble ai-bubble"
                     style={{
                       maxWidth: '75%',
                       padding: '10px 14px',
@@ -588,15 +516,15 @@ export default function WorkbenchPage() {
                       borderRadius: '12px 12px 12px 2px',
                       fontSize: 13,
                       lineHeight: 1.6,
-                      whiteSpace: 'pre-wrap',
                     }}
                   >
-                    {streamingContent}
+                    {/* biome-ignore lint/security/noDangerouslySetInnerHtml: renderMarkdown sanitizes AI content */}
+                    <div dangerouslySetInnerHTML={{ __html: renderMarkdown(sse.content) }} />
                     <span className="streaming-cursor">▊</span>
                   </div>
                 </div>
               )}
-              {isStreaming && !streamingContent && (
+              {sse.isStreaming && !sse.content && (
                 <div
                   style={{
                     display: 'flex',
@@ -667,7 +595,7 @@ export default function WorkbenchPage() {
                 type="button"
                 className="btn btn-primary"
                 onClick={sendMessage}
-                disabled={isStreaming || !inputText.trim()}
+                disabled={sse.isStreaming || !inputText.trim()}
                 style={{ padding: '8px 16px' }}
               >
                 <Send size={16} />
@@ -691,7 +619,7 @@ export default function WorkbenchPage() {
             >
               <Sparkles size={64} style={{ opacity: 0.2, marginBottom: 16 }} />
               <p style={{ fontSize: 16 }}>
-                {selectedReqId ? '选择或新建会话' : '请从左侧选择需求'}
+                {tree.selectedReqId ? '选择或新建会话' : '请从左侧选择需求'}
               </p>
               <p style={{ fontSize: 13 }}>对话式 AI 测试用例生成</p>
             </div>
@@ -776,7 +704,7 @@ export default function WorkbenchPage() {
                 fontSize: 12,
               }}
             >
-              {selectedReqId ? '暂无测试用例' : '选择需求查看用例'}
+              {tree.selectedReqId ? '暂无测试用例' : '选择需求查看用例'}
             </div>
           )}
         </div>
