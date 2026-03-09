@@ -144,25 +144,33 @@ async def upload_requirement(
     iteration_id: Annotated[uuid.UUID, Form(...)],
     session: AsyncSessionDep = ...,
 ) -> RequirementResponse:
-    raw_bytes = await file.read()
-    file_content = raw_bytes.decode("utf-8")
+    """Upload a requirement document (docx, pdf, md, txt) and create a Requirement."""
+    from app.modules.uda.parsers import parse_document as uda_parse
 
-    sections: list[dict[str, str]] = []
-    current_heading = ""
-    current_body: list[str] = []
-    for line in file_content.splitlines():
-        if line.startswith("#"):
-            if current_heading or current_body:
-                sections.append({"heading": current_heading, "body": "\n".join(current_body).strip()})
-            current_heading = line.lstrip("#").strip()
-            current_body = []
-        else:
-            current_body.append(line)
-    if current_heading or current_body:
-        sections.append({"heading": current_heading, "body": "\n".join(current_body).strip()})
+    raw_bytes = await file.read()
+    filename = file.filename or "unknown.txt"
+
+    try:
+        full_text, content_ast = uda_parse(filename, raw_bytes)
+    except Exception:
+        # Fallback: try to read as text
+        full_text = raw_bytes.decode("utf-8", errors="replace")
+        sections: list[dict[str, str]] = []
+        current_heading = ""
+        current_body: list[str] = []
+        for line in full_text.splitlines():
+            if line.startswith("#"):
+                if current_heading or current_body:
+                    sections.append({"heading": current_heading, "body": "\n".join(current_body).strip()})
+                current_heading = line.lstrip("#").strip()
+                current_body = []
+            else:
+                current_body.append(line)
+        if current_heading or current_body:
+            sections.append({"heading": current_heading, "body": "\n".join(current_body).strip()})
+        content_ast = {"raw_text": full_text, "sections": sections}
 
     req_id = f"REQ-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-    content_ast = {"raw_text": file_content, "sections": sections}
 
     data = RequirementCreate(
         iteration_id=iteration_id,

@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.ai.prompts import GENERATION_SYSTEM
+from app.ai.prompts import assemble_prompt
 from app.ai.stream_adapter import get_thinking_stream
 from app.modules.generation.models import GenerationMessage, GenerationSession
 from app.modules.products.models import Requirement
@@ -36,9 +36,7 @@ class GenerationService:
         result = await self.session.execute(q)
         return result.scalar_one_or_none()
 
-    async def get_or_create_session(
-        self, requirement_id: UUID, mode: str = "test_point_driven"
-    ) -> GenerationSession:
+    async def get_or_create_session(self, requirement_id: UUID, mode: str = "test_point_driven") -> GenerationSession:
         """Return the latest active session for a requirement, or create one."""
         q = (
             select(GenerationSession)
@@ -139,4 +137,11 @@ class GenerationService:
             enriched = f"{context}\n\n用户请求：{user_message}"
             if history:
                 history[-1]["content"] = enriched
-        return await get_thinking_stream(history, system=GENERATION_SYSTEM)
+        # Select prompt module based on session mode
+        if gen_session.mode == "test_point_driven":
+            task_instruction = "根据已确认的测试点，生成高质量、可执行的测试用例，输出 JSON 数组。"
+            system = assemble_prompt("generation", task_instruction)
+        else:
+            task_instruction = "与用户协作完成测试用例设计，根据对话上下文生成或调整用例。"
+            system = assemble_prompt("exploratory", task_instruction)
+        return await get_thinking_stream(history, system=system)

@@ -34,6 +34,7 @@ _MODULE_NAMES = [
     "dashboard",
     "audit",
     "recycle",
+    "ai_config",
 ]
 
 

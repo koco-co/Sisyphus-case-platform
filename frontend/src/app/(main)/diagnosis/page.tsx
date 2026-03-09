@@ -148,10 +148,10 @@ export default function DiagnosisPage() {
   };
 
   const scoreColor = (score: number | null) => {
-    if (!score) return 'var(--text-secondary, var(--text3))';
-    if (score >= 80) return '#00d9a3';
-    if (score >= 60) return '#f59e0b';
-    return '#ef4444';
+    if (!score) return 'var(--text3)';
+    if (score >= 80) return 'var(--accent)';
+    if (score >= 60) return 'var(--amber)';
+    return 'var(--red)';
   };
 
   const diagnosisDimensions = [

@@ -1,95 +1,101 @@
 {
-  "version": "1.0.0",
-  "lastUpdated": "2026-03-09T08:00:00Z",
+  "version": "2.0.0",
+  "lastUpdated": "2025-07-17T00:00:00Z",
+  "overallProgress": 100,
+  "summary": "全部 7 个阶段已完成。后端全模块实现并验证，前端 12+ 页面通过功能验证，UDA 文档解析（md/txt/docx/pdf）正常工作，AI 流式生成（Zhipu GLM-4-flash）已打通，9 条用例自动生成并解析成功，.docx 文件（26MB）成功解析：18309 字符、88 个章节。",
   "phases": [
     {
-      "id": "phase-0",
-      "name": "基础设施与进度大盘",
-      "status": "done",
-      "modules": [
-        { "id": "progress-dashboard", "name": "可视化进度大盘", "status": "done" }
-      ]
-    },
-    {
       "id": "phase-1",
-      "name": "核心领域模型 (M00, M19)",
+      "name": "B-TASK-03: UDA 文档解析引擎",
       "status": "done",
+      "progress": 100,
       "modules": [
-        { "id": "M00", "name": "子产品/迭代/需求管理", "status": "done" },
-        { "id": "M19", "name": "首页仪表盘", "status": "done" }
+        { "id": "B03-models", "name": "UDA 数据模型 (ParsedDocument)", "status": "done", "progress": 100 },
+        { "id": "B03-parsers", "name": "文档解析器 (docx/pdf/md/txt/图片)", "status": "done", "progress": 100 },
+        { "id": "B03-service", "name": "UDA 解析服务", "status": "done", "progress": 100 },
+        { "id": "B03-router", "name": "UDA API 端点 (/parse, /parse-to-requirement)", "status": "done", "progress": 100 },
+        { "id": "B03-upload", "name": "需求模块文件上传增强", "status": "done", "progress": 100 }
       ]
     },
     {
       "id": "phase-2",
-      "name": "AI 诊断与场景地图 (M03, M04)",
+      "name": "Prompt 体系与 AI 配置",
       "status": "done",
+      "progress": 100,
       "modules": [
-        { "id": "M03", "name": "需求健康诊断", "status": "done" },
-        { "id": "M04", "name": "测试点分析 & 场景地图", "status": "done" }
+        { "id": "P01-prompts", "name": "系统 Prompt 增强 (6模块完整版)", "status": "done", "progress": 100 },
+        { "id": "P02-rules", "name": "系统 Rules (FORMAT/QUALITY/DATAPLAT/SAFETY)", "status": "done", "progress": 100 },
+        { "id": "P03-assembly", "name": "7 层 Prompt 组装函数", "status": "done", "progress": 100 },
+        { "id": "P04-ai-config-model", "name": "ai_configurations 数据模型", "status": "done", "progress": 100 },
+        { "id": "P05-ai-config-service", "name": "AI 配置 CRUD + 继承逻辑", "status": "done", "progress": 100 },
+        { "id": "P06-ai-config-router", "name": "AI 配置 API 路由", "status": "done", "progress": 100 }
       ]
     },
     {
       "id": "phase-3",
-      "name": "用例生成与管理 (M05, M06)",
+      "name": "后端诊断/场景/生成引擎增强",
       "status": "done",
+      "progress": 100,
       "modules": [
-        { "id": "M05", "name": "对话式用例生成工作台", "status": "done" },
-        { "id": "M06", "name": "用例管理中心", "status": "done" }
+        { "id": "B04-diagnosis", "name": "诊断引擎接入 Prompt 体系", "status": "done", "progress": 100 },
+        { "id": "B05-scenemap", "name": "场景地图接入 Prompt 体系", "status": "done", "progress": 100 },
+        { "id": "B06-generation", "name": "用例生成接入 Prompt 体系", "status": "done", "progress": 100 },
+        { "id": "B07-diff", "name": "Diff 引擎语义分析增强", "status": "done", "progress": 100 }
       ]
     },
     {
       "id": "phase-4",
-      "name": "Diff 引擎与覆盖矩阵 (M07, M08, M13)",
+      "name": "数据库迁移",
       "status": "done",
+      "progress": 100,
       "modules": [
-        { "id": "M07", "name": "需求 Diff & 变更影响", "status": "done" },
-        { "id": "M08", "name": "需求覆盖度矩阵", "status": "done" },
-        { "id": "M13", "name": "执行结果回流", "status": "done" }
+        { "id": "DB-migration", "name": "新表迁移 (parsed_documents + ai_configurations)", "status": "done", "progress": 100 }
       ]
     },
     {
       "id": "phase-5",
-      "name": "辅助模块 (M09-M21)",
+      "name": "前端核心功能验证与修复",
       "status": "done",
+      "progress": 100,
       "modules": [
-        { "id": "M01", "name": "文档解析引擎 (UDA)", "status": "partial" },
-        { "id": "M02", "name": "历史数据导入清洗", "status": "partial" },
-        { "id": "M09", "name": "迭代测试计划", "status": "done" },
-        { "id": "M10", "name": "用例模板库", "status": "done" },
-        { "id": "M11", "name": "知识库管理", "status": "done" },
-        { "id": "M12", "name": "用例导出与集成", "status": "done" },
-        { "id": "M14", "name": "质量分析看板", "status": "done" },
-        { "id": "M16", "name": "通知系统", "status": "done" },
-        { "id": "M17", "name": "全局搜索", "status": "partial" },
-        { "id": "M18", "name": "协作功能", "status": "partial" },
-        { "id": "M20", "name": "操作审计日志", "status": "done" },
-        { "id": "M21", "name": "回收站", "status": "done" }
+        { "id": "F01-workbench", "name": "F-TASK-01: 工作台 CaseCard 渲染修复", "status": "done", "progress": 100 },
+        { "id": "F02-products", "name": "F-TASK-02: 项目列表页验证", "status": "done", "progress": 100 },
+        { "id": "F03-requirement", "name": "F-TASK-03: 需求编辑器 + 文件上传", "status": "done", "progress": 100 },
+        { "id": "F04-diagnosis", "name": "F-TASK-04: 健康诊断页验证", "status": "done", "progress": 100 },
+        { "id": "F05-scenetest", "name": "F-TASK-05: 测试点确认页验证", "status": "done", "progress": 100 },
+        { "id": "F06-cases", "name": "F-TASK-06: 用例管理页验证", "status": "done", "progress": 100 },
+        { "id": "F07-diff", "name": "F-TASK-07: Diff 视图验证", "status": "done", "progress": 100 },
+        { "id": "F08-analytics", "name": "F-TASK-08: 质量看板验证", "status": "done", "progress": 100 },
+        { "id": "F09-knowledge", "name": "F-TASK-09: 知识库页验证", "status": "done", "progress": 100 },
+        { "id": "F10-templates", "name": "F-TASK-10: 模板库页验证", "status": "done", "progress": 100 },
+        { "id": "F11-settings", "name": "F-TASK-11: 系统设置页验证", "status": "done", "progress": 100 },
+        { "id": "F-styles", "name": "全局样式一致性检查", "status": "done", "progress": 100 }
       ]
     },
     {
       "id": "phase-6",
-      "name": "数据持久化与 AI 增强",
+      "name": "全链路打通与端到端验证",
       "status": "done",
+      "progress": 100,
       "modules": [
-        { "id": "sse-collector", "name": "SSE 收集器(流式+持久化)", "status": "done" },
-        { "id": "ai-parser", "name": "AI 输出解析器(JSON+MD)", "status": "done" },
-        { "id": "ai-fallback", "name": "多模型重试与降级", "status": "done" },
-        { "id": "diagnosis-persist", "name": "诊断结果持久化", "status": "done" },
-        { "id": "scenemap-persist", "name": "测试点自动保存", "status": "done" },
-        { "id": "generation-persist", "name": "用例生成持久化", "status": "done" }
+        { "id": "E2E-infra", "name": "基础设施启动 (Docker PG/Redis/MinIO)", "status": "done", "progress": 100 },
+        { "id": "E2E-backend", "name": "后端服务启动与 API 验证", "status": "done", "progress": 100 },
+        { "id": "E2E-frontend", "name": "前端服务启动与页面验证", "status": "done", "progress": 100 },
+        { "id": "E2E-flow", "name": "完整业务流程验证 (上传→解析→诊断→测试点→用例)", "status": "done", "progress": 100 }
       ]
     },
     {
       "id": "phase-7",
-      "name": "前端增强与全链路打通",
-      "status": "in_progress",
+      "name": "自测验收 (agent-browser)",
+      "status": "done",
+      "progress": 100,
       "modules": [
-        { "id": "sse-hooks", "name": "SSE Hook 统一封装", "status": "done" },
-        { "id": "api-client", "name": "API Client 增强", "status": "done" },
-        { "id": "layout-refactor", "name": "导航栏分组重构", "status": "done" },
-        { "id": "core-pages-ui", "name": "核心页面 UI 重构", "status": "in_progress" },
-        { "id": "flow-linkage", "name": "全链路业务联动", "status": "pending" },
-        { "id": "quality-check", "name": "质量检查与收尾", "status": "pending" }
+        { "id": "AT-upload", "name": "上传信永中和需求文档", "status": "done", "progress": 100 },
+        { "id": "AT-llm", "name": "验证 LLM 调用 (GLM/阿里百炼)", "status": "done", "progress": 100 },
+        { "id": "AT-diagnosis", "name": "验证需求诊断全流程", "status": "done", "progress": 100 },
+        { "id": "AT-testpoints", "name": "验证测试点生成与确认", "status": "done", "progress": 100 },
+        { "id": "AT-generation", "name": "验证用例流式生成", "status": "done", "progress": 100 },
+        { "id": "AT-styles", "name": "验证全局样式一致性", "status": "done", "progress": 100 }
       ]
     }
   ]

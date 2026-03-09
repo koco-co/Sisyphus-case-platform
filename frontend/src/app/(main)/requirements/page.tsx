@@ -108,8 +108,8 @@ export default function RequirementsPage() {
             <input name="title" className="input" required placeholder="输入需求标题" style={{ width: "100%" }} />
           </div>
           <div style={{ marginBottom: 16 }}>
-            <label style={{ fontSize: 12, color: "var(--text2)", display: "block", marginBottom: 4 }}>需求文档 (.md / .txt)</label>
-            <input name="file" type="file" accept=".md,.txt" required className="input" style={{ width: "100%" }} />
+            <label style={{ fontSize: 12, color: "var(--text2)", display: "block", marginBottom: 4 }}>需求文档 (.docx / .pdf / .md / .txt)</label>
+            <input name="file" type="file" accept=".docx,.doc,.pdf,.md,.txt" required className="input" style={{ width: "100%" }} />
           </div>
           {uploadError && <div className="alert alert-red" style={{ marginBottom: 12, fontSize: 12 }}>{uploadError}</div>}
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>

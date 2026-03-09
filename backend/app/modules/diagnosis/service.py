@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.ai.prompts import DIAGNOSIS_SYSTEM
+from app.ai.prompts import assemble_prompt
 from app.ai.stream_adapter import get_thinking_stream
 from app.modules.diagnosis.models import DiagnosisChatMessage, DiagnosisReport, DiagnosisRisk
 from app.modules.diagnosis.schemas import DiagnosisRiskUpdate
@@ -51,8 +51,10 @@ class DiagnosisService:
         content = json.dumps(req.content_ast, ensure_ascii=False) if req else ""
         title = req.title if req else ""
         user_content = f"请对以下需求进行健康诊断：\n\n需求标题：{title}\n\n需求内容：\n{content}"
+        task_instruction = "对用户提供的需求文档进行全面的测试健康诊断，按 6 个维度逐一扫描并给出评分。"
+        system = assemble_prompt("diagnosis", task_instruction)
         messages = [{"role": "user", "content": user_content}]
-        return await get_thinking_stream(messages, system=DIAGNOSIS_SYSTEM)
+        return await get_thinking_stream(messages, system=system)
 
     async def create_or_get_report(self, requirement_id: UUID) -> DiagnosisReport:
         report = await self.get_report(requirement_id)
@@ -124,4 +126,6 @@ class DiagnosisService:
                 history.append({"role": msg.role, "content": msg.content})
 
         history.append({"role": "user", "content": user_message})
-        return await get_thinking_stream(history, system=DIAGNOSIS_SYSTEM)
+        task_instruction = "针对上一轮对话中发现的风险点进行苏格拉底式追问，深入挖掘需求盲区。"
+        system = assemble_prompt("diagnosis_followup", task_instruction)
+        return await get_thinking_stream(history, system=system)

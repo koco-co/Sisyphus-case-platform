@@ -31,6 +31,7 @@ export const useStreamStore = create<StreamState>((set) => ({
   appendContent: (delta) =>
     set((s) => ({
       contentText: s.contentText + delta,
+      isStreaming: true,
       isThinkingDone: true,
     })),
   setDone: () => set({ isStreaming: false }),

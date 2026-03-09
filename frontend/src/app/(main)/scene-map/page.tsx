@@ -583,13 +583,13 @@ export default function SceneMapPage() {
                 <div style={{ fontSize: 10, color: 'var(--text-secondary)' }}>总计</div>
               </div>
               <div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#00d9a3' }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--accent)' }}>
                   {confirmedCount}
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--text-secondary)' }}>已确认</div>
               </div>
               <div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#f59e0b' }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--amber)' }}>
                   {testPoints.length - confirmedCount}
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--text-secondary)' }}>待确认</div>

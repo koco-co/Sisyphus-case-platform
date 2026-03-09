@@ -742,7 +742,7 @@ export default function WorkbenchPage() {
                 style={{
                   fontSize: 16,
                   fontWeight: 700,
-                  color: '#00d9a3',
+                  color: 'var(--accent)',
                 }}
               >
                 {testCases.filter((t) => t.source === 'ai').length}
@@ -761,7 +761,7 @@ export default function WorkbenchPage() {
                 style={{
                   fontSize: 16,
                   fontWeight: 700,
-                  color: '#f59e0b',
+                  color: 'var(--amber)',
                 }}
               >
                 {testCases.filter((t) => t.source !== 'ai').length}

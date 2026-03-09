@@ -6,7 +6,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.ai.prompts import SCENE_MAP_SYSTEM
+from app.ai.prompts import assemble_prompt
 from app.ai.stream_adapter import get_thinking_stream
 from app.modules.products.models import Requirement
 from app.modules.scene_map.models import SceneMap, TestPoint
@@ -160,5 +160,7 @@ class SceneMapService:
             f"请按照正常流程、异常场景、边界值、并发场景、权限安全分组，"
             f"每个测试点包含：分组名、标题、描述、优先级(P0/P1/P2)、预计用例数。"
         )
+        task_instruction = "根据需求文档提取完整的测试点列表，按场景类型分组，输出 JSON 数组。"
+        system = assemble_prompt("scene_map", task_instruction)
         messages = [{"role": "user", "content": user_content}]
-        return await get_thinking_stream(messages, system=SCENE_MAP_SYSTEM)
+        return await get_thinking_stream(messages, system=system)
