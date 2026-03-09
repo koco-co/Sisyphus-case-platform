@@ -1,226 +1,232 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { FlaskConical, Plug, Zap, ShieldCheck, BarChart3, RefreshCw, Star, type LucideIcon } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from "react";
+import { LayoutTemplate, Plus, Trash2, Copy } from "lucide-react";
 
-/* ── categories ── */
-const tabs = ['全部', '功能测试', '接口测试', '性能测试', '安全测试'] as const;
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
-/* ── demo templates ── */
 interface Template {
-  icon: LucideIcon;
+  id: string;
   name: string;
-  desc: string;
   category: string;
-  uses: number;
-  rating: number;
-  tags: string[];
+  description: string | null;
+  usage_count: number;
+  status: string;
+  created_at: string;
 }
 
-const templates: Template[] = [
-  {
-    icon: FlaskConical,
-    name: '标准功能测试模板',
-    desc: '覆盖正常流程、异常流程和边界值的通用功能测试模板，适用于大多数业务场景。',
-    category: '功能测试',
-    uses: 1247,
-    rating: 4.8,
-    tags: ['功能', '通用', '推荐'],
-  },
-  {
-    icon: Plug,
-    name: 'RESTful API 测试模板',
-    desc: '针对 REST 接口的参数校验、状态码、幂等性、限流等维度的标准化测试模板。',
-    category: '接口测试',
-    uses: 986,
-    rating: 4.7,
-    tags: ['API', 'REST', '接口'],
-  },
-  {
-    icon: Zap,
-    name: '性能基线测试模板',
-    desc: '包含并发、吞吐量、响应时间、资源占用等性能指标的基线测试用例模板。',
-    category: '性能测试',
-    uses: 654,
-    rating: 4.5,
-    tags: ['性能', '基线', '并发'],
-  },
-  {
-    icon: ShieldCheck,
-    name: 'OWASP Top 10 安全模板',
-    desc: '基于 OWASP Top 10 安全风险清单的安全测试用例模板，覆盖注入、XSS、CSRF 等。',
-    category: '安全测试',
-    uses: 523,
-    rating: 4.9,
-    tags: ['安全', 'OWASP', '渗透'],
-  },
-  {
-    icon: BarChart3,
-    name: '数据迁移验证模板',
-    desc: '数据迁移场景的完整性、一致性、回滚验证测试模板，含字段映射校验。',
-    category: '功能测试',
-    uses: 412,
-    rating: 4.3,
-    tags: ['数据', '迁移', 'ETL'],
-  },
-  {
-    icon: RefreshCw,
-    name: '消息队列集成测试模板',
-    desc: 'Kafka / RabbitMQ 消息投递、消费、重试、死信队列等场景的集成测试模板。',
-    category: '接口测试',
-    uses: 378,
-    rating: 4.6,
-    tags: ['MQ', 'Kafka', '集成'],
-  },
-];
+const categoryLabels: Record<string, string> = {
+  functional: "功能测试",
+  performance: "性能测试",
+  security: "安全测试",
+  compatibility: "兼容性测试",
+};
 
-/* ── page ── */
+const categoryColors: Record<string, string> = {
+  functional: "pill-green",
+  performance: "pill-amber",
+  security: "pill-red",
+  compatibility: "",
+};
+
 export default function TemplatesPage() {
-  const [activeTab, setActiveTab] = useState('全部');
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [total, setTotal] = useState(0);
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [showCreate, setShowCreate] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newCategory, setNewCategory] = useState("functional");
+  const [newDesc, setNewDesc] = useState("");
 
-  const filtered =
-    activeTab === '全部' ? templates : templates.filter((t) => t.category === activeTab);
+  const fetchTemplates = useCallback(async () => {
+    const params = new URLSearchParams();
+    if (categoryFilter) params.set("category", categoryFilter);
+    try {
+      const res = await fetch(`${API}/templates/?${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        setTemplates(data.items || []);
+        setTotal(data.total || 0);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [categoryFilter]);
+
+  useEffect(() => {
+    fetchTemplates();
+  }, [fetchTemplates]);
+
+  const createTemplate = async () => {
+    if (!newName.trim()) return;
+    try {
+      await fetch(`${API}/templates/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newName,
+          category: newCategory,
+          description: newDesc || null,
+          template_content: {},
+        }),
+      });
+      setShowCreate(false);
+      setNewName("");
+      setNewDesc("");
+      fetchTemplates();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const useTemplate = async (id: string) => {
+    try {
+      await fetch(`${API}/templates/${id}/use`, { method: "POST" });
+      fetchTemplates();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const deleteTemplate = async (id: string) => {
+    if (!confirm("确定删除？")) return;
+    await fetch(`${API}/templates/${id}`, { method: "DELETE" });
+    fetchTemplates();
+  };
 
   return (
-    <div className="no-sidebar">
-      <div className="page-watermark">P11 · TEMPLATE LIBRARY</div>
-
-      {/* Topbar */}
-      <div className="topbar">
-        <h1>模板库</h1>
-        <div className="spacer" />
-        <input className="input" placeholder="搜索模板..." style={{ width: 220 }} />
-        <button type="button" className="btn btn-primary">
-          ＋ 新建模板
-        </button>
-      </div>
-
-      {/* Category tabs */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-        {tabs.map((t) => (
-          <button
-            type="button"
-            key={t}
-            className={`btn btn-sm${t === activeTab ? ' btn-primary' : ''}`}
-            onClick={() => setActiveTab(t)}
+    <div style={{ padding: 24 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <h2 style={{ margin: 0, fontSize: 20, color: "var(--text)" }}>
+          <LayoutTemplate size={24} style={{ marginRight: 8, verticalAlign: "middle" }} />
+          用例模板库 ({total})
+        </h2>
+        <div style={{ display: "flex", gap: 8 }}>
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            style={{
+              padding: "8px 12px",
+              borderRadius: 8,
+              border: "1px solid var(--border)",
+              background: "var(--bg2)",
+              color: "var(--text)",
+              fontSize: 13,
+            }}
           >
-            {t}
+            <option value="">全部分类</option>
+            <option value="functional">功能测试</option>
+            <option value="performance">性能测试</option>
+            <option value="security">安全测试</option>
+            <option value="compatibility">兼容性测试</option>
+          </select>
+          <button className="btn btn-primary" onClick={() => setShowCreate(!showCreate)}>
+            <Plus size={14} style={{ marginRight: 4 }} /> 新建模板
           </button>
-        ))}
+        </div>
       </div>
 
-      {/* Template grid */}
-      <div className="grid-3">
-        {filtered.map((t) => {
-          const TplIcon = t.icon;
-          return (
-          <div className="card card-hover" key={t.name}>
-            {/* Header */}
-            <div
+      {showCreate && (
+        <div className="card" style={{ padding: 16, marginBottom: 16 }}>
+          <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+            <input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="模板名称"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                marginBottom: 10,
+                flex: 1,
+                padding: "8px 12px",
+                borderRadius: 8,
+                border: "1px solid var(--border)",
+                background: "var(--bg2)",
+                color: "var(--text)",
+                fontSize: 13,
+                outline: "none",
+              }}
+            />
+            <select
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              style={{
+                padding: "8px 12px",
+                borderRadius: 8,
+                border: "1px solid var(--border)",
+                background: "var(--bg2)",
+                color: "var(--text)",
+                fontSize: 13,
               }}
             >
-              <span
-                style={{
-                  width: 40,
-                  height: 40,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'var(--bg2)',
-                  borderRadius: 8,
-                  border: '1px solid var(--border)',
-                }}
-              >
-                <TplIcon size={20} />
+              <option value="functional">功能测试</option>
+              <option value="performance">性能测试</option>
+              <option value="security">安全测试</option>
+              <option value="compatibility">兼容性测试</option>
+            </select>
+          </div>
+          <textarea
+            value={newDesc}
+            onChange={(e) => setNewDesc(e.target.value)}
+            placeholder="模板描述..."
+            rows={3}
+            style={{
+              width: "100%",
+              padding: "8px 12px",
+              borderRadius: 8,
+              border: "1px solid var(--border)",
+              background: "var(--bg2)",
+              color: "var(--text)",
+              fontSize: 13,
+              resize: "vertical",
+              outline: "none",
+              marginBottom: 12,
+            }}
+          />
+          <button className="btn btn-primary" onClick={createTemplate}>
+            创建模板
+          </button>
+        </div>
+      )}
+
+      <div className="grid-3" style={{ gap: 16 }}>
+        {templates.map((tpl) => (
+          <div key={tpl.id} className="card card-hover" style={{ padding: 20 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+              <h4 style={{ margin: 0, fontSize: 14, color: "var(--text)" }}>{tpl.name}</h4>
+              <span className={`pill ${categoryColors[tpl.category] || ""}`} style={{ fontSize: 10 }}>
+                {categoryLabels[tpl.category] || tpl.category}
               </span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color: 'var(--text)',
-                  }}
+            </div>
+            {tpl.description && (
+              <p style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5, margin: "0 0 12px" }}>
+                {tpl.description}
+              </p>
+            )}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>使用 {tpl.usage_count} 次</span>
+              <div style={{ display: "flex", gap: 4 }}>
+                <button
+                  className="btn"
+                  style={{ padding: "4px 10px", fontSize: 11 }}
+                  onClick={() => useTemplate(tpl.id)}
                 >
-                  {t.name}
-                </div>
-                <div
-                  style={{
-                    fontSize: 11.5,
-                    color: 'var(--text3)',
-                    marginTop: 2,
-                  }}
+                  <Copy size={12} style={{ marginRight: 4 }} /> 使用
+                </button>
+                <button
+                  onClick={() => deleteTemplate(tpl.id)}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)", padding: 4 }}
                 >
-                  {t.category}
-                </div>
+                  <Trash2 size={14} />
+                </button>
               </div>
             </div>
-
-            {/* Description */}
-            <div
-              style={{
-                fontSize: 12.5,
-                color: 'var(--text2)',
-                lineHeight: 1.6,
-                marginBottom: 12,
-                minHeight: 40,
-              }}
-            >
-              {t.desc}
-            </div>
-
-            {/* Stats row */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 16,
-                marginBottom: 12,
-                fontSize: 12,
-                color: 'var(--text3)',
-              }}
-            >
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <BarChart3 size={12} /> 使用{' '}
-                <span className="mono" style={{ color: 'var(--text2)' }}>
-                  {t.uses}
-                </span>{' '}
-                次
-              </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <Star size={12} />{' '}
-                <span className="mono" style={{ color: 'var(--accent)' }}>
-                  {t.rating}
-                </span>
-              </span>
-            </div>
-
-            {/* Tags + action */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                flexWrap: 'wrap',
-              }}
-            >
-              {t.tags.map((tag) => (
-                <span className="tag" key={tag}>
-                  {tag}
-                </span>
-              ))}
-              <div className="spacer" />
-              <button type="button" className="btn btn-sm btn-primary">
-                使用
-              </button>
-            </div>
           </div>
-          );
-        })}
+        ))}
+        {templates.length === 0 && (
+          <div className="card" style={{ padding: 40, textAlign: "center", color: "var(--text-secondary)", gridColumn: "1 / -1" }}>
+            <LayoutTemplate size={48} style={{ opacity: 0.3, marginBottom: 16 }} />
+            <p style={{ fontSize: 14 }}>暂无模板</p>
+            <p style={{ fontSize: 12 }}>点击"新建模板"创建第一个测试用例模板</p>
+          </div>
+        )}
       </div>
     </div>
   );
