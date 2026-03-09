@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from typing import Annotated
 
 from fastapi import APIRouter, File, Form, UploadFile, status
 
@@ -138,9 +139,9 @@ async def delete_requirement(requirement_id: uuid.UUID, session: AsyncSessionDep
 
 @router.post("/upload-requirement", response_model=RequirementResponse, status_code=status.HTTP_201_CREATED)
 async def upload_requirement(
-    file: UploadFile = File(...),
-    title: str = Form(...),
-    iteration_id: uuid.UUID = Form(...),
+    file: Annotated[UploadFile, File(...)],
+    title: Annotated[str, Form(...)],
+    iteration_id: Annotated[uuid.UUID, Form(...)],
     session: AsyncSessionDep = ...,
 ) -> RequirementResponse:
     raw_bytes = await file.read()
