@@ -107,16 +107,19 @@ class GenerationService:
                 tp_text = "\n".join(f"- [{tp.group_name}] {tp.title} (优先级: {tp.priority})" for tp in test_points)
                 context_parts.append(f"已确认测试点：\n{tp_text}")
 
-        # Build chat history
+        # Build chat history (excluding latest user message, which will be appended below)
         history: list[dict[str, str]] = []
         messages = await self.list_messages(session_id)
         for msg in messages:
             history.append({"role": msg.role, "content": msg.content})
 
-        # Add context to first message if no history
-        if not history and context_parts:
+        # Inject context on first conversation turn (only 1 message = the one just saved)
+        if len(messages) <= 1 and context_parts:
             context = "\n\n".join(context_parts)
             user_message = f"{context}\n\n用户请求：{user_message}"
-
-        history.append({"role": "user", "content": user_message})
+            # Replace the last history entry with context-enriched version
+            if history:
+                history[-1]["content"] = user_message
+        else:
+            history.append({"role": "user", "content": user_message})
         return await get_thinking_stream(history, system=GENERATION_SYSTEM)

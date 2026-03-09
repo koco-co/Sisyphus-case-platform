@@ -22,9 +22,11 @@ async def openai_thinking_stream(
     system: str = "",
 ) -> AsyncIterator[str]:
     """OpenAI 流式输出。"""
+    import httpx
     from openai import AsyncOpenAI
 
-    client = AsyncOpenAI(api_key=settings.openai_api_key)
+    no_proxy_client = httpx.AsyncClient(proxy=None, trust_env=False)
+    client = AsyncOpenAI(api_key=settings.openai_api_key, http_client=no_proxy_client)
 
     yield _sse("thinking", {"delta": "正在分析需求，梳理测试场景...\n"})
 
@@ -81,7 +83,7 @@ async def zhipu_thinking_stream(
     from zhipuai import ZhipuAI
 
     # 绕过系统 SOCKS 代理，ZhiPu 是国内服务无需代理
-    no_proxy_client = httpx.Client(proxy=None)
+    no_proxy_client = httpx.Client(proxy=None, trust_env=False)
     client = ZhipuAI(api_key=settings.zhipu_api_key, http_client=no_proxy_client)
 
     yield _sse("thinking", {"delta": "正在分析需求，梳理测试场景...\n"})
@@ -118,6 +120,41 @@ async def zhipu_thinking_stream(
     yield _sse("done", {"usage": {}})
 
 
+async def dashscope_thinking_stream(
+    messages: list[dict],
+    system: str = "",
+) -> AsyncIterator[str]:
+    """阿里百炼 Dashscope 流式输出 (OpenAI 兼容模式)。"""
+    import httpx
+    from openai import AsyncOpenAI
+
+    # 绕过系统 SOCKS 代理，Dashscope 是国内服务无需代理
+    no_proxy_client = httpx.AsyncClient(proxy=None, trust_env=False)
+    client = AsyncOpenAI(
+        api_key=settings.dashscope_api_key,
+        base_url=settings.dashscope_base_url,
+        http_client=no_proxy_client,
+    )
+
+    yield _sse("thinking", {"delta": "正在分析需求，梳理测试场景...\n"})
+
+    all_messages = messages
+    if system:
+        all_messages = [{"role": "system", "content": system}, *messages]
+
+    stream = await client.chat.completions.create(
+        model=settings.dashscope_model,
+        messages=all_messages,
+        stream=True,
+    )
+
+    async for chunk in stream:
+        if chunk.choices and chunk.choices[0].delta.content:
+            yield _sse("content", {"delta": chunk.choices[0].delta.content})
+
+    yield _sse("done", {"usage": {}})
+
+
 async def get_thinking_stream(
     messages: list[dict],
     system: str = "",
@@ -128,4 +165,6 @@ async def get_thinking_stream(
         return anthropic_thinking_stream(messages, system)
     if provider == "zhipu":
         return zhipu_thinking_stream(messages, system)
+    if provider == "dashscope":
+        return dashscope_thinking_stream(messages, system)
     return openai_thinking_stream(messages, system)

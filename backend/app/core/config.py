@@ -40,12 +40,15 @@ class Settings(BaseSettings):
     jwt_access_token_expire_minutes: int = 30
 
     # LLM
-    llm_provider: str = "zhipu"
+    llm_provider: str = "dashscope"
     openai_api_key: str = ""
     openai_model: str = "gpt-4o"
     ollama_base_url: str = "http://localhost:11434"
     zhipu_api_key: str = ""
     zhipu_model: str = "glm-4-flash"
+    dashscope_api_key: str = ""
+    dashscope_model: str = "qwen-plus"
+    dashscope_base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
 
 settings = Settings()
