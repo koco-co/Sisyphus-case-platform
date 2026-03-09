@@ -82,6 +82,7 @@
     "pixmap",
     "poolclass",
     "prefs",
+    "psql",
     "pybuilder",
     "pycache",
     "pydantic",

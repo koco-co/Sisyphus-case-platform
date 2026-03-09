@@ -1,4 +1,4 @@
-# Claude Instructions — Sisyphus Case Platform
+# Copilot Instructions — Sisyphus Case Platform
 
 ## Interaction Language
 

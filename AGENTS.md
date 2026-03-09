@@ -1,9 +1,3 @@
-# Claude Instructions — Sisyphus Case Platform
-
-## Interaction Language
-
-Always respond to me in Simplified Chinese (简体中文). This applies to code explanations, summaries, and general chat. However, keep the source code and technical identifiers (variable names, function names) in their original language.
-
 ## 项目概述
 
 **Sisyphus-case-platform**（代号 Sisyphus-Y）是 AI 驱动的企业级功能测试用例自动生成平台，面向数据中台场景。

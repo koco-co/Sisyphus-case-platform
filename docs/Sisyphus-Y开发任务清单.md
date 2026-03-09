@@ -1,9 +1,9 @@
 # Sisyphus-Y 开发任务清单 v1.0
 
 > **项目名称**：Sisyphus-Y
-> **原型参考**：`Sisyphus-Y.html`（唯一视觉标准，所有 UI 细节以此为准，不得自行发挥）
+> **原型参考**：`Sisyphus-Y原型图.html`（ UI 细节以此为准，不得自行发挥）
 > **仓库地址**：https://github.com/koco-co/Sisyphus-case-platform.git
-> **当前最严重 Bug**（见截图）：生成工作台中间区域直接渲染原始 JSON 字符串，必须第一优先修复
+> **当前最严重 Bug**：生成工作台中间区域直接渲染原始 JSON 字符串，必须第一优先修复
 
 ---
 
