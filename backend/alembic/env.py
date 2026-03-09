@@ -10,6 +10,7 @@ from app.modules.audit.models import AuditLog  # noqa: F401
 from app.modules.auth.models import User  # noqa: F401
 from app.modules.notification.models import Notification  # noqa: F401
 from app.modules.products.models import Iteration, Product, Requirement, RequirementVersion  # noqa: F401
+from app.modules.testcases.models import TestCase, TestCaseStep, TestCaseVersion  # noqa: F401
 from app.shared.base_model import Base
 
 config = context.config
