@@ -66,3 +66,9 @@ class RequirementService:
             )
         )
         return list(result.scalars().all())
+
+    async def list_all(self) -> list[Requirement]:
+        result = await self.session.execute(
+            select(Requirement).where(Requirement.deleted_at.is_(None))
+        )
+        return list(result.scalars().all())

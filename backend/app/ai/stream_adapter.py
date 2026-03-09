@@ -77,9 +77,12 @@ async def zhipu_thinking_stream(
     system: str = "",
 ) -> AsyncIterator[str]:
     """智谱 GLM 流式输出，运行在线程池以避免阻塞事件循环。"""
+    import httpx
     from zhipuai import ZhipuAI
 
-    client = ZhipuAI(api_key=settings.zhipu_api_key)
+    # 绕过系统 SOCKS 代理，ZhiPu 是国内服务无需代理
+    no_proxy_client = httpx.Client(proxy=None)
+    client = ZhipuAI(api_key=settings.zhipu_api_key, http_client=no_proxy_client)
 
     yield _sse("thinking", {"delta": "正在分析需求，梳理测试场景...\n"})
 

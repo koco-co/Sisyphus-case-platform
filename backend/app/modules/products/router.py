@@ -1,6 +1,7 @@
 import uuid
+from datetime import datetime
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, File, Form, UploadFile, status
 
 from app.core.dependencies import AsyncSessionDep
 from app.modules.products.schemas import (
@@ -64,3 +65,48 @@ async def list_requirements(iteration_id: uuid.UUID, session: AsyncSessionDep) -
     service = RequirementService(session)
     reqs = await service.list_by_iteration(iteration_id)
     return [RequirementResponse.model_validate(r) for r in reqs]
+
+
+@router.get("/requirements", response_model=list[RequirementResponse])
+async def list_all_requirements(session: AsyncSessionDep) -> list[RequirementResponse]:
+    service = RequirementService(session)
+    reqs = await service.list_all()
+    return [RequirementResponse.model_validate(r) for r in reqs]
+
+
+@router.post("/upload-requirement", response_model=RequirementResponse, status_code=status.HTTP_201_CREATED)
+async def upload_requirement(
+    file: UploadFile = File(...),
+    title: str = Form(...),
+    iteration_id: uuid.UUID = Form(...),
+    session: AsyncSessionDep = ...,
+) -> RequirementResponse:
+    raw_bytes = await file.read()
+    file_content = raw_bytes.decode("utf-8")
+
+    sections: list[dict[str, str]] = []
+    current_heading = ""
+    current_body: list[str] = []
+    for line in file_content.splitlines():
+        if line.startswith("#"):
+            if current_heading or current_body:
+                sections.append({"heading": current_heading, "body": "\n".join(current_body).strip()})
+            current_heading = line.lstrip("#").strip()
+            current_body = []
+        else:
+            current_body.append(line)
+    if current_heading or current_body:
+        sections.append({"heading": current_heading, "body": "\n".join(current_body).strip()})
+
+    req_id = f"REQ-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    content_ast = {"raw_text": file_content, "sections": sections}
+
+    data = RequirementCreate(
+        iteration_id=iteration_id,
+        req_id=req_id,
+        title=title,
+        content_ast=content_ast,
+    )
+    service = RequirementService(session)
+    req = await service.create_requirement(data)
+    return RequirementResponse.model_validate(req)
