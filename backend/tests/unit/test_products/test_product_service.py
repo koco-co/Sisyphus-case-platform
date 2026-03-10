@@ -10,7 +10,6 @@ from fastapi import HTTPException
 
 from app.modules.products.schemas import ProductCreate, ProductUpdate
 
-
 # ── Helpers ──────────────────────────────────────────────────────────
 
 
@@ -44,7 +43,7 @@ class TestCreateProduct:
 
         svc = _make_service(session)
 
-        with patch("app.modules.products.service.Product", return_value=product_mock) as MockProduct:
+        with patch("app.modules.products.service.Product", return_value=product_mock):
             result = await svc.create_product(ProductCreate(name="TestProduct", slug="test-product"))
 
         session.add.assert_called_once_with(product_mock)

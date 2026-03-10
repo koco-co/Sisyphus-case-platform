@@ -6,10 +6,8 @@ import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import HTTPException
 
 from app.modules.test_plan.schemas import TestPlanCreate
-
 
 # ── Helpers ──────────────────────────────────────────────────────────
 

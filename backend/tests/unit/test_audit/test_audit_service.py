@@ -5,10 +5,7 @@ from __future__ import annotations
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
-
 from app.modules.audit.schemas import AuditLogCreate
-
 
 # ── Helpers ──────────────────────────────────────────────────────────
 
@@ -52,7 +49,7 @@ class TestCreateLog:
         svc = _make_service(session)
 
         with patch("app.modules.audit.service.AuditLog", return_value=log_mock):
-            result = await svc.log_action(
+            await svc.log_action(
                 AuditLogCreate(
                     action="create",
                     entity_type="test_case",
@@ -77,7 +74,7 @@ class TestCreateLog:
         svc = _make_service(session)
 
         with patch("app.modules.audit.service.AuditLog", return_value=log_mock):
-            result = await svc.log_action(
+            await svc.log_action(
                 AuditLogCreate(
                     action="update",
                     entity_type="test_case",

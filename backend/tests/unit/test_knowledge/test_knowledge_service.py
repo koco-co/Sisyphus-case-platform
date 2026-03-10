@@ -5,28 +5,29 @@ from __future__ import annotations
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
-from fastapi import HTTPException
-
-
 # ── Helpers ──────────────────────────────────────────────────────────
 
 
 def _make_doc(
-    title: str = "测试知识文档",
-    doc_type: str = "standard",
+    title: str = "测试知识文档.md",
+    doc_type: str = "md",
     content: str = "这是知识库内容",
     version: int = 1,
 ):
     doc = MagicMock()
     doc.id = uuid.uuid4()
     doc.title = title
+    doc.file_name = title
     doc.doc_type = doc_type
+    doc.file_size = 1024
     doc.content = content
     doc.tags = ["测试", "知识库"]
     doc.source = "manual"
     doc.version = version
     doc.status = "active"
+    doc.vector_status = "completed"
+    doc.hit_count = 0
+    doc.chunk_count = 2
     doc.deleted_at = None
     doc.created_at = "2024-01-01T00:00:00"
     doc.updated_at = "2024-01-01T00:00:00"
@@ -55,8 +56,10 @@ class TestCreateDocument:
 
         with patch("app.modules.knowledge.service.KnowledgeDocument", return_value=doc_mock):
             result = await svc.create_document(
-                title="测试知识文档",
-                doc_type="standard",
+                title="测试知识文档.md",
+                file_name="测试知识文档.md",
+                doc_type="md",
+                file_size=128,
                 content="内容",
             )
 
@@ -88,7 +91,7 @@ class TestSearchKnowledge:
 
     async def test_list_by_doc_type(self):
         """按类型过滤应正常工作。"""
-        docs = [_make_doc("标准文档", doc_type="standard")]
+        docs = [_make_doc("标准文档.md", doc_type="md")]
 
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 1
@@ -100,7 +103,7 @@ class TestSearchKnowledge:
         session.execute = AsyncMock(side_effect=[mock_count_result, mock_list_result])
 
         svc = _make_service(session)
-        items, total = await svc.list_documents(doc_type="standard")
+        items, total = await svc.list_documents(doc_type="md")
 
         assert len(items) == 1
         assert total == 1
@@ -121,3 +124,40 @@ class TestSearchKnowledge:
 
         assert items == []
         assert total == 0
+
+
+class TestKnowledgeIndexing:
+    async def test_upload_document_indexes_chunks(self):
+        """上传文档后应完成解析、分块和向量索引。"""
+        session = AsyncMock()
+        session.add = MagicMock()
+        session.flush = AsyncMock()
+        session.commit = AsyncMock()
+        session.refresh = AsyncMock()
+        doc_mock = _make_doc()
+        doc_mock.vector_status = "processing"
+        doc_mock.chunk_count = 0
+
+        upload = MagicMock()
+        upload.filename = "知识库文档.md"
+        upload.read = AsyncMock(return_value=b"# Title\n\ncontent")
+
+        svc = _make_service(session)
+
+        with (
+            patch("app.modules.knowledge.service.KnowledgeDocument", return_value=doc_mock),
+            patch(
+                "app.modules.knowledge.service.parse_document",
+                return_value=("# Title\n\ncontent", {"sections": []}),
+            ),
+            patch("app.modules.knowledge.service.chunk_by_headers", return_value=[MagicMock(), MagicMock()]),
+            patch("app.modules.knowledge.service.index_chunks", new=AsyncMock(return_value=2)) as index_chunks,
+        ):
+            result = await svc.upload_document(upload)
+
+        session.add.assert_called_once_with(doc_mock)
+        session.commit.assert_awaited()
+        index_chunks.assert_awaited_once()
+        assert result == doc_mock
+        assert doc_mock.vector_status == "completed"
+        assert doc_mock.chunk_count == 2

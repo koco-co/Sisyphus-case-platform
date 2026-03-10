@@ -5,11 +5,9 @@ from __future__ import annotations
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
-from fastapi import HTTPException
+from sqlalchemy.dialects import postgresql
 
-from app.modules.testcases.schemas import TestCaseCreate, TestCaseFilter
-
+from app.modules.testcases.schemas import TestCaseCreate
 
 # ── Helpers ──────────────────────────────────────────────────────────
 
@@ -50,6 +48,15 @@ def _make_service(session: AsyncMock):
     from app.modules.testcases.service import TestCaseService
 
     return TestCaseService(session)
+
+
+def _compile_sql(statement) -> str:
+    return str(
+        statement.compile(
+            dialect=postgresql.dialect(),
+            compile_kwargs={"literal_binds": True},
+        )
+    )
 
 
 # ── Tests ────────────────────────────────────────────────────────────
@@ -151,6 +158,53 @@ class TestListWithFilters:
 
         assert total == 0
         assert items == []
+
+    async def test_list_keyword_matches_case_id(self):
+        """关键字搜索应同时匹配标题和 case_id。"""
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 0
+
+        mock_list_result = MagicMock()
+        mock_list_result.scalars.return_value.all.return_value = []
+
+        session = AsyncMock()
+        session.execute = AsyncMock(side_effect=[mock_count_result, mock_list_result])
+
+        svc = _make_service(session)
+        await svc.list_cases(keyword="TC-001", page=1, page_size=20)
+
+        count_stmt = session.execute.await_args_list[0].args[0]
+        sql = _compile_sql(count_stmt)
+
+        assert "test_cases.title ILIKE '%%TC-001%%'" in sql
+        assert "test_cases.case_id ILIKE '%%TC-001%%'" in sql
+
+    async def test_list_aliases_functional_ai_generated_and_review_status(self):
+        """列表过滤应兼容旧状态、类型和来源别名。"""
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 0
+
+        mock_list_result = MagicMock()
+        mock_list_result.scalars.return_value.all.return_value = []
+
+        session = AsyncMock()
+        session.execute = AsyncMock(side_effect=[mock_count_result, mock_list_result])
+
+        svc = _make_service(session)
+        await svc.list_cases(
+            status_filter="review",
+            case_type="functional",
+            source="ai_generated",
+            page=1,
+            page_size=20,
+        )
+
+        count_stmt = session.execute.await_args_list[0].args[0]
+        sql = _compile_sql(count_stmt)
+
+        assert "test_cases.status IN ('review', 'pending_review')" in sql
+        assert "test_cases.case_type IN ('functional', 'normal')" in sql
+        assert "test_cases.source IN ('ai_generated', 'ai')" in sql
 
 
 class TestVersionHistory:

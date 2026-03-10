@@ -5,10 +5,6 @@ from __future__ import annotations
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
-from fastapi import HTTPException
-
-
 # ── Helpers ──────────────────────────────────────────────────────────
 
 
@@ -122,14 +118,14 @@ class TestOverridePriority:
         )
 
         # Mock get_by_scope to return different configs for different scopes
+        scope_map = {
+            "global": global_cfg,
+            "product": product_cfg,
+            "iteration": iter_cfg,
+        }
+
         async def mock_get_by_scope(scope, scope_id=None):
-            if scope == "global":
-                return global_cfg
-            elif scope == "product":
-                return product_cfg
-            elif scope == "iteration":
-                return iter_cfg
-            return None
+            return scope_map.get(scope)
 
         session = AsyncMock()
         svc = _make_service(session)
@@ -158,14 +154,14 @@ class TestOverridePriority:
             llm_temperature=0.5,
         )
 
+        scope_map = {
+            "global": global_cfg,
+            "product": product_cfg,
+            "iteration": None,
+        }
+
         async def mock_get_by_scope(scope, scope_id=None):
-            if scope == "global":
-                return global_cfg
-            elif scope == "product":
-                return product_cfg
-            elif scope == "iteration":
-                return None
-            return None
+            return scope_map.get(scope)
 
         session = AsyncMock()
         svc = _make_service(session)

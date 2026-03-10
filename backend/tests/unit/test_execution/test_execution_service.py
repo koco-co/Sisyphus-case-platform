@@ -5,10 +5,7 @@ from __future__ import annotations
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
-
 from app.modules.execution.schemas import ExecutionResultCreate
-
 
 # ── Helpers ──────────────────────────────────────────────────────────
 
@@ -65,7 +62,7 @@ class TestUpsertResult:
             session.refresh = AsyncMock()
 
             with patch("app.modules.execution.service.ExecutionResult", return_value=result_mock):
-                result = await svc.record_result(
+                await svc.record_result(
                     ExecutionResultCreate(
                         test_case_id=tc_id,
                         iteration_id=iter_id,
@@ -94,7 +91,7 @@ class TestUpsertResult:
             session.commit = AsyncMock()
             session.refresh = AsyncMock()
 
-            result = await svc.record_result(
+            await svc.record_result(
                 ExecutionResultCreate(
                     test_case_id=tc_id,
                     iteration_id=iter_id,
@@ -120,7 +117,7 @@ class TestMarkFailed:
 
         # mark_failed 内部调用 record_result，直接 mock record_result
         with patch.object(svc, "record_result", return_value=result_mock) as mock_record:
-            result = await svc.mark_failed(
+            await svc.mark_failed(
                 test_case_id=tc_id,
                 iteration_id=iter_id,
                 defect_id="BUG-001",
@@ -152,7 +149,7 @@ class TestMarkFailed:
             session.refresh = AsyncMock()
 
             with patch("app.modules.execution.service.ExecutionResult", return_value=result_mock):
-                result = await svc.mark_failed(
+                await svc.mark_failed(
                     test_case_id=tc_id,
                     iteration_id=iter_id,
                     defect_id="BUG-002",

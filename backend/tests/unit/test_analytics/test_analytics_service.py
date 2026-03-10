@@ -5,9 +5,6 @@ from __future__ import annotations
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
-
-
 # ── Helpers ──────────────────────────────────────────────────────────
 
 
@@ -35,6 +32,8 @@ class TestDashboardSummary:
                 "_get_execution_counts",
                 return_value={"passed": 60, "failed": 15, "blocked": 5, "skipped": 0},
             ),
+            patch.object(svc, "_get_executed_case_count", AsyncMock(return_value=80)),
+            patch.object(svc, "_get_ai_generated_case_count", AsyncMock(return_value=60)),
             patch.object(
                 svc,
                 "get_priority_distribution",
@@ -67,6 +66,8 @@ class TestDashboardSummary:
         with (
             patch.object(svc, "_count_cases_for_iteration", return_value=0),
             patch.object(svc, "_get_execution_counts", return_value={}),
+            patch.object(svc, "_get_executed_case_count", AsyncMock(return_value=0)),
+            patch.object(svc, "_get_ai_generated_case_count", AsyncMock(return_value=0)),
             patch.object(svc, "get_priority_distribution", return_value=[]),
             patch.object(svc, "get_status_distribution", return_value=[]),
             patch.object(svc, "get_source_distribution", return_value=[]),
@@ -74,6 +75,51 @@ class TestDashboardSummary:
             result = await svc.get_dashboard_data(uuid.uuid4())
 
         assert result["overview"]["total_cases"] == 0
+
+
+class TestQualityOverview:
+    async def test_quality_overview_includes_runtime_metrics(self):
+        """总览应补齐通过率、覆盖率、自动化率与质量分。"""
+        session = AsyncMock()
+
+        scalar_results = []
+        for value in [2, 3, 4, 10]:
+            result = MagicMock()
+            result.scalar.return_value = value
+            scalar_results.append(result)
+        session.execute = AsyncMock(side_effect=scalar_results)
+
+        svc = _make_service(session)
+        with (
+            patch.object(
+                svc,
+                "_get_execution_counts",
+                AsyncMock(return_value={"passed": 6, "failed": 2, "blocked": 0}),
+                create=True,
+            ),
+            patch.object(
+                svc,
+                "_get_executed_case_count",
+                AsyncMock(return_value=8),
+                create=True,
+            ),
+            patch.object(
+                svc,
+                "_get_ai_generated_case_count",
+                AsyncMock(return_value=5),
+                create=True,
+            ),
+        ):
+            result = await svc.get_quality_overview()
+
+        assert result["product_count"] == 2
+        assert result["iteration_count"] == 3
+        assert result["requirement_count"] == 4
+        assert result["testcase_count"] == 10
+        assert result["pass_rate"] == 75.0
+        assert result["coverage_rate"] == 80.0
+        assert result["automation_rate"] == 50.0
+        assert result["quality_score"] > 0
 
 
 class TestTrendData:
@@ -85,11 +131,25 @@ class TestTrendData:
 
         snap1 = MagicMock()
         snap1.snapshot_date = date(2024, 1, 1)
-        snap1.metrics = {"total_cases": 50, "passed": 40, "failed": 5, "blocked": 2, "coverage_rate": 0.8, "defect_density": 0.1}
+        snap1.metrics = {
+            "total_cases": 50,
+            "passed": 40,
+            "failed": 5,
+            "blocked": 2,
+            "coverage_rate": 0.8,
+            "defect_density": 0.1,
+        }
 
         snap2 = MagicMock()
         snap2.snapshot_date = date(2024, 1, 2)
-        snap2.metrics = {"total_cases": 60, "passed": 50, "failed": 3, "blocked": 1, "coverage_rate": 0.85, "defect_density": 0.05}
+        snap2.metrics = {
+            "total_cases": 60,
+            "passed": 50,
+            "failed": 3,
+            "blocked": 1,
+            "coverage_rate": 0.85,
+            "defect_density": 0.05,
+        }
 
         mock_result = MagicMock()
         mock_result.scalars.return_value.all.return_value = [snap1, snap2]
@@ -117,3 +177,37 @@ class TestTrendData:
         result = await svc.get_trend_data(uuid.uuid4())
 
         assert result["dates"] == []
+
+
+class TestFrontendTrends:
+    async def test_frontend_trends_aggregate_snapshot_metrics(self):
+        """前端趋势接口应返回 case_count/pass_rate 双折线需要的数据。"""
+        from datetime import date
+
+        snap1 = MagicMock()
+        snap1.snapshot_date = date(2024, 3, 8)
+        snap1.metrics = {"total_cases": 10, "passed": 6, "failed": 3, "blocked": 1}
+
+        snap2 = MagicMock()
+        snap2.snapshot_date = date(2024, 3, 9)
+        snap2.metrics = {"total_cases": 18, "passed": 12, "failed": 2, "blocked": 1}
+
+        mock_result = MagicMock()
+        mock_result.scalars.return_value.all.return_value = [snap1, snap2]
+
+        session = AsyncMock()
+        session.execute = AsyncMock(return_value=mock_result)
+
+        svc = _make_service(session)
+        result = await svc.get_frontend_trends()
+
+        assert result == {
+            "case_count_trend": [
+                {"date": "03/08", "value": 10},
+                {"date": "03/09", "value": 18},
+            ],
+            "pass_rate_trend": [
+                {"date": "03/08", "value": 60.0},
+                {"date": "03/09", "value": 80.0},
+            ],
+        }

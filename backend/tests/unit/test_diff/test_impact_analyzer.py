@@ -5,8 +5,6 @@ from __future__ import annotations
 import uuid
 from unittest.mock import AsyncMock, MagicMock
 
-import pytest
-
 
 class TestTokenize:
     """测试关键词提取。"""

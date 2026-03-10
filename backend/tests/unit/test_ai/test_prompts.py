@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from app.ai.prompts import (
+    _MODULE_PROMPTS,
     DIAGNOSIS_SYSTEM,
     DIFF_SEMANTIC_SYSTEM,
     GENERATION_SYSTEM,
@@ -11,7 +12,6 @@ from app.ai.prompts import (
     RULE_QUALITY,
     RULE_SAFETY,
     SCENE_MAP_SYSTEM,
-    _MODULE_PROMPTS,
     assemble_prompt,
     get_system_prompt,
 )

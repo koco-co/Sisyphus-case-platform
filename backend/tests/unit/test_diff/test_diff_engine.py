@@ -18,8 +18,8 @@ class TestMyersDiffTextComparison:
                 new.splitlines(keepends=True),
             )
         )
-        additions = [l for l in diff if l.startswith("+") and not l.startswith("+++")]
-        deletions = [l for l in diff if l.startswith("-") and not l.startswith("---")]
+        additions = [line for line in diff if line.startswith("+") and not line.startswith("+++")]
+        deletions = [line for line in diff if line.startswith("-") and not line.startswith("---")]
 
         assert len(additions) == 0
         assert len(deletions) == 0
@@ -36,9 +36,9 @@ class TestMyersDiffTextComparison:
                 tofile="v2",
             )
         )
-        additions = [l for l in diff if l.startswith("+") and not l.startswith("+++")]
+        additions = [line for line in diff if line.startswith("+") and not line.startswith("+++")]
         assert len(additions) >= 1
-        assert any("line 3" in l for l in additions)
+        assert any("line 3" in line for line in additions)
 
     def test_deletion_detected(self):
         old = "line 1\nline 2\nline 3\n"
@@ -50,9 +50,9 @@ class TestMyersDiffTextComparison:
                 new.splitlines(keepends=True),
             )
         )
-        deletions = [l for l in diff if l.startswith("-") and not l.startswith("---")]
+        deletions = [line for line in diff if line.startswith("-") and not line.startswith("---")]
         assert len(deletions) >= 1
-        assert any("line 2" in l for l in deletions)
+        assert any("line 2" in line for line in deletions)
 
     def test_modification_detected(self):
         old = "name: old_value\nstatus: active\n"
@@ -64,13 +64,13 @@ class TestMyersDiffTextComparison:
                 new.splitlines(keepends=True),
             )
         )
-        additions = [l for l in diff if l.startswith("+") and not l.startswith("+++")]
-        deletions = [l for l in diff if l.startswith("-") and not l.startswith("---")]
+        additions = [line for line in diff if line.startswith("+") and not line.startswith("+++")]
+        deletions = [line for line in diff if line.startswith("-") and not line.startswith("---")]
 
         assert len(additions) >= 1
         assert len(deletions) >= 1
-        assert any("new_value" in l for l in additions)
-        assert any("old_value" in l for l in deletions)
+        assert any("new_value" in line for line in additions)
+        assert any("old_value" in line for line in deletions)
 
     def test_impact_level_classification(self):
         """验证 DiffService 中使用的影响等级分类逻辑。"""
@@ -102,8 +102,8 @@ class TestMyersDiffTextComparison:
                 new.splitlines(keepends=True),
             )
         )
-        additions = [l for l in diff if l.startswith("+") and not l.startswith("+++")]
-        assert any("增量同步" in l for l in additions)
+        additions = [line for line in diff if line.startswith("+") and not line.startswith("+++")]
+        assert any("增量同步" in line for line in additions)
 
     def test_empty_to_content(self):
         """空文本到有内容应全部为新增。"""
@@ -113,5 +113,5 @@ class TestMyersDiffTextComparison:
                 "new content\n".splitlines(keepends=True),
             )
         )
-        additions = [l for l in diff if l.startswith("+") and not l.startswith("+++")]
+        additions = [line for line in diff if line.startswith("+") and not line.startswith("+++")]
         assert len(additions) >= 1

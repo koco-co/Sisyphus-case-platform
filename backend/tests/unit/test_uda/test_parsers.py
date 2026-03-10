@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from app.engine.uda.ast_types import ASTNode, DocumentAST, NodeType
 
-
 # ═══════════════════════════════════════════════════════════════════
 # Markdown 解析器
 # ═══════════════════════════════════════════════════════════════════
@@ -84,7 +83,7 @@ class TestTxtParser:
     def test_parse_txt_utf8(self):
         from app.modules.uda.parsers.txt_parser import parse_txt
 
-        text = "需求文档：数据同步功能".encode("utf-8")
+        text = "需求文档：数据同步功能".encode()
         full_text, ast = parse_txt(text)
 
         assert "数据同步功能" in full_text

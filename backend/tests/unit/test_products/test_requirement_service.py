@@ -10,7 +10,6 @@ from fastapi import HTTPException
 
 from app.modules.products.schemas import RequirementCreate
 
-
 # ── Helpers ──────────────────────────────────────────────────────────
 
 

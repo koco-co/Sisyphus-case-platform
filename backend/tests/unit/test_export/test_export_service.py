@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import json
 import uuid
-from unittest.mock import AsyncMock, MagicMock, patch
-
-import pytest
-
+from io import BytesIO
+from unittest.mock import AsyncMock, patch
 
 # ── Helpers ──────────────────────────────────────────────────────────
 
@@ -92,3 +90,26 @@ class TestMarkdownExport:
         assert "case_id" in result
         lines = result.strip().split("\n")
         assert len(lines) == 1  # only header
+
+
+class TestExcelBinaryExport:
+    async def test_excel_export_returns_xlsx_binary(self):
+        """Excel 导出应生成可被 openpyxl 读取的 xlsx 二进制。"""
+        from openpyxl import load_workbook
+
+        cases = [_make_testcase_dict("用例A")]
+
+        session = AsyncMock()
+        svc = _make_service(session)
+
+        with patch.object(svc, "_get_cases", return_value=cases):
+            result = await svc.export_cases_excel(requirement_id=uuid.uuid4())
+
+        assert isinstance(result, bytes)
+        assert result.startswith(b"PK")
+
+        workbook = load_workbook(BytesIO(result))
+        sheet = workbook.active
+        assert sheet.title == "Test Cases"
+        assert sheet["A1"].value == "case_id"
+        assert sheet["B2"].value == "用例A"

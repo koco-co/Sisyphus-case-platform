@@ -5,7 +5,6 @@ from __future__ import annotations
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
 from httpx import ASGITransport, AsyncClient
 
 
@@ -85,9 +84,9 @@ class TestConfirmEndpoint:
 
         with (
             patch("app.modules.scene_map.router.SceneMapService", return_value=mock_service_instance),
-            patch("app.modules.scene_map.router.SceneMapResponse") as MockSceneMapResp,
+            patch("app.modules.scene_map.router.SceneMapResponse") as mock_scene_map_response,
         ):
-            MockSceneMapResp.model_validate.return_value = fake_resp
+            mock_scene_map_response.model_validate.return_value = fake_resp
 
             from app.core.database import get_async_session
             from app.main import app

@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, patch
 
-import pytest
-
 
 class TestGenerateQuestions:
     """测试基于风险摘要生成追问问题。"""

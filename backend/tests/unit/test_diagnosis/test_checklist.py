@@ -30,7 +30,16 @@ class TestChecklistItemsLoaded:
 
     def test_checklist_categories_valid(self):
         """所有检查项必须属于已知类别。"""
-        expected_categories = {"数据同步", "调度任务", "字段映射", "大表分页", "权限隔离", "审计日志", "数据血缘", "质量规则"}
+        expected_categories = {
+            "数据同步",
+            "调度任务",
+            "字段映射",
+            "大表分页",
+            "权限隔离",
+            "审计日志",
+            "数据血缘",
+            "质量规则",
+        }
         checklist = get_builtin_checklist()
         actual_categories = {item.category for item in checklist}
         assert actual_categories == expected_categories
