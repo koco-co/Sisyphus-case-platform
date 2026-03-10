@@ -2,6 +2,8 @@
 
 import { Bot, Check, Loader2, Save, Star, Zap } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { ConnectionTestButton } from '@/components/ui/ConnectionTestButton';
+import { ParamTooltip } from '@/components/ui/ParamTooltip';
 import { useAiConfig } from '@/hooks/useAiConfig';
 
 interface ModelInfo {
@@ -52,6 +54,7 @@ interface SliderParam {
   step: number;
   initial: number;
   fmt: (v: number) => string;
+  tooltip: string;
 }
 
 const sliderParams: SliderParam[] = [
@@ -63,6 +66,8 @@ const sliderParams: SliderParam[] = [
     step: 0.1,
     initial: 0.7,
     fmt: (v) => v.toFixed(1),
+    tooltip:
+      '控制输出随机性。0 = 确定性最高，适合结构化输出；1+ = 更有创造性。推荐用例生成场景使用 0.3~0.7。',
   },
   {
     label: 'Max Tokens',
@@ -72,6 +77,8 @@ const sliderParams: SliderParam[] = [
     step: 256,
     initial: 4096,
     fmt: (v) => String(v),
+    tooltip:
+      '单次生成的最大 token 数。用例生成建议 4096+，诊断对话 2048 即可。过大会增加响应时间和费用。',
   },
   {
     label: 'Top-P',
@@ -81,6 +88,8 @@ const sliderParams: SliderParam[] = [
     step: 0.05,
     initial: 0.95,
     fmt: (v) => v.toFixed(2),
+    tooltip:
+      '核采样参数。0.95 表示从概率前 95% 的 token 中采样。配合 temperature 使用，一般保持 0.9~0.95 即可。',
   },
   {
     label: '并发数',
@@ -90,6 +99,7 @@ const sliderParams: SliderParam[] = [
     step: 1,
     initial: 3,
     fmt: (v) => String(v),
+    tooltip: '同时发送给 LLM 的请求数。过高可能触发 API 限流。建议智谱 ≤5，DashScope ≤3。',
   },
 ];
 
@@ -215,7 +225,10 @@ export function AIModelSettings() {
         {sliderParams.map((param) => (
           <div key={param.key}>
             <div className="flex justify-between mb-1.5">
-              <span className="text-[12.5px] text-text2">{param.label}</span>
+              <span className="text-[12.5px] text-text2 flex items-center gap-1">
+                {param.label}
+                <ParamTooltip content={param.tooltip} />
+              </span>
               <span className="font-mono text-xs text-accent">
                 {param.fmt(paramVals[param.key])}
               </span>
@@ -236,9 +249,15 @@ export function AIModelSettings() {
         ))}
 
         <div className="flex items-center justify-between pt-2">
-          <p className="text-[12px] text-text3">
-            当前模型：<span className="text-text2">{activeModel.name}</span>
-          </p>
+          <div className="flex items-center gap-3">
+            <p className="text-[12px] text-text3">
+              当前模型：<span className="text-text2">{activeModel.name}</span>
+            </p>
+            <ConnectionTestButton
+              testUrl={`/api/ai-config/test-llm?provider=${activeModel.provider === '智谱AI' ? 'zhipu' : activeModel.provider === '阿里云' ? 'dashscope' : 'openai'}`}
+              label="测试连接"
+            />
+          </div>
           <button
             type="button"
             className="btn btn-sm btn-primary"
