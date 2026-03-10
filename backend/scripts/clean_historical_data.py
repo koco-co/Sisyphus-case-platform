@@ -147,8 +147,7 @@ def clean_precondition(text: str) -> str:
     for line in lines:
         stripped = line.strip().upper()
         if any(
-            stripped.startswith(kw)
-            for kw in ("SELECT ", "INSERT ", "UPDATE ", "DELETE ", "CREATE ", "ALTER ", "DROP ")
+            stripped.startswith(kw) for kw in ("SELECT ", "INSERT ", "UPDATE ", "DELETE ", "CREATE ", "ALTER ", "DROP ")
         ):
             in_sql = True
             continue

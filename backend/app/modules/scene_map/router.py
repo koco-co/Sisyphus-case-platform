@@ -4,8 +4,6 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import PlainTextResponse, StreamingResponse
 
-from app.ai.parser import parse_test_points
-from app.ai.sse_collector import SSECollector
 from app.core.dependencies import AsyncSessionDep
 from app.modules.scene_map.schemas import (
     BatchUpdateRequest,
@@ -35,28 +33,7 @@ async def get_scene_map(requirement_id: uuid.UUID, session: AsyncSessionDep) -> 
 @router.post("/{requirement_id}/generate")
 async def generate_scene_map(requirement_id: uuid.UUID, session: AsyncSessionDep) -> StreamingResponse:
     svc = SceneMapService(session)
-    scene_map = await svc.get_or_create(requirement_id)
-    scene_map_id = scene_map.id
-    stream = await svc.generate_stream(requirement_id)
-
-    async def on_complete(full_text: str) -> None:
-        from app.core.database import get_async_session_context
-
-        async with get_async_session_context() as new_session:
-            new_svc = SceneMapService(new_session)
-            points = parse_test_points(full_text)
-            for pt in points:
-                await new_svc.add_test_point(
-                    scene_map_id,
-                    group_name=pt["group_name"],
-                    title=pt["title"],
-                    description=pt.get("description"),
-                    priority=pt.get("priority", "P1"),
-                    estimated_cases=pt.get("estimated_cases", 3),
-                    source="ai",
-                )
-
-    collector = SSECollector(stream, on_complete=on_complete)
+    collector = await svc.generate_stream_with_persistence(requirement_id)
     return StreamingResponse(collector, media_type="text/event-stream")
 
 

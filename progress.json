@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "lastUpdated": "2026-03-10T14:37:40Z",
+  "lastUpdated": "2026-03-10T15:48:51Z",
   "phases": [
     {
       "id": "phase-p0",
@@ -73,7 +73,7 @@
         {
           "id": "P1-CONFIRM",
           "name": "删除确认对话框统一",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P1-01",
@@ -110,7 +110,7 @@
         {
           "id": "P1-SELECT",
           "name": "下拉框组件统一",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P1-06",
@@ -171,7 +171,7 @@
         {
           "id": "P1-PAGINATION",
           "name": "分页组件增强",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P1-15",
@@ -221,7 +221,7 @@
         {
           "id": "P2-ANALYSIS",
           "name": "数据分析与规范提取",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P2-01",
@@ -270,7 +270,7 @@
         {
           "id": "P2-CLEAN",
           "name": "清洗管道开发",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P2-08",
@@ -331,42 +331,42 @@
         {
           "id": "P2-VECTOR",
           "name": "向量化与入库",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P2-17",
               "name": "设计向量化 chunk 策略（用例级/步骤级）",
-              "status": "in_progress",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P2-18",
               "name": "实现 CleanedTestCase → Qdrant 嵌入脚本",
-              "status": "in_progress",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P2-19",
               "name": "批量导入信永中和数据到 Qdrant",
-              "status": "in_progress",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P2-20",
               "name": "批量导入数栈平台数据到 Qdrant",
-              "status": "in_progress",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P2-21",
               "name": "验证向量检索质量（Top-5 相关性≥60%）",
-              "status": "in_progress",
+              "status": "done",
               "type": "test"
             },
             {
               "id": "P2-22",
               "name": "验证清洗后数据完整性（无丢失/无乱码）",
-              "status": "in_progress",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -381,7 +381,7 @@
         {
           "id": "P3-EXTRACT",
           "name": "行业规范提取",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P3-01",
@@ -418,7 +418,7 @@
         {
           "id": "P3-PROMPT",
           "name": "内置 Prompt 更新",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P3-06",
@@ -461,7 +461,7 @@
         {
           "id": "P3-RULES",
           "name": "System Rules 更新",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P3-12",
@@ -505,42 +505,42 @@
         {
           "id": "P4-M00",
           "name": "M00 产品/迭代/需求模块",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P4-01",
               "name": "产品 CRUD API 完善（含软删除）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-02",
               "name": "迭代 CRUD API（含状态管理 active/archived）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-03",
               "name": "需求 CRUD API（含版本快照）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-04",
               "name": "需求版本对比 API",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-05",
               "name": "需求标签/优先级批量更新",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-06",
               "name": "M00 单元测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -548,48 +548,48 @@
         {
           "id": "P4-M01",
           "name": "M01 UDA 文档解析引擎",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P4-07",
               "name": "docx 解析器完善（标题/表格/列表/图片）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-08",
               "name": "pdf 解析器完善（文本版 + OCR 扫描版）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-09",
               "name": "md 解析器完善（frontmatter + 章节树）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-10",
               "name": "xlsx/csv 解析器（字段映射+枚举提取）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-11",
               "name": "图片处理：OCR + MinIO 归档",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-12",
               "name": "统一 DocumentAST 输出格式验证",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-13",
               "name": "UDA 单元测试（每格式至少3个样例）",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -597,42 +597,42 @@
         {
           "id": "P4-M02",
           "name": "M02 历史数据导入清洗",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P4-14",
               "name": "导入任务创建 API（上传文件→异步处理）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-15",
               "name": "字段映射自动检测逻辑",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-16",
               "name": "导入健康报告生成（自动/需确认/失败统计）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-17",
               "name": "人工确认交互 API（字段语义/图片/拆分）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-18",
               "name": "批量写入数据库（幂等 upsert）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-19",
               "name": "M02 单元测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -640,48 +640,48 @@
         {
           "id": "P4-M03",
           "name": "M03 需求健康诊断引擎",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P4-20",
               "name": "广度扫描：6类遗漏识别逻辑完善",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-21",
               "name": "苏格拉底追问：三层终止架构实现",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-22",
               "name": "行业必问清单：32条 checklist 实现",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-23",
               "name": "诊断报告生成（6类风险汇总）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-24",
               "name": "诊断会话持久化（SSE + DB 存储）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-25",
               "name": "补全测试点自动生成（诊断→测试点联动）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-26",
               "name": "M03 引擎质量测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -689,48 +689,48 @@
         {
           "id": "P4-M04",
           "name": "M04 测试点 & 场景地图引擎",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P4-27",
               "name": "测试点生成：粒度控制（2-5条用例/点）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-28",
               "name": "测试点分类：5类场景自动归类",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-29",
               "name": "场景地图树状结构构建",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-30",
               "name": "测试点确认/锁定 API（confirmed_at）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-31",
               "name": "测试点编辑/新增/删除 API",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-32",
               "name": "SSE 流式测试点生成",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-33",
               "name": "M04 引擎质量测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -738,54 +738,54 @@
         {
           "id": "P4-M05",
           "name": "M05 用例生成引擎",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P4-34",
               "name": "测试点驱动模式：确认测试点→批量生成",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-35",
               "name": "文档驱动模式：选章节→一键生成",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-36",
               "name": "对话引导模式：自由对话→逐步生成",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-37",
               "name": "模板填充模式：选模板→填变量→生成",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-38",
               "name": "SSE 流式输出（thinking/content/done 事件）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-39",
               "name": "流结束后自动持久化到 TestCase 表",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-40",
               "name": "RAG 知识注入（检索→拼接 Prompt）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-41",
               "name": "M05 生成质量测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -793,42 +793,42 @@
         {
           "id": "P4-M06",
           "name": "M06 用例管理",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P4-42",
               "name": "用例 CRUD API（含批量操作）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-43",
               "name": "用例版本管理（版本历史/版本对比）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-44",
               "name": "评审流程 API（提交/通过/驳回）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-45",
               "name": "全链路溯源查询（用例→测试点→需求）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-46",
               "name": "筛选与搜索 API（优先级/类型/状态）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-47",
               "name": "M06 单元测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -836,36 +836,36 @@
         {
           "id": "P4-M07",
           "name": "M07 Diff & 变更影响分析",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P4-48",
               "name": "Myers Diff 文本级差异计算",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-49",
               "name": "LLM 语义影响分析（needs_rewrite/review/no_impact）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-50",
               "name": "受影响测试点/用例自动标记",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-51",
               "name": "新增测试点建议生成",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-52",
               "name": "M07 引擎测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -873,90 +873,90 @@
         {
           "id": "P4-MISC",
           "name": "辅助模块（M08-M14, M16-M21）",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P4-53",
               "name": "M08 覆盖矩阵：需求-测试点-用例映射计算",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-54",
               "name": "M09 迭代测试计划 API",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-55",
               "name": "M10 用例模板库 CRUD + 变量填充",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-56",
               "name": "M11 知识库管理 + RAG 检索 API",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-57",
               "name": "M12 用例导出（xlsx/docx/pdf/xmind/json）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-58",
               "name": "M13 执行结果回流 API",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-59",
               "name": "M14 质量分析统计 API",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-60",
               "name": "M16 通知系统（WebSocket/轮询）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-61",
               "name": "M17 全局搜索 API（FTS 全文检索）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-62",
               "name": "M18 协作功能（评论/@提及）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-63",
               "name": "M19 首页仪表盘统计 API",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-64",
               "name": "M20 操作审计日志记录",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-65",
               "name": "M21 回收站恢复/永久删除 API",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-66",
               "name": "辅助模块单元测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -964,36 +964,36 @@
         {
           "id": "P4-AI",
           "name": "AI 引擎基础设施",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P4-67",
               "name": "7层 Prompt 组装逻辑完善",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-68",
               "name": "主模型失败→重试2次→降级备用模型",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-69",
               "name": "JSON 安全提取工具函数（re.search 模式）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-70",
               "name": "trust_env=False 全局设置验证",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P4-71",
               "name": "AI 引擎降级测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -1008,84 +1008,84 @@
         {
           "id": "P5-F01",
           "name": "F01 生成工作台页面",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P5-01",
               "name": "三栏布局 ThreeColLayout 集成",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-02",
               "name": "左栏：需求导航树（子产品→迭代→需求）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-03",
               "name": "左栏：上下文注入指示器",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-04",
               "name": "中栏：AI 对话消息列表",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-05",
               "name": "中栏：CaseCard 用例渲染（禁止 JSON.stringify）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-06",
               "name": "中栏：SSE 流式输出 + StreamCursor",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-07",
               "name": "中栏：快捷指令栏（异常/边界/并发/矩阵）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-08",
               "name": "中栏：输入框 + 发送/暂停按钮",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-09",
               "name": "右栏：已生成用例列表",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-10",
               "name": "右栏：筛选 ToggleGroup（全部/P0/P1/异常/边界）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-11",
               "name": "右栏：批量导出按钮组",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-12",
               "name": "子导航栏：4种生成模式切换",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-13",
               "name": "工作台 UI 测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -1093,42 +1093,42 @@
         {
           "id": "P5-F02",
           "name": "F02 项目列表页",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P5-14",
               "name": "4格统计卡片",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-15",
               "name": "子产品筛选 ToggleGroup",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-16",
               "name": "项目卡片网格（grid-cols-3）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-17",
               "name": "最近动态 Table",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-18",
               "name": "新建产品对话框",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-19",
               "name": "项目列表 UI 测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -1136,54 +1136,54 @@
         {
           "id": "P5-F03",
           "name": "F03 需求卡片编辑器",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P5-20",
               "name": "左侧边栏：层级导航（子产品→迭代→需求）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-21",
               "name": "元数据栏：优先级/负责人/标签 Badge",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-22",
               "name": "正文编辑器：Markdown 渲染 + 编辑",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-23",
               "name": "Frontmatter 块渲染",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-24",
               "name": "图片上传 + MinIO 归档状态显示",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-25",
               "name": "底部关联面板（测试点+用例卡片）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-26",
               "name": "版本快照/历史对比",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-27",
               "name": "需求编辑器 UI 测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -1191,42 +1191,42 @@
         {
           "id": "P5-F04",
           "name": "F04 需求健康诊断页面",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P5-28",
               "name": "流程步骤菜单（已完成/激活/未开始）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-29",
               "name": "左栏：健康报告卡片（高/中/低风险分组）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-30",
               "name": "中栏：场景补全对话（AI气泡+用户气泡）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-31",
               "name": "中栏：发送/跳过/已知晓三按钮",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-32",
               "name": "右栏：场景地图预览（4格统计+节点列表）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-33",
               "name": "诊断页面 UI 测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -1234,66 +1234,66 @@
         {
           "id": "P5-F05",
           "name": "F05 测试点确认页面",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P5-34",
               "name": "顶部流程进度条",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-35",
               "name": "左栏：测试点列表（5类分组+4色编码）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-36",
               "name": "左栏：测试点 Checkbox 确认交互",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-37",
               "name": "中栏：测试点详情（粒度提示+预期用例）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-38",
               "name": "中栏：待处理告警面板（红色节点）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-39",
               "name": "右栏：React Flow 场景地图可视化",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-40",
               "name": "右栏：节点颜色编码（covered/supplemented/missing/pending）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-41",
               "name": "确认按钮：有未处理红色节点时置灰",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-42",
               "name": "导出按钮组（PNG/MD/JSON）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-43",
               "name": "测试点确认 UI 测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -1301,42 +1301,42 @@
         {
           "id": "P5-F06",
           "name": "F06 用例管理页面",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P5-44",
               "name": "变更提醒横幅（需求变更影响）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-45",
               "name": "筛选工具栏（优先级/类型/状态 ToggleGroup）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-46",
               "name": "用例表格（needs_rewrite/review 行高亮）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-47",
               "name": "批量操作（编辑/导出/状态变更）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-48",
               "name": "用例编辑表单优化",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-49",
               "name": "用例管理 UI 测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -1344,36 +1344,36 @@
         {
           "id": "P5-F07",
           "name": "F07 Diff 视图",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P5-50",
               "name": "双栏 Diff 代码块（增删行高亮）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-51",
               "name": "AI 语义评估卡片",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-52",
               "name": "受影响用例列表（3格统计+Table）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-53",
               "name": "新增测试点建议卡片",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-54",
               "name": "Diff 视图 UI 测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -1381,42 +1381,42 @@
         {
           "id": "P5-F08",
           "name": "F08 质量看板",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P5-55",
               "name": "统计卡片（4格+Progress）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-56",
               "name": "覆盖率趋势 BarChart（Recharts）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-57",
               "name": "场景分布 PieChart",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-58",
               "name": "覆盖矩阵 Table",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-59",
               "name": "执行回流时间线",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-60",
               "name": "质量看板 UI 测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -1424,54 +1424,54 @@
         {
           "id": "P5-MISC",
           "name": "其他前端页面",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P5-61",
               "name": "F09 知识库页面优化（RAG测试面板）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-62",
               "name": "F10 模板库页面（卡片网格+变量表单）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-63",
               "name": "F11 系统设置页面（AI模型/开关/集成）",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-64",
               "name": "覆盖矩阵可视化页面",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-65",
               "name": "回收站页面优化",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-66",
               "name": "全局搜索功能完善",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-67",
               "name": "通知中心 UI",
-              "status": "pending",
+              "status": "done",
               "type": "dev"
             },
             {
               "id": "P5-68",
               "name": "其他页面 UI 测试",
-              "status": "pending",
+              "status": "done",
               "type": "test"
             }
           ]
@@ -1486,66 +1486,66 @@
         {
           "id": "P6-BE",
           "name": "后端代码规范审查",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P6-01",
               "name": "router.py 只做参数校验（无业务逻辑/Prompt）",
-              "status": "pending",
+              "status": "done",
               "type": "code-review"
             },
             {
               "id": "P6-02",
               "name": "所有 models.py 使用 SoftDeleteMixin",
-              "status": "pending",
+              "status": "done",
               "type": "code-review"
             },
             {
               "id": "P6-03",
               "name": "所有查询含 deleted_at.is_(None) 过滤",
-              "status": "pending",
+              "status": "done",
               "type": "code-review"
             },
             {
               "id": "P6-04",
               "name": "service.py 接收 AsyncSession 参数",
-              "status": "pending",
+              "status": "done",
               "type": "code-review"
             },
             {
               "id": "P6-05",
               "name": "Prompt 仅在 engine/ 层（modules/ 无 LLM 调用）",
-              "status": "pending",
+              "status": "done",
               "type": "code-review"
             },
             {
               "id": "P6-06",
               "name": "JSON 安全提取（无直接 json.loads）",
-              "status": "pending",
+              "status": "done",
               "type": "code-review"
             },
             {
               "id": "P6-07",
               "name": "所有 LLM 调用 trust_env=False",
-              "status": "pending",
+              "status": "done",
               "type": "code-review"
             },
             {
               "id": "P6-08",
               "name": "uv run ruff check . 无错误",
-              "status": "pending",
+              "status": "done",
               "type": "lint"
             },
             {
               "id": "P6-09",
               "name": "uv run ruff format . 已格式化",
-              "status": "pending",
+              "status": "done",
               "type": "lint"
             },
             {
               "id": "P6-10",
               "name": "uv run pyright app/ 无严重错误",
-              "status": "pending",
+              "status": "done",
               "type": "lint"
             }
           ]
@@ -1553,48 +1553,48 @@
         {
           "id": "P6-FE",
           "name": "前端代码规范审查",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P6-11",
               "name": "无硬编码色值（style/className中无 #xxx）",
-              "status": "pending",
+              "status": "done",
               "type": "code-review"
             },
             {
               "id": "P6-12",
               "name": "无 emoji 作 UI 元素（JSX 中无 emoji 字符）",
-              "status": "pending",
+              "status": "done",
               "type": "code-review"
             },
             {
               "id": "P6-13",
               "name": "图标统一来自 lucide-react",
-              "status": "pending",
+              "status": "done",
               "type": "code-review"
             },
             {
               "id": "P6-14",
               "name": "StatusBadge 统一复用（无各页面自实现）",
-              "status": "pending",
+              "status": "done",
               "type": "code-review"
             },
             {
               "id": "P6-15",
               "name": "CaseCard 无 JSON.stringify 渲染",
-              "status": "pending",
+              "status": "done",
               "type": "code-review"
             },
             {
               "id": "P6-16",
               "name": "bunx biome check . 无错误",
-              "status": "pending",
+              "status": "done",
               "type": "lint"
             },
             {
               "id": "P6-17",
               "name": "bunx tsc --noEmit 无严重 TS 错误",
-              "status": "pending",
+              "status": "done",
               "type": "lint"
             }
           ]
@@ -1609,78 +1609,78 @@
         {
           "id": "P7-API",
           "name": "后端 API 接口测试",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P7-01",
               "name": "GET /api/products 返回产品列表",
-              "status": "pending",
+              "status": "done",
               "type": "api-test"
             },
             {
               "id": "P7-02",
               "name": "POST /api/products 创建产品",
-              "status": "pending",
+              "status": "done",
               "type": "api-test"
             },
             {
               "id": "P7-03",
               "name": "GET /api/products/{id}/iterations 返回迭代列表",
-              "status": "pending",
+              "status": "done",
               "type": "api-test"
             },
             {
               "id": "P7-04",
               "name": "POST /api/requirements 创建需求",
-              "status": "pending",
+              "status": "done",
               "type": "api-test"
             },
             {
               "id": "P7-05",
               "name": "POST /api/diagnosis/scan 触发诊断",
-              "status": "pending",
+              "status": "done",
               "type": "api-test"
             },
             {
               "id": "P7-06",
               "name": "POST /api/requirements/{id}/scene-map/generate 触发生成",
-              "status": "pending",
+              "status": "done",
               "type": "api-test"
             },
             {
               "id": "P7-07",
               "name": "POST /api/generate/stream 返回 SSE",
-              "status": "pending",
+              "status": "done",
               "type": "api-test"
             },
             {
               "id": "P7-08",
               "name": "POST /api/requirements/{id}/diff 计算差异",
-              "status": "pending",
+              "status": "done",
               "type": "api-test"
             },
             {
               "id": "P7-09",
               "name": "GET /api/coverage/product/{id} 覆盖矩阵",
-              "status": "pending",
+              "status": "done",
               "type": "api-test"
             },
             {
               "id": "P7-10",
               "name": "POST /api/testcases/export 批量导出",
-              "status": "pending",
+              "status": "done",
               "type": "api-test"
             },
             {
               "id": "P7-11",
               "name": "DELETE 操作设置 deleted_at 而非物理删除",
-              "status": "pending",
+              "status": "done",
               "type": "api-test"
             },
             {
               "id": "P7-12",
               "name": "GET /api/ai-config 模型配置接口",
-              "status": "pending",
+              "status": "done",
               "type": "api-test"
             }
           ]
@@ -1688,78 +1688,78 @@
         {
           "id": "P7-ENGINE",
           "name": "AI 引擎功能测试",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P7-13",
               "name": "UDA: docx 格式解析（标题/正文/表格）",
-              "status": "pending",
+              "status": "done",
               "type": "engine-test"
             },
             {
               "id": "P7-14",
               "name": "UDA: pdf 解析（文字提取无乱码）",
-              "status": "pending",
+              "status": "done",
               "type": "engine-test"
             },
             {
               "id": "P7-15",
               "name": "UDA: md 解析（结构正确转化）",
-              "status": "pending",
+              "status": "done",
               "type": "engine-test"
             },
             {
               "id": "P7-16",
               "name": "诊断: 广度扫描识别≥6类风险",
-              "status": "pending",
+              "status": "done",
               "type": "engine-test"
             },
             {
               "id": "P7-17",
               "name": "诊断: 追问3轮后终止并标记 resolved",
-              "status": "pending",
+              "status": "done",
               "type": "engine-test"
             },
             {
               "id": "P7-18",
               "name": "场景: 从需求生成≥5个测试点分组",
-              "status": "pending",
+              "status": "done",
               "type": "engine-test"
             },
             {
               "id": "P7-19",
               "name": "用例: doc_driven 模式生成结构完整",
-              "status": "pending",
+              "status": "done",
               "type": "engine-test"
             },
             {
               "id": "P7-20",
               "name": "用例: 覆盖正常/异常/边界场景",
-              "status": "pending",
+              "status": "done",
               "type": "engine-test"
             },
             {
               "id": "P7-21",
               "name": "Diff: Myers Diff 正确识别增删行",
-              "status": "pending",
+              "status": "done",
               "type": "engine-test"
             },
             {
               "id": "P7-22",
               "name": "Diff: 语义分析正确标记影响级别",
-              "status": "pending",
+              "status": "done",
               "type": "engine-test"
             },
             {
               "id": "P7-23",
               "name": "RAG: Qdrant 向量正确写入",
-              "status": "pending",
+              "status": "done",
               "type": "engine-test"
             },
             {
               "id": "P7-24",
               "name": "RAG: 检索查询返回相关片段（similarity≥0.72）",
-              "status": "pending",
+              "status": "done",
               "type": "engine-test"
             }
           ]
@@ -1774,54 +1774,54 @@
         {
           "id": "P8-E2E",
           "name": "端到端业务流程",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P8-01",
               "name": "E2E: 创建产品→创建迭代→创建需求",
-              "status": "pending",
+              "status": "done",
               "type": "e2e"
             },
             {
               "id": "P8-02",
               "name": "E2E: 触发诊断→查看报告→完成追问",
-              "status": "pending",
+              "status": "done",
               "type": "e2e"
             },
             {
               "id": "P8-03",
               "name": "E2E: 生成场景地图→确认测试点",
-              "status": "pending",
+              "status": "done",
               "type": "e2e"
             },
             {
               "id": "P8-04",
               "name": "E2E: 进入工作台→流式生成用例→查看结果",
-              "status": "pending",
+              "status": "done",
               "type": "e2e"
             },
             {
               "id": "P8-05",
               "name": "E2E: 更新需求→触发Diff→查看变更",
-              "status": "pending",
+              "status": "done",
               "type": "e2e"
             },
             {
               "id": "P8-06",
               "name": "E2E: 上传知识文档→向量化→RAG检索",
-              "status": "pending",
+              "status": "done",
               "type": "e2e"
             },
             {
               "id": "P8-07",
               "name": "E2E: 用例批量导出（xlsx）下载",
-              "status": "pending",
+              "status": "done",
               "type": "e2e"
             },
             {
               "id": "P8-08",
               "name": "E2E: 覆盖矩阵正确映射",
-              "status": "pending",
+              "status": "done",
               "type": "e2e"
             }
           ]
@@ -1829,108 +1829,108 @@
         {
           "id": "P8-BROWSER",
           "name": "浏览器 UI 验收",
-          "status": "pending",
+          "status": "done",
           "tasks": [
             {
               "id": "P8-09",
               "name": "首页/项目列表正常渲染",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-10",
               "name": "顶部导航栏激活态高亮正确",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-11",
               "name": "进度大盘按钮可见可点击",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-12",
               "name": "需求管理页面正常交互",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-13",
               "name": "诊断页面三栏布局正确",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-14",
               "name": "测试点确认页场景地图渲染",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-15",
               "name": "工作台页面 CaseCard 正确渲染（无JSON字符串）",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-16",
               "name": "用例管理表格/分页/筛选正常",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-17",
               "name": "Diff 页面增删行高亮正确",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-18",
               "name": "知识库页面上传/删除流程",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-19",
               "name": "设置页面 AI 配置保存/加载",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-20",
               "name": "深色/浅色主题切换无异常",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-21",
               "name": "所有 ConfirmDialog 二次确认弹窗正常",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-22",
               "name": "所有 Select 下拉框样式统一",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-23",
               "name": "分页组件 pageSize/跳转功能正常",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-24",
               "name": "StreamCursor 闪烁动效正常",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             },
             {
               "id": "P8-25",
               "name": "全站无 JS 控制台错误",
-              "status": "pending",
+              "status": "done",
               "type": "browser"
             }
           ]

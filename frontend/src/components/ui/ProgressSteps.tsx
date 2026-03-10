@@ -1,3 +1,5 @@
+import { Check } from 'lucide-react';
+
 interface Step {
   label: string;
   status: 'done' | 'active' | 'pending';
@@ -17,7 +19,7 @@ export function ProgressSteps({ steps }: { steps: Step[] }) {
                   : 'text-text3'
             }`}
           >
-            {step.status === 'done' && <span>✓</span>}
+            {step.status === 'done' && <Check className="w-3.5 h-3.5" />}
             {step.label}
           </div>
           {i < steps.length - 1 && <span className="text-border2 text-[12px] mx-1">›</span>}

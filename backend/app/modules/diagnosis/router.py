@@ -3,8 +3,6 @@ import uuid
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
-from app.ai.sse_collector import SSECollector
-from app.core.database import get_async_session_context
 from app.core.dependencies import AsyncSessionDep
 from app.modules.diagnosis.schemas import (
     ChatRequest,
@@ -49,19 +47,7 @@ async def get_diagnosis(requirement_id: uuid.UUID, session: AsyncSessionDep) -> 
 @router.post("/{requirement_id}/run")
 async def run_diagnosis(requirement_id: uuid.UUID, session: AsyncSessionDep) -> StreamingResponse:
     svc = DiagnosisService(session)
-    report = await svc.create_or_get_report(requirement_id)
-    report_id = report.id
-
-    stream = await svc.run_stream(requirement_id)
-
-    async def on_complete(full_text: str) -> None:
-        async with get_async_session_context() as new_session:
-            new_svc = DiagnosisService(new_session)
-            # 自动解析 AI 响应并持久化（消息 + 风险项 + 报告更新）
-            await new_svc.persist_ai_response(report_id, full_text, round_num=1)
-            await new_svc.complete_report(report_id, summary=full_text)
-
-    collector = SSECollector(stream, on_complete=on_complete)
+    collector = await svc.run_and_persist_stream(requirement_id)
     return StreamingResponse(collector, media_type="text/event-stream")
 
 
@@ -72,21 +58,7 @@ async def chat_diagnosis(
     session: AsyncSessionDep,
 ) -> StreamingResponse:
     svc = DiagnosisService(session)
-    report = await svc.create_or_get_report(requirement_id)
-    report_id = report.id
-    user_message = data.message
-
-    stream = await svc.chat_stream(requirement_id, user_message)
-
-    async def on_complete(full_text: str) -> None:
-        async with get_async_session_context() as new_session:
-            new_svc = DiagnosisService(new_session)
-            round_num = await new_svc.get_current_round(report_id)
-            await new_svc.save_message(report_id, "user", user_message, round_num=round_num)
-            # 自动解析 AI 响应并持久化（消息 + 风险项）
-            await new_svc.persist_ai_response(report_id, full_text, round_num=round_num)
-
-    collector = SSECollector(stream, on_complete=on_complete)
+    collector = await svc.chat_and_persist_stream(requirement_id, data.message)
     return StreamingResponse(collector, media_type="text/event-stream")
 
 

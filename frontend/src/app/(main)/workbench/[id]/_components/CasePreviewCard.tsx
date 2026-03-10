@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react';
 import { StatusPill } from '@/components/ui';
 
 export interface CaseStep {
@@ -78,11 +79,13 @@ export function CasePreviewCard({
           onClick={onAccept}
           className="mt-2 w-full text-center py-1 rounded-md text-[11px] font-medium bg-accent text-black hover:bg-accent2 transition-colors"
         >
-          ✓ 接受用例
+          <Check className="w-3.5 h-3.5 inline-block -mt-px" /> 接受用例
         </button>
       )}
       {isAccepted && (
-        <div className="mt-2 text-center py-1 text-[11px] text-accent font-mono">✓ 已接受</div>
+        <div className="mt-2 text-center py-1 text-[11px] text-accent font-mono flex items-center justify-center gap-1">
+          <Check className="w-3.5 h-3.5" /> 已接受
+        </div>
       )}
     </div>
   );

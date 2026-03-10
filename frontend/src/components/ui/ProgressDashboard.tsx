@@ -90,7 +90,7 @@ function getPhaseProgress(phase: Phase): number {
 function ModuleRow({ mod }: { mod: Module }) {
   const [expanded, setExpanded] = useState(false);
   const hasTasks = (mod.tasks?.length ?? 0) > 0;
-  const taskProgress = hasTasks ? getProgress(mod.tasks!) : 0;
+  const taskProgress = hasTasks && mod.tasks ? getProgress(mod.tasks) : 0;
   const derivedStatus = deriveModuleStatus(mod);
   const cfg = STATUS_CFG[derivedStatus] ?? STATUS_CFG.pending;
 
@@ -279,9 +279,13 @@ export default function ProgressDashboard() {
   }, [open]);
 
   const allModules = data?.phases.flatMap((p) => p.modules) ?? [];
-  const overall = getProgress(allModules);
-  const doneCount = allModules.filter((m) => m.status === 'done').length;
-  const failedCount = allModules.filter((m) => m.status === 'failed').length;
+  const derivedStatuses = allModules.map((m) => deriveModuleStatus(m));
+  const doneCount = derivedStatuses.filter((s) => s === 'done').length;
+  const failedCount = derivedStatuses.filter((s) => s === 'failed').length;
+  const partialCount = derivedStatuses.filter((s) => s === 'in_progress' || s === 'partial').length;
+  const overall = allModules.length
+    ? Math.round(((doneCount + partialCount * 0.5) / allModules.length) * 100)
+    : 0;
 
   return (
     <>

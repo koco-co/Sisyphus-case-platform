@@ -8,7 +8,9 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.prompts import assemble_prompt
+from app.ai.sse_collector import SSECollector
 from app.ai.stream_adapter import get_thinking_stream
+from app.core.database import get_async_session_context
 from app.modules.diagnosis.models import DiagnosisChatMessage, DiagnosisReport, DiagnosisRisk
 from app.modules.diagnosis.schemas import DiagnosisRiskUpdate
 from app.modules.products.models import Requirement
@@ -370,3 +372,34 @@ class DiagnosisService:
             "checklist": checklist_result,
             "quality": quality,
         }
+
+    # ── SSE stream with auto-persistence ──────────────────────────────
+
+    async def run_and_persist_stream(self, requirement_id: UUID) -> SSECollector:
+        """Run diagnosis stream; auto-persist AI response on completion."""
+        report = await self.create_or_get_report(requirement_id)
+        report_id = report.id
+        stream = await self.run_stream(requirement_id)
+
+        async def on_complete(full_text: str) -> None:
+            async with get_async_session_context() as new_session:
+                new_svc = DiagnosisService(new_session)
+                await new_svc.persist_ai_response(report_id, full_text, round_num=1)
+                await new_svc.complete_report(report_id, summary=full_text)
+
+        return SSECollector(stream, on_complete=on_complete)
+
+    async def chat_and_persist_stream(self, requirement_id: UUID, user_message: str) -> SSECollector:
+        """Chat with diagnosis AI; auto-persist messages on completion."""
+        report = await self.create_or_get_report(requirement_id)
+        report_id = report.id
+        stream = await self.chat_stream(requirement_id, user_message)
+
+        async def on_complete(full_text: str) -> None:
+            async with get_async_session_context() as new_session:
+                new_svc = DiagnosisService(new_session)
+                round_num = await new_svc.get_current_round(report_id)
+                await new_svc.save_message(report_id, "user", user_message, round_num=round_num)
+                await new_svc.persist_ai_response(report_id, full_text, round_num=round_num)
+
+        return SSECollector(stream, on_complete=on_complete)

@@ -1,3 +1,6 @@
+const CHECK_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:2px"><polyline points="20 6 9 17 4 12"/></svg>';
+
 interface ChatBubbleProps {
   sender: 'ai' | 'user';
   content: string;
@@ -28,7 +31,7 @@ export function ChatBubble({
         const parsed = JSON.parse(json.trim());
         if (Array.isArray(parsed)) {
           caseCount += parsed.length;
-          return `\n\n✓ 已生成 ${parsed.length} 条测试用例，请查看右侧面板\n\n`;
+          return `\n\n{check} 已生成 ${parsed.length} 条测试用例，请查看右侧面板\n\n`;
         }
       } catch {
         // keep non-JSON code blocks
@@ -48,7 +51,7 @@ export function ChatBubble({
         const parsed = JSON.parse(match);
         if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.title) {
           caseCount += parsed.length;
-          return `✓ 已生成 ${parsed.length} 条测试用例，请查看右侧面板`;
+          return `{check} 已生成 ${parsed.length} 条测试用例，请查看右侧面板`;
         }
       } catch {
         // keep
@@ -65,7 +68,7 @@ export function ChatBubble({
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/✓ (.+)/g, '<span style="color:var(--accent)">✓ $1</span>')
+      .replace(/\{check\} (.+)/g, `<span style="color:var(--accent)">${CHECK_SVG} $1</span>`)
       .replace(/### (.+)/g, '<h3 style="font-size:13px;font-weight:700;margin:8px 0 4px">$1</h3>')
       .replace(/## (.+)/g, '<h2 style="font-size:14px;font-weight:700;margin:10px 0 4px">$1</h2>')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
@@ -91,7 +94,7 @@ export function ChatBubble({
       return '<span style="color:var(--text3)">正在生成测试用例...</span>';
     }
     if (!prose) {
-      return '<span style="color:var(--accent)">✓ 测试用例已生成，请查看右侧面板</span>';
+      return `<span style="color:var(--accent)">${CHECK_SVG} 测试用例已生成，请查看右侧面板</span>`;
     }
     return renderMarkdown(prose);
   }

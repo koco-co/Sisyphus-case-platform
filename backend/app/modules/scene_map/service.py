@@ -9,8 +9,11 @@ from fastapi import status as http_status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.ai.parser import parse_test_points
 from app.ai.prompts import assemble_prompt
+from app.ai.sse_collector import SSECollector
 from app.ai.stream_adapter import get_thinking_stream
+from app.core.database import get_async_session_context
 from app.modules.products.models import Requirement
 from app.modules.scene_map.models import SceneMap, TestPoint
 from app.modules.scene_map.schemas import BatchPointUpdate, ReorderItem, TestPointCreate, TestPointUpdate
@@ -275,3 +278,26 @@ class SceneMapService:
         system = assemble_prompt("scene_map", task_instruction)
         messages = [{"role": "user", "content": user_content}]
         return await get_thinking_stream(messages, system=system)
+
+    async def generate_stream_with_persistence(self, requirement_id: UUID) -> SSECollector:
+        """Generate scene map stream; auto-persist parsed test points on completion."""
+        scene_map = await self.get_or_create(requirement_id)
+        scene_map_id = scene_map.id
+        stream = await self.generate_stream(requirement_id)
+
+        async def on_complete(full_text: str) -> None:
+            async with get_async_session_context() as new_session:
+                new_svc = SceneMapService(new_session)
+                points = parse_test_points(full_text)
+                for pt in points:
+                    await new_svc.add_test_point(
+                        scene_map_id,
+                        group_name=pt["group_name"],
+                        title=pt["title"],
+                        description=pt.get("description"),
+                        priority=pt.get("priority", "P1"),
+                        estimated_cases=pt.get("estimated_cases", 3),
+                        source="ai",
+                    )
+
+        return SSECollector(stream, on_complete=on_complete)
