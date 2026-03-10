@@ -14,6 +14,8 @@ class AiConfigCreate(BaseSchema):
     custom_checklist: dict | None = None
     llm_model: str | None = None
     llm_temperature: float | None = None
+    api_keys: dict | None = None
+    vector_config: dict | None = None
 
 
 class AiConfigUpdate(BaseSchema):
@@ -25,6 +27,8 @@ class AiConfigUpdate(BaseSchema):
     custom_checklist: dict | None = None
     llm_model: str | None = None
     llm_temperature: float | None = None
+    api_keys: dict | None = None
+    vector_config: dict | None = None
 
 
 class AiConfigResponse(BaseResponse):
@@ -39,3 +43,5 @@ class AiConfigResponse(BaseResponse):
     custom_checklist: dict | None
     llm_model: str | None
     llm_temperature: float | None
+    api_keys: dict | None = None
+    vector_config: dict | None = None

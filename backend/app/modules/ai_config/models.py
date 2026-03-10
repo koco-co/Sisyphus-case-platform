@@ -21,3 +21,8 @@ class AiConfiguration(BaseModel):
     custom_checklist: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     llm_model: Mapped[str | None] = mapped_column(String(50), nullable=True)
     llm_temperature: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+    # API key storage (encrypted via core/encryption.py)
+    api_keys: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    # Vector/embedding model configuration
+    vector_config: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
