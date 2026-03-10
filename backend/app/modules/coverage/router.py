@@ -15,6 +15,13 @@ from app.modules.coverage.service import CoverageService
 router = APIRouter(prefix="/coverage", tags=["coverage"])
 
 
+@router.get("/product/{product_id}")
+async def get_product_coverage(product_id: uuid.UUID, session: AsyncSessionDep) -> dict:
+    """Return product-level coverage data for the coverage dashboard."""
+    svc = CoverageService(session)
+    return await svc.get_product_coverage(product_id)
+
+
 @router.get("/{iteration_id}")
 async def get_coverage_matrix(iteration_id: uuid.UUID, session: AsyncSessionDep) -> dict:
     """Return per-requirement coverage matrix for an iteration."""

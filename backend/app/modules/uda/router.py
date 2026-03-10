@@ -16,8 +16,8 @@ router = APIRouter(prefix="/uda", tags=["uda"])
 @router.post("/parse", response_model=ParsedDocumentResponse, status_code=status.HTTP_201_CREATED)
 async def parse_document(
     file: Annotated[UploadFile, File(...)],
+    session: AsyncSessionDep,
     requirement_id: Annotated[uuid.UUID | None, Form()] = None,
-    session: AsyncSessionDep = ...,
 ) -> ParsedDocumentResponse:
     """Upload and parse a document (docx, pdf, md, txt, image)."""
     service = UdaService(session)
@@ -49,7 +49,7 @@ async def parse_to_requirement(
     file: Annotated[UploadFile, File(...)],
     title: Annotated[str, Form(...)],
     iteration_id: Annotated[uuid.UUID, Form(...)],
-    session: AsyncSessionDep = ...,
+    session: AsyncSessionDep,
 ) -> dict:
     """Parse a document and create a Requirement from its content."""
     uda_service = UdaService(session)

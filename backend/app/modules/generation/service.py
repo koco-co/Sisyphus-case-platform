@@ -10,6 +10,7 @@ from app.ai.stream_adapter import get_thinking_stream
 from app.modules.generation.models import GenerationMessage, GenerationSession
 from app.modules.products.models import Requirement
 from app.modules.scene_map.models import SceneMap, TestPoint
+from app.modules.testcases.models import TestCase
 
 
 class GenerationService:
@@ -42,6 +43,7 @@ class GenerationService:
             select(GenerationSession)
             .where(
                 GenerationSession.requirement_id == requirement_id,
+                GenerationSession.mode == mode,
                 GenerationSession.status == "active",
                 GenerationSession.deleted_at.is_(None),
             )
@@ -92,6 +94,36 @@ class GenerationService:
         )
         result = await self.session.execute(q)
         return list(result.scalars().all())
+
+    async def list_session_cases(self, session_id: UUID) -> list[TestCase]:
+        q = (
+            select(TestCase)
+            .where(
+                TestCase.generation_session_id == session_id,
+                TestCase.deleted_at.is_(None),
+            )
+            .order_by(TestCase.created_at.desc())
+        )
+        result = await self.session.execute(q)
+        return list(result.scalars().all())
+
+    async def accept_session_case(self, session_id: UUID, case_id: UUID) -> TestCase:
+        q = select(TestCase).where(
+            TestCase.id == case_id,
+            TestCase.generation_session_id == session_id,
+            TestCase.deleted_at.is_(None),
+        )
+        result = await self.session.execute(q)
+        test_case = result.scalar_one_or_none()
+        if not test_case:
+            raise ValueError("Test case not found")
+
+        if test_case.status == "draft":
+            test_case.status = "review"
+            await self.session.commit()
+            await self.session.refresh(test_case)
+
+        return test_case
 
     async def chat_stream(self, session_id: UUID, user_message: str) -> AsyncIterator[str]:
         gen_session = await self.get_session(session_id)

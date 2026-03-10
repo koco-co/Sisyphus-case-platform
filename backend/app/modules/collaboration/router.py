@@ -146,6 +146,7 @@ async def get_shared_review(token: str, session: AsyncSessionDep) -> SharedRevie
     return SharedReviewResponse(
         review=ReviewResponse.model_validate(result["review"]),
         decisions=[ReviewDecisionResponse.model_validate(d) for d in result["decisions"]],
+        entity_snapshot=result.get("entity_snapshot"),
     )
 
 

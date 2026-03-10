@@ -11,7 +11,10 @@ router = APIRouter(prefix="/search", tags=["search"])
 async def global_search(
     session: AsyncSessionDep,
     q: str = Query("", min_length=1, description="搜索关键词"),
-    types: str | None = Query(None, description="实体类型，逗号分隔: requirement,testcase,test_point"),
+    types: str | None = Query(
+        None,
+        description="实体类型，逗号分隔: requirement,testcase,test_point,template,knowledge,diagnosis",
+    ),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
 ) -> dict:

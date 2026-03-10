@@ -93,18 +93,21 @@ class DiagnosisService:
         self,
         report_id: UUID,
         summary: str,
-        risk_count_high: int = 0,
-        risk_count_medium: int = 0,
-        risk_count_industry: int = 0,
+        risk_count_high: int | None = None,
+        risk_count_medium: int | None = None,
+        risk_count_industry: int | None = None,
         overall_score: float | None = None,
     ) -> DiagnosisReport | None:
         report = await self.session.get(DiagnosisReport, report_id)
         if report:
             report.status = "completed"
             report.summary = summary
-            report.risk_count_high = risk_count_high
-            report.risk_count_medium = risk_count_medium
-            report.risk_count_industry = risk_count_industry
+            if risk_count_high is not None:
+                report.risk_count_high = risk_count_high
+            if risk_count_medium is not None:
+                report.risk_count_medium = risk_count_medium
+            if risk_count_industry is not None:
+                report.risk_count_industry = risk_count_industry
             if overall_score is not None:
                 report.overall_score = overall_score
             await self.session.commit()
@@ -193,29 +196,20 @@ class DiagnosisService:
         )
         self.session.add(msg)
 
-        # 2. 安全提取 JSON 风险项
+        # 2. 安全提取 JSON / Markdown 风险项
         risks: list[DiagnosisRisk] = []
-        match = re.search(r"\[.*\]", ai_content, re.DOTALL)
-        if match:
-            try:
-                risk_data = json.loads(match.group())
-                for item in risk_data:
-                    if not isinstance(item, dict):
-                        continue
-                    level = item.get("risk_level") or item.get("level") or item.get("severity", "medium")
-                    title = item.get("title", "")
-                    if not title:
-                        continue
-                    risk = DiagnosisRisk(
-                        report_id=report_id,
-                        level=level,
-                        title=title,
-                        description=item.get("description", ""),
-                    )
-                    self.session.add(risk)
-                    risks.append(risk)
-            except (json.JSONDecodeError, TypeError):
-                logger.debug("AI 响应非结构化，仅保存消息（report_id=%s）", report_id)
+        for item in self._extract_risk_items(ai_content):
+            title = item.get("title", "")
+            if not title:
+                continue
+            risk = DiagnosisRisk(
+                report_id=report_id,
+                level=self._normalize_risk_level(item.get("level")),
+                title=title,
+                description=item.get("description", ""),
+            )
+            self.session.add(risk)
+            risks.append(risk)
 
         await self.session.flush()
 
@@ -223,13 +217,19 @@ class DiagnosisService:
         if risks:
             high = sum(1 for r in risks if r.level == "high")
             medium = sum(1 for r in risks if r.level == "medium")
+            industry = sum(1 for r in risks if r.level == "industry")
             report = await self.session.get(DiagnosisReport, report_id)
             if report:
                 report.risk_count_high = high
                 report.risk_count_medium = medium
+                report.risk_count_industry = industry
 
         # 4. 尝试从内容中提取总分
-        score_match = re.search(r"(?:总体|总分|健康评分|overall)[：:\s]*(\d{1,3})", ai_content)
+        score_match = re.search(
+            r"(?:总体健康评分|总体|总分|健康评分|评分|overall)[^\d]{0,20}(\d{1,3})",
+            ai_content,
+            re.IGNORECASE,
+        )
         if score_match:
             score = min(int(score_match.group(1)), 100)
             report = await self.session.get(DiagnosisReport, report_id)
@@ -239,6 +239,49 @@ class DiagnosisService:
         await self.session.commit()
         logger.info("AI 响应已持久化: report_id=%s, risks=%d", report_id, len(risks))
         return risks
+
+    def _extract_risk_items(self, ai_content: str) -> list[dict[str, str]]:
+        match = re.search(r"\[.*\]", ai_content, re.DOTALL)
+        if match:
+            try:
+                data = json.loads(match.group())
+                return [item for item in data if isinstance(item, dict)]
+            except (json.JSONDecodeError, TypeError):
+                logger.debug("AI 响应 JSON 解析失败，尝试 Markdown 表格回退")
+
+        markdown_items: list[dict[str, str]] = []
+        for raw_line in ai_content.splitlines():
+            line = raw_line.strip()
+            if "|" not in line:
+                continue
+
+            cells = [cell.strip() for cell in line.strip("|").split("|")]
+            if len(cells) < 5:
+                continue
+
+            first_cell = cells[0].lower()
+            if first_cell == "id" or all(set(cell) <= {"-", ":", " "} for cell in cells):
+                continue
+
+            markdown_items.append(
+                {
+                    "title": cells[1],
+                    "description": cells[2],
+                    "level": cells[3],
+                }
+            )
+
+        return markdown_items
+
+    def _normalize_risk_level(self, raw_level: str | None) -> str:
+        level = (raw_level or "medium").strip().lower()
+        if level in {"high", "高", "高风险"}:
+            return "high"
+        if level in {"industry", "行业", "行业建议"}:
+            return "industry"
+        if level in {"low", "低", "低风险"}:
+            return "low"
+        return "medium"
 
     # ── 完整诊断流程（引擎整合） ───────────────────────────────────────
 

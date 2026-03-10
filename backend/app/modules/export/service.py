@@ -5,6 +5,7 @@ import logging
 from uuid import UUID
 
 import httpx
+from openpyxl import Workbook
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -46,6 +47,34 @@ class ExportService:
             )
 
         return output.getvalue()
+
+    async def export_cases_excel(self, requirement_id: UUID | None = None) -> bytes:
+        cases = await self._get_cases(requirement_id)
+        workbook = Workbook()
+        sheet = workbook.active or workbook.create_sheet("Test Cases")
+        sheet.title = "Test Cases"
+        sheet.append(["case_id", "title", "priority", "case_type", "status", "precondition", "steps"])
+
+        for case in cases:
+            steps_text = "\n".join(
+                f"Step {step['step_num']}: {step['action']} -> {step['expected_result']}"
+                for step in case.get("steps", [])
+            )
+            sheet.append(
+                [
+                    case["case_id"],
+                    case["title"],
+                    case["priority"],
+                    case["case_type"],
+                    case["status"],
+                    case.get("precondition", ""),
+                    steps_text,
+                ]
+            )
+
+        buffer = io.BytesIO()
+        workbook.save(buffer)
+        return buffer.getvalue()
 
     async def create_export_job(self, params: ExportJobCreate) -> ExportJob:
         job = ExportJob(

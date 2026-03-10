@@ -3,9 +3,12 @@ import logging
 from sqlalchemy import Text, cast, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.diagnosis.models import DiagnosisReport
+from app.modules.knowledge.models import KnowledgeDocument
 from app.modules.products.models import Requirement
 from app.modules.scene_map.models import TestPoint
 from app.modules.search.schemas import SearchResultItem
+from app.modules.templates.models import TestCaseTemplate
 from app.modules.testcases.models import TestCase
 
 logger = logging.getLogger(__name__)
@@ -14,6 +17,9 @@ _ENTITY_MODELS = {
     "requirement": (Requirement, Requirement.title),
     "testcase": (TestCase, TestCase.title),
     "test_point": (TestPoint, TestPoint.title),
+    "template": (TestCaseTemplate, TestCaseTemplate.name),
+    "knowledge": (KnowledgeDocument, KnowledgeDocument.title),
+    "diagnosis": (DiagnosisReport, DiagnosisReport.summary),
 }
 
 # Table names that have a search_vector generated column
@@ -78,6 +84,7 @@ class SearchService:
                     rows = result.scalars().all()
                 except Exception:
                     logger.debug("FTS query failed for %s, falling back to ILIKE", et)
+                    await self.session.rollback()
                     q = select(model).where(
                         cast(title_col, Text).ilike(pattern),
                         model.deleted_at.is_(None),
@@ -93,6 +100,7 @@ class SearchService:
                 rows = result.scalars().all()
 
             for row in rows:
+                title = getattr(row, "title", "")
                 summary = None
                 if et == "requirement" and hasattr(row, "req_id"):
                     summary = row.req_id
@@ -100,12 +108,25 @@ class SearchService:
                     summary = row.case_id
                 elif et == "test_point" and hasattr(row, "description"):
                     summary = (row.description or "")[:120] or None
+                elif et == "template":
+                    title = getattr(row, "name", "")
+                    summary = getattr(row, "description", None)
+                elif et == "knowledge":
+                    summary_parts = [getattr(row, "source", None), getattr(row, "doc_type", None)]
+                    summary = " · ".join(part for part in summary_parts if part) or None
+                elif et == "diagnosis":
+                    title = getattr(row, "summary", None) or "需求诊断报告"
+                    summary = (
+                        f"状态 {getattr(row, 'status', 'unknown')} · "
+                        f"高风险 {getattr(row, 'risk_count_high', 0)} · "
+                        f"中风险 {getattr(row, 'risk_count_medium', 0)}"
+                    )
 
                 all_items.append(
                     SearchResultItem(
                         id=row.id,
                         entity_type=et,
-                        title=getattr(row, "title", ""),
+                        title=title,
                         summary=summary,
                         updated_at=row.updated_at if hasattr(row, "updated_at") else None,
                     )

@@ -142,7 +142,7 @@ async def upload_requirement(
     file: Annotated[UploadFile, File(...)],
     title: Annotated[str, Form(...)],
     iteration_id: Annotated[uuid.UUID, Form(...)],
-    session: AsyncSessionDep = ...,
+    session: AsyncSessionDep,
 ) -> RequirementResponse:
     """Upload a requirement document (docx, pdf, md, txt) and create a Requirement."""
     from app.modules.uda.parsers import parse_document as uda_parse

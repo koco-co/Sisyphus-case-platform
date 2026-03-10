@@ -298,7 +298,10 @@ class ImportJobService:
             .where(ImportRecord.job_id == job_id, ImportRecord.deleted_at.is_(None))
             .group_by(ImportRecord.status)
         )
-        status_counts = dict(result.all())
+        status_counts = {
+            str(status): int(count)
+            for status, count in result.all()
+        }
 
         job.success_count = status_counts.get("accepted", 0) + status_counts.get("imported", 0)
         job.failed_count = status_counts.get("error", 0) + status_counts.get("rejected", 0)

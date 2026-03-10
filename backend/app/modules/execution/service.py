@@ -178,7 +178,7 @@ class ExecutionService:
                 if not doc:
                     continue
 
-                tags = dict(doc.tags) if doc.tags else {}
+                tags = dict(doc.tags) if isinstance(doc.tags, dict) else {}
                 current_weight = float(tags.get("rag_weight", 1.0))
 
                 new_weight = min(current_weight + 0.1, 2.0) if status == "passed" else max(current_weight - 0.2, 0.1)

@@ -1,5 +1,6 @@
 import math
 import uuid
+from typing import cast
 
 from fastapi import APIRouter, Query, status
 
@@ -33,7 +34,13 @@ async def get_stats(
     total, by_status = await svc.count_by_status(requirement_id)
     return TestCaseStatsResponse(
         total=total,
-        by_status=[StatusCountItem(**item) for item in by_status],
+        by_status=[
+            StatusCountItem(
+                status=str(item["status"]),
+                count=cast(int, item["count"]),
+            )
+            for item in by_status
+        ],
     )
 
 

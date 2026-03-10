@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from uuid import UUID
 
 from sqlalchemy import func, select, update
@@ -80,6 +81,14 @@ class NotificationService:
         )
         result = await self.session.execute(q)
         return result.scalar() or 0
+
+    async def soft_delete(self, notification_id: UUID) -> bool:
+        notif = await self.session.get(Notification, notification_id)
+        if not notif or notif.deleted_at is not None:
+            return False
+        notif.deleted_at = datetime.now(UTC)
+        await self.session.commit()
+        return True
 
     async def send_notification(
         self,

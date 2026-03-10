@@ -8,6 +8,7 @@ from app.modules.diff.schemas import (
     DiffResponse,
     RegenerateRequest,
     RegenerateResponse,
+    SuggestionItem,
     SuggestionResponse,
 )
 from app.modules.diff.service import DiffService
@@ -63,7 +64,10 @@ async def suggest_test_points(
     """基于最新 Diff 变更建议新增测试点 (B-M07-06)。"""
     svc = DiffService(session)
     suggestions = await svc.suggest_test_points(requirement_id)
-    return SuggestionResponse(suggestions=suggestions, count=len(suggestions))
+    return SuggestionResponse(
+        suggestions=[SuggestionItem.model_validate(item) for item in suggestions],
+        count=len(suggestions),
+    )
 
 
 @router.post("/{requirement_id}/regenerate", response_model=RegenerateResponse)

@@ -11,10 +11,12 @@ SSE 事件格式：
 """
 
 import asyncio
+import importlib
 import json
 import logging
 import time
 from collections.abc import AsyncIterator
+from typing import Any, cast
 
 from app.core.config import settings
 
@@ -50,10 +52,13 @@ async def openai_thinking_stream(
     if system:
         all_messages = [{"role": "system", "content": system}, *messages]
 
-    stream = await client.chat.completions.create(
+    stream = cast(
+        Any,
+        await client.chat.completions.create(
         model=settings.openai_model,
-        messages=all_messages,
-        stream=True,
+            messages=cast(Any, all_messages),
+            stream=True,
+        ),
     )
 
     async for chunk in stream:
@@ -69,7 +74,7 @@ async def anthropic_thinking_stream(
     system: str = "",
 ) -> AsyncIterator[str]:
     """Claude 扩展思考流式输出。"""
-    import anthropic
+    anthropic = importlib.import_module("anthropic")
 
     client = anthropic.AsyncAnthropic()
 
@@ -78,7 +83,7 @@ async def anthropic_thinking_stream(
         max_tokens=16000,
         thinking={"type": "enabled", "budget_tokens": 10000},
         system=system,
-        messages=messages,
+        messages=cast(Any, messages),
     ) as stream:
         async for event in stream:
             if event.type == "content_block_delta":
@@ -112,7 +117,7 @@ async def zhipu_thinking_stream(
     def _create_stream():
         return client.chat.completions.create(
             model=settings.zhipu_model,
-            messages=all_messages,
+            messages=cast(Any, all_messages),
             stream=True,
         )
 
@@ -158,10 +163,13 @@ async def dashscope_thinking_stream(
     if system:
         all_messages = [{"role": "system", "content": system}, *messages]
 
-    stream = await client.chat.completions.create(
+    stream = cast(
+        Any,
+        await client.chat.completions.create(
         model=settings.dashscope_model,
-        messages=all_messages,
-        stream=True,
+            messages=cast(Any, all_messages),
+            stream=True,
+        ),
     )
 
     async for chunk in stream:

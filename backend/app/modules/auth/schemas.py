@@ -24,3 +24,4 @@ class UserResponse(BaseResponse):
 class TokenResponse(BaseSchema):
     access_token: str
     token_type: str = "bearer"
+    user: UserResponse

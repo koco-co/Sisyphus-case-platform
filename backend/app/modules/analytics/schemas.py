@@ -24,6 +24,11 @@ class TrendDataResponse(BaseSchema):
     metrics: dict[str, list]
 
 
+class FrontendTrendResponse(BaseSchema):
+    case_count_trend: list[dict]
+    pass_rate_trend: list[dict]
+
+
 class QualityScoreResponse(BaseSchema):
     iteration_id: uuid.UUID
     score: float

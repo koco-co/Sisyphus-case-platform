@@ -6,6 +6,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.auth.models import User
 from app.modules.collaboration.models import (
     CollaborationComment,
     Review,
@@ -13,6 +14,8 @@ from app.modules.collaboration.models import (
     ReviewShareToken,
 )
 from app.modules.collaboration.schemas import CommentCreate, CommentUpdate, ReviewCreate, ReviewDecisionSubmit
+from app.modules.products.models import Requirement
+from app.modules.scene_map.models import SceneMap, TestPoint
 
 
 class CollaborationService:
@@ -197,7 +200,8 @@ class CollaborationService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Review not found")
 
         decisions = await self._get_decisions(share.review_id)
-        return {"review": review, "decisions": decisions}
+        entity_snapshot = await self._build_entity_snapshot(review)
+        return {"review": review, "decisions": decisions, "entity_snapshot": entity_snapshot}
 
     async def revoke_share_token(self, token: str) -> None:
         """撤销分享 token。"""
@@ -230,6 +234,90 @@ class CollaborationService:
         )
         result = await self.session.execute(q)
         return list(result.scalars().all())
+
+    async def _build_entity_snapshot(self, review: Review) -> dict | None:
+        requirement: Requirement | None = None
+        scene_map: SceneMap | None = None
+
+        if review.entity_type == "requirement":
+            requirement = await self.session.get(Requirement, review.entity_id)
+            if not requirement or requirement.deleted_at is not None:
+                return None
+            scene_map_q = select(SceneMap).where(
+                SceneMap.requirement_id == requirement.id,
+                SceneMap.deleted_at.is_(None),
+            )
+            scene_map = (await self.session.execute(scene_map_q)).scalar_one_or_none()
+        elif review.entity_type == "scene_map":
+            scene_map = await self.session.get(SceneMap, review.entity_id)
+            if not scene_map or scene_map.deleted_at is not None:
+                return None
+            requirement = await self.session.get(Requirement, scene_map.requirement_id)
+            if not requirement or requirement.deleted_at is not None:
+                return None
+        else:
+            return None
+
+        test_points: list[dict] = []
+        if scene_map:
+            points_q = (
+                select(TestPoint)
+                .where(
+                    TestPoint.scene_map_id == scene_map.id,
+                    TestPoint.deleted_at.is_(None),
+                )
+                .order_by(TestPoint.sort_order.asc(), TestPoint.created_at.asc())
+            )
+            point_rows = await self.session.execute(points_q)
+            test_points = [self._serialize_test_point(point) for point in point_rows.scalars().all()]
+
+        reviewer_names = await self._resolve_user_display_names(review.reviewer_ids or [])
+        return {
+            "entity_type": review.entity_type,
+            "requirement_id": str(requirement.id),
+            "requirement_title": requirement.title,
+            "req_id": requirement.req_id,
+            "scene_map_id": str(scene_map.id) if scene_map else None,
+            "test_points": test_points,
+            "reviewer_names": reviewer_names,
+        }
+
+    async def _resolve_user_display_names(self, reviewer_ids: list[str]) -> list[str]:
+        reviewer_uuids: list[UUID] = []
+        raw_order: list[str] = []
+        for reviewer_id in reviewer_ids:
+            raw_order.append(reviewer_id)
+            try:
+                reviewer_uuids.append(UUID(reviewer_id))
+            except ValueError:
+                continue
+
+        if not reviewer_uuids:
+            return raw_order
+
+        users_q = select(User).where(
+            User.id.in_(reviewer_uuids),
+            User.deleted_at.is_(None),
+        )
+        user_rows = await self.session.execute(users_q)
+        display_by_id = {
+            str(user.id): user.full_name or user.username
+            for user in user_rows.scalars().all()
+        }
+        return [display_by_id.get(reviewer_id, reviewer_id) for reviewer_id in raw_order]
+
+    @staticmethod
+    def _serialize_test_point(point: TestPoint) -> dict:
+        return {
+            "id": str(point.id),
+            "group_name": point.group_name,
+            "title": point.title,
+            "description": point.description,
+            "priority": point.priority,
+            "status": point.status,
+            "source": point.source,
+            "estimated_cases": point.estimated_cases,
+        }
 
     async def _update_review_status(self, review: Review) -> None:
         """自动更新评审状态：所有人 approved → approved，有人 rejected → rejected。"""

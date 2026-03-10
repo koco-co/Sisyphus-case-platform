@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import UTC, datetime
 from uuid import UUID
 
@@ -12,13 +13,181 @@ from app.modules.coverage.schemas import (
     RequirementCoverageItem,
     UncoveredRequirementItem,
 )
-from app.modules.products.models import Requirement
+from app.modules.products.models import Iteration, Requirement
+from app.modules.scene_map.models import SceneMap, TestPoint
 from app.modules.testcases.models import TestCase
 
 
 class CoverageService:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
+
+    async def get_product_coverage(self, product_id: UUID) -> dict:
+        """Return iteration/requirement coverage data matching the frontend matrix contract."""
+        iteration_q = (
+            select(Iteration)
+            .where(
+                Iteration.product_id == product_id,
+                Iteration.deleted_at.is_(None),
+            )
+            .order_by(Iteration.created_at.desc())
+        )
+        iterations = list((await self.session.execute(iteration_q)).scalars().all())
+        if not iterations:
+            return {"iterations": []}
+
+        iteration_ids = [iteration.id for iteration in iterations]
+        requirement_q = (
+            select(Requirement)
+            .where(
+                Requirement.iteration_id.in_(iteration_ids),
+                Requirement.deleted_at.is_(None),
+            )
+            .order_by(Requirement.created_at.asc())
+        )
+        requirements = list((await self.session.execute(requirement_q)).scalars().all())
+        if not requirements:
+            return {
+                "iterations": [
+                    {
+                        "iteration_id": str(iteration.id),
+                        "iteration_name": iteration.name,
+                        "coverage_rate": 0,
+                        "requirement_count": 0,
+                        "testcase_count": 0,
+                        "uncovered_count": 0,
+                        "requirements": [],
+                    }
+                    for iteration in iterations
+                ]
+            }
+
+        requirement_ids = [requirement.id for requirement in requirements]
+        scene_map_q = (
+            select(SceneMap)
+            .where(
+                SceneMap.requirement_id.in_(requirement_ids),
+                SceneMap.deleted_at.is_(None),
+            )
+            .order_by(SceneMap.created_at.asc())
+        )
+        scene_maps = list((await self.session.execute(scene_map_q)).scalars().all())
+        scene_map_by_requirement = {scene_map.requirement_id: scene_map for scene_map in scene_maps}
+
+        scene_map_ids = [scene_map.id for scene_map in scene_maps]
+        test_points: list[TestPoint] = []
+        if scene_map_ids:
+            test_point_q = (
+                select(TestPoint)
+                .where(
+                    TestPoint.scene_map_id.in_(scene_map_ids),
+                    TestPoint.deleted_at.is_(None),
+                )
+                .order_by(TestPoint.sort_order.asc(), TestPoint.created_at.asc())
+            )
+            test_points = list((await self.session.execute(test_point_q)).scalars().all())
+
+        test_cases_q = (
+            select(TestCase)
+            .where(
+                TestCase.requirement_id.in_(requirement_ids),
+                TestCase.deleted_at.is_(None),
+            )
+            .order_by(TestCase.created_at.asc())
+        )
+        test_cases = list((await self.session.execute(test_cases_q)).scalars().all())
+
+        requirements_by_iteration: dict[UUID, list] = defaultdict(list)
+        for requirement in requirements:
+            requirements_by_iteration[requirement.iteration_id].append(requirement)
+
+        test_points_by_scene_map: dict[UUID, list[TestPoint]] = defaultdict(list)
+        for test_point in test_points:
+            test_points_by_scene_map[test_point.scene_map_id].append(test_point)
+
+        cases_by_requirement: dict[UUID, list[TestCase]] = defaultdict(list)
+        cases_by_test_point: dict[UUID, list[TestCase]] = defaultdict(list)
+        for test_case in test_cases:
+            cases_by_requirement[test_case.requirement_id].append(test_case)
+            if test_case.scene_node_id:
+                cases_by_test_point[test_case.scene_node_id].append(test_case)
+
+        payload_iterations = []
+        for iteration in iterations:
+            iteration_requirements = requirements_by_iteration.get(iteration.id, [])
+            requirement_items = []
+            uncovered_count = 0
+
+            for requirement in iteration_requirements:
+                scene_map = scene_map_by_requirement.get(requirement.id)
+                requirement_test_points = (
+                    test_points_by_scene_map.get(scene_map.id, []) if scene_map else []
+                )
+                requirement_test_cases = cases_by_requirement.get(requirement.id, [])
+                point_items = []
+
+                for test_point in requirement_test_points:
+                    point_cases = cases_by_test_point.get(test_point.id, [])
+                    point_items.append(
+                        {
+                            "id": str(test_point.id),
+                            "title": test_point.title,
+                            "priority": test_point.priority,
+                            "case_count": len(point_cases),
+                            "cases": [
+                                {
+                                    "id": str(test_case.id),
+                                    "case_id": test_case.case_id,
+                                    "title": test_case.title,
+                                    "status": test_case.status,
+                                }
+                                for test_case in point_cases
+                            ],
+                        }
+                    )
+
+                if not requirement_test_cases:
+                    coverage_status = "none"
+                    uncovered_count += 1
+                elif requirement_test_points and all(
+                    cases_by_test_point.get(test_point.id) for test_point in requirement_test_points
+                ):
+                    coverage_status = "full"
+                else:
+                    coverage_status = "partial"
+
+                requirement_items.append(
+                    {
+                        "id": str(requirement.id),
+                        "req_id": requirement.req_id,
+                        "title": requirement.title,
+                        "coverage_status": coverage_status,
+                        "test_points": point_items,
+                    }
+                )
+
+            requirement_count = len(iteration_requirements)
+            coverage_rate = (
+                round((requirement_count - uncovered_count) / requirement_count * 100)
+                if requirement_count
+                else 0
+            )
+            payload_iterations.append(
+                {
+                    "iteration_id": str(iteration.id),
+                    "iteration_name": iteration.name,
+                    "coverage_rate": coverage_rate,
+                    "requirement_count": requirement_count,
+                    "testcase_count": sum(
+                        len(cases_by_requirement.get(requirement.id, []))
+                        for requirement in iteration_requirements
+                    ),
+                    "uncovered_count": uncovered_count,
+                    "requirements": requirement_items,
+                }
+            )
+
+        return {"iterations": payload_iterations}
 
     # ── Single-requirement coverage ────────────────────────────────
 

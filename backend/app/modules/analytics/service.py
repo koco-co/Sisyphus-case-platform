@@ -1,7 +1,8 @@
 import uuid
 from datetime import date, timedelta
+from typing import cast
 
-from sqlalchemy import func, select
+from sqlalchemy import BinaryExpression, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.analytics.models import AnalyticsSnapshot
@@ -15,13 +16,102 @@ class AnalyticsService:
         self.session = session
 
     def _iteration_case_filter(self, iteration_id: uuid.UUID | None):
-        conditions = [
+        conditions: list[BinaryExpression[bool]] = [
             TestCase.deleted_at.is_(None),
             Requirement.deleted_at.is_(None),
         ]
         if iteration_id is not None:
-            conditions.append(Requirement.iteration_id == iteration_id)
+            conditions.append(cast(BinaryExpression[bool], Requirement.iteration_id == iteration_id))
         return conditions
+
+    def _case_ids_subquery(self, iteration_id: uuid.UUID | None):
+        return (
+            select(TestCase.id)
+            .join(Requirement, TestCase.requirement_id == Requirement.id)
+            .where(*self._iteration_case_filter(iteration_id))
+            .subquery()
+        )
+
+    def _snapshot_query(self, iteration_id: uuid.UUID | None, since: date):
+        q = (
+            select(AnalyticsSnapshot)
+            .where(
+                AnalyticsSnapshot.deleted_at.is_(None),
+                AnalyticsSnapshot.snapshot_date >= since,
+            )
+            .order_by(AnalyticsSnapshot.snapshot_date)
+        )
+        if iteration_id is not None:
+            q = q.where(AnalyticsSnapshot.iteration_id == iteration_id)
+        return q
+
+    async def _count_cases(self, iteration_id: uuid.UUID | None = None) -> int:
+        q = (
+            select(func.count())
+            .select_from(TestCase)
+            .join(Requirement, TestCase.requirement_id == Requirement.id)
+            .where(*self._iteration_case_filter(iteration_id))
+        )
+        return (await self.session.execute(q)).scalar() or 0
+
+    async def _get_executed_case_count(self, iteration_id: uuid.UUID | None = None) -> int:
+        case_ids_subq = self._case_ids_subquery(iteration_id)
+        return (
+            await self.session.execute(
+                select(func.count(func.distinct(ExecutionResult.test_case_id))).where(
+                    ExecutionResult.deleted_at.is_(None),
+                    ExecutionResult.test_case_id.in_(select(case_ids_subq.c.id)),
+                )
+            )
+        ).scalar() or 0
+
+    async def _get_ai_generated_case_count(self, iteration_id: uuid.UUID | None = None) -> int:
+        q = (
+            select(func.count())
+            .select_from(TestCase)
+            .join(Requirement, TestCase.requirement_id == Requirement.id)
+            .where(
+                *self._iteration_case_filter(iteration_id),
+                TestCase.source == "ai_generated",
+            )
+        )
+        return (await self.session.execute(q)).scalar() or 0
+
+    def _calculate_overview_metrics(
+        self,
+        total_cases: int,
+        exec_counts: dict[str, int],
+        executed_cases: int,
+        ai_generated_cases: int,
+    ) -> dict[str, float]:
+        total_executed = sum(exec_counts.values())
+        passed = exec_counts.get("passed", 0)
+        failed = exec_counts.get("failed", 0)
+
+        pass_rate = round((passed / total_executed * 100) if total_executed > 0 else 0.0, 2)
+        coverage_rate = round((executed_cases / total_cases * 100) if total_cases > 0 else 0.0, 2)
+        defect_density = round((failed / total_cases) if total_cases > 0 else 0.0, 2)
+        automation_rate = round((ai_generated_cases / total_cases * 100) if total_cases > 0 else 0.0, 2)
+        quality_score = round(
+            min(
+                100.0,
+                max(
+                    0.0,
+                    pass_rate * 0.4
+                    + coverage_rate * 0.4
+                    + max(0.0, 100 - defect_density * 10) * 0.2,
+                ),
+            ),
+            2,
+        )
+
+        return {
+            "pass_rate": pass_rate,
+            "coverage_rate": coverage_rate,
+            "defect_density": defect_density,
+            "automation_rate": automation_rate,
+            "quality_score": quality_score,
+        }
 
     async def get_quality_overview(self, iteration_id: uuid.UUID | None = None) -> dict:
         product_count = (
@@ -39,19 +129,23 @@ class AnalyticsService:
             req_q = req_q.where(Requirement.iteration_id == iteration_id)
         requirement_count = (await self.session.execute(req_q)).scalar() or 0
 
-        tc_q = (
-            select(func.count())
-            .select_from(TestCase)
-            .join(Requirement, TestCase.requirement_id == Requirement.id)
-            .where(*self._iteration_case_filter(iteration_id))
+        testcase_count = await self._count_cases(iteration_id)
+        exec_counts = await self._get_execution_counts(iteration_id)
+        executed_cases = await self._get_executed_case_count(iteration_id)
+        ai_generated_cases = await self._get_ai_generated_case_count(iteration_id)
+        metrics = self._calculate_overview_metrics(
+            total_cases=testcase_count,
+            exec_counts=exec_counts,
+            executed_cases=executed_cases,
+            ai_generated_cases=ai_generated_cases,
         )
-        testcase_count = (await self.session.execute(tc_q)).scalar() or 0
 
         return {
             "product_count": product_count,
             "iteration_count": iteration_count,
             "requirement_count": requirement_count,
             "testcase_count": testcase_count,
+            **metrics,
         }
 
     async def get_priority_distribution(self, iteration_id: uuid.UUID | None = None) -> list[dict]:
@@ -85,21 +179,10 @@ class AnalyticsService:
         return [{"source": row[0], "count": row[1]} for row in result.all()]
 
     async def _count_cases_for_iteration(self, iteration_id: uuid.UUID) -> int:
-        q = (
-            select(func.count())
-            .select_from(TestCase)
-            .join(Requirement, TestCase.requirement_id == Requirement.id)
-            .where(*self._iteration_case_filter(iteration_id))
-        )
-        return (await self.session.execute(q)).scalar() or 0
+        return await self._count_cases(iteration_id)
 
-    async def _get_execution_counts(self, iteration_id: uuid.UUID) -> dict[str, int]:
-        case_ids_subq = (
-            select(TestCase.id)
-            .join(Requirement, TestCase.requirement_id == Requirement.id)
-            .where(*self._iteration_case_filter(iteration_id))
-            .subquery()
-        )
+    async def _get_execution_counts(self, iteration_id: uuid.UUID | None = None) -> dict[str, int]:
+        case_ids_subq = self._case_ids_subquery(iteration_id)
         q = (
             select(ExecutionResult.status, func.count())
             .where(
@@ -117,40 +200,23 @@ class AnalyticsService:
     async def take_snapshot(self, iteration_id: uuid.UUID) -> AnalyticsSnapshot:
         total_cases = await self._count_cases_for_iteration(iteration_id)
         exec_counts = await self._get_execution_counts(iteration_id)
-
-        passed = exec_counts.get("passed", 0)
-        failed = exec_counts.get("failed", 0)
-        blocked = exec_counts.get("blocked", 0)
-
-        case_ids_subq = (
-            select(TestCase.id)
-            .join(Requirement, TestCase.requirement_id == Requirement.id)
-            .where(*self._iteration_case_filter(iteration_id))
-            .subquery()
+        executed_cases = await self._get_executed_case_count(iteration_id)
+        ai_generated_cases = await self._get_ai_generated_case_count(iteration_id)
+        metrics = self._calculate_overview_metrics(
+            total_cases=total_cases,
+            exec_counts=exec_counts,
+            executed_cases=executed_cases,
+            ai_generated_cases=ai_generated_cases,
         )
-        executed_cases = (
-            await self.session.execute(
-                select(func.count(func.distinct(ExecutionResult.test_case_id))).where(
-                    ExecutionResult.deleted_at.is_(None),
-                    ExecutionResult.test_case_id.in_(select(case_ids_subq.c.id)),
-                )
-            )
-        ).scalar() or 0
-
-        coverage_rate = round((executed_cases / total_cases * 100) if total_cases > 0 else 0.0, 2)
-        defect_density = 0.0
-        automation_rate = 0.0
         reuse_rate = 0.0
 
-        metrics = {
+        snapshot_metrics = {
             "total_cases": total_cases,
-            "passed": passed,
-            "failed": failed,
-            "blocked": blocked,
-            "coverage_rate": coverage_rate,
-            "defect_density": defect_density,
-            "automation_rate": automation_rate,
+            "passed": exec_counts.get("passed", 0),
+            "failed": exec_counts.get("failed", 0),
+            "blocked": exec_counts.get("blocked", 0),
             "reuse_rate": reuse_rate,
+            **metrics,
         }
 
         today = date.today()
@@ -165,7 +231,7 @@ class AnalyticsService:
         ).scalar_one_or_none()
 
         if existing:
-            existing.metrics = metrics
+            existing.metrics = snapshot_metrics
             existing.trends = None
             await self.session.commit()
             await self.session.refresh(existing)
@@ -174,7 +240,7 @@ class AnalyticsService:
         snapshot = AnalyticsSnapshot(
             iteration_id=iteration_id,
             snapshot_date=today,
-            metrics=metrics,
+            metrics=snapshot_metrics,
         )
         self.session.add(snapshot)
         await self.session.commit()
@@ -184,12 +250,19 @@ class AnalyticsService:
     async def get_dashboard_data(self, iteration_id: uuid.UUID) -> dict:
         total_cases = await self._count_cases_for_iteration(iteration_id)
         exec_counts = await self._get_execution_counts(iteration_id)
+        executed_cases = await self._get_executed_case_count(iteration_id)
+        ai_generated_cases = await self._get_ai_generated_case_count(iteration_id)
+        metrics = self._calculate_overview_metrics(
+            total_cases=total_cases,
+            exec_counts=exec_counts,
+            executed_cases=executed_cases,
+            ai_generated_cases=ai_generated_cases,
+        )
 
         total_executed = sum(exec_counts.values())
-        passed = exec_counts.get("passed", 0)
         failed = exec_counts.get("failed", 0)
 
-        pass_rate = round((passed / total_executed * 100) if total_executed > 0 else 0.0, 2)
+        pass_rate = metrics["pass_rate"]
         fail_rate = round((failed / total_executed * 100) if total_executed > 0 else 0.0, 2)
 
         priority_dist = await self.get_priority_distribution(iteration_id)
@@ -207,7 +280,7 @@ class AnalyticsService:
             "status_distribution": status_dist,
             "source_distribution": source_dist,
             "execution_summary": {
-                "passed": passed,
+                "passed": exec_counts.get("passed", 0),
                 "failed": failed,
                 "blocked": exec_counts.get("blocked", 0),
                 "skipped": exec_counts.get("skipped", 0),
@@ -216,16 +289,7 @@ class AnalyticsService:
 
     async def get_trend_data(self, iteration_id: uuid.UUID, days: int = 30) -> dict:
         since = date.today() - timedelta(days=days)
-        q = (
-            select(AnalyticsSnapshot)
-            .where(
-                AnalyticsSnapshot.deleted_at.is_(None),
-                AnalyticsSnapshot.iteration_id == iteration_id,
-                AnalyticsSnapshot.snapshot_date >= since,
-            )
-            .order_by(AnalyticsSnapshot.snapshot_date)
-        )
-        result = await self.session.execute(q)
+        result = await self.session.execute(self._snapshot_query(iteration_id, since))
         snapshots = result.scalars().all()
 
         dates: list[str] = []
@@ -245,6 +309,37 @@ class AnalyticsService:
                 metrics_data[key].append(m.get(key, 0))
 
         return {"dates": dates, "metrics": metrics_data}
+
+    async def get_frontend_trends(self, iteration_id: uuid.UUID | None = None, days: int = 30) -> dict:
+        since = date.today() - timedelta(days=days)
+        result = await self.session.execute(self._snapshot_query(iteration_id, since))
+        snapshots = result.scalars().all()
+
+        aggregated: dict[str, dict[str, float]] = {}
+        for snap in snapshots:
+            date_key = snap.snapshot_date.strftime("%m/%d")
+            bucket = aggregated.setdefault(
+                date_key,
+                {"total_cases": 0.0, "passed": 0.0, "failed": 0.0, "blocked": 0.0},
+            )
+            metrics = snap.metrics or {}
+            bucket["total_cases"] += float(metrics.get("total_cases", 0))
+            bucket["passed"] += float(metrics.get("passed", 0))
+            bucket["failed"] += float(metrics.get("failed", 0))
+            bucket["blocked"] += float(metrics.get("blocked", 0))
+
+        case_count_trend: list[dict[str, float | str]] = []
+        pass_rate_trend: list[dict[str, float | str]] = []
+        for date_key, bucket in aggregated.items():
+            total_executed = bucket["passed"] + bucket["failed"] + bucket["blocked"]
+            pass_rate = round((bucket["passed"] / total_executed * 100) if total_executed > 0 else 0.0, 2)
+            case_count_trend.append({"date": date_key, "value": round(bucket["total_cases"])})
+            pass_rate_trend.append({"date": date_key, "value": pass_rate})
+
+        return {
+            "case_count_trend": case_count_trend,
+            "pass_rate_trend": pass_rate_trend,
+        }
 
     async def get_quality_score(self, iteration_id: uuid.UUID) -> dict:
         total_cases = await self._count_cases_for_iteration(iteration_id)

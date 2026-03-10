@@ -5,8 +5,10 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.knowledge.models import KnowledgeDocument
 from app.modules.products.models import Iteration, Product, Requirement
 from app.modules.recycle.schemas import RecycleItemResponse, RestoreRequest
+from app.modules.templates.models import TestCaseTemplate
 from app.modules.testcases.models import TestCase
 
 _MODEL_MAP: dict[str, tuple[type, str]] = {
@@ -14,6 +16,8 @@ _MODEL_MAP: dict[str, tuple[type, str]] = {
     "iteration": (Iteration, "name"),
     "requirement": (Requirement, "title"),
     "testcase": (TestCase, "title"),
+    "template": (TestCaseTemplate, "name"),
+    "knowledge": (KnowledgeDocument, "title"),
 }
 
 

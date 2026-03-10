@@ -8,7 +8,9 @@ from pydantic import BaseModel
 from app.ai.parser import parse_test_cases
 from app.ai.sse_collector import SSECollector
 from app.core.dependencies import AsyncSessionDep
+from app.modules.generation.schemas import GeneratedCaseResponse, GeneratedCaseStepResponse
 from app.modules.generation.service import GenerationService
+from app.modules.testcases.models import TestCase
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +30,41 @@ class TemplateGenerateRequest(BaseModel):
     requirement_id: uuid.UUID
     template_id: uuid.UUID
     variables: dict[str, str] | None = None
+
+
+def _normalize_case_type(case_type: str) -> str:
+    return "normal" if case_type == "functional" else case_type
+
+
+def _normalize_steps(steps: object) -> list[GeneratedCaseStepResponse]:
+    normalized: list[GeneratedCaseStepResponse] = []
+    if not isinstance(steps, list):
+        return normalized
+
+    for index, step in enumerate(steps, start=1):
+        if not isinstance(step, dict):
+            continue
+        normalized.append(
+            GeneratedCaseStepResponse(
+                step_num=step.get("step_num") or step.get("step") or index,
+                action=step.get("action", ""),
+                expected_result=step.get("expected_result") or step.get("expected", ""),
+            )
+        )
+
+    return normalized
+
+
+def _serialize_case(test_case: TestCase) -> GeneratedCaseResponse:
+    return GeneratedCaseResponse(
+        id=test_case.id,
+        case_id=test_case.case_id,
+        title=test_case.title,
+        priority=test_case.priority,
+        case_type=_normalize_case_type(test_case.case_type),
+        status=test_case.status,
+        steps=_normalize_steps(getattr(test_case, "steps", [])),
+    )
 
 
 async def _save_and_parse(
@@ -81,7 +118,7 @@ async def _save_and_parse(
 @router.post("/sessions")
 async def create_session(data: CreateSessionRequest, session: AsyncSessionDep) -> dict:
     svc = GenerationService(session)
-    gen_session = await svc.create_session(data.requirement_id, data.mode)
+    gen_session = await svc.get_or_create_session(data.requirement_id, data.mode)
     return {
         "id": str(gen_session.id),
         "requirement_id": str(gen_session.requirement_id),
@@ -139,6 +176,30 @@ async def chat(session_id: uuid.UUID, data: ChatRequest, session: AsyncSessionDe
 
     collector = SSECollector(stream, on_complete=on_complete)
     return StreamingResponse(collector, media_type="text/event-stream")
+
+
+@router.get("/sessions/{session_id}/cases", response_model=list[GeneratedCaseResponse])
+async def list_session_cases(
+    session_id: uuid.UUID,
+    session: AsyncSessionDep,
+) -> list[GeneratedCaseResponse]:
+    svc = GenerationService(session)
+    cases = await svc.list_session_cases(session_id)
+    return [_serialize_case(case) for case in cases]
+
+
+@router.post("/sessions/{session_id}/cases/{case_id}/accept", response_model=GeneratedCaseResponse)
+async def accept_session_case(
+    session_id: uuid.UUID,
+    case_id: uuid.UUID,
+    session: AsyncSessionDep,
+) -> GeneratedCaseResponse:
+    svc = GenerationService(session)
+    try:
+        case = await svc.accept_session_case(session_id, case_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return _serialize_case(case)
 
 
 @router.post("/by-requirement/{requirement_id}/chat")

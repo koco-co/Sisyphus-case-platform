@@ -3,6 +3,7 @@
 import asyncio
 import logging
 from dataclasses import dataclass, field
+from typing import Any, cast
 
 from app.core.config import settings
 
@@ -75,9 +76,12 @@ async def _invoke_openai(messages: list[dict]) -> LLMResult:
         api_key=settings.openai_api_key,
         http_client=httpx.AsyncClient(proxy=None, trust_env=False),
     )
-    response = await client.chat.completions.create(
+    response = cast(
+        Any,
+        await client.chat.completions.create(
         model=settings.openai_model,
-        messages=messages,
+            messages=cast(Any, messages),
+        ),
     )
     return LLMResult(
         content=response.choices[0].message.content or "",
@@ -95,9 +99,9 @@ async def _invoke_zhipu(messages: list[dict]) -> LLMResult:
     )
 
     def _call():
-        return client.chat.completions.create(model=settings.zhipu_model, messages=messages)
+        return client.chat.completions.create(model=settings.zhipu_model, messages=cast(Any, messages))
 
-    response = await asyncio.to_thread(_call)
+    response = cast(Any, await asyncio.to_thread(_call))
     return LLMResult(
         content=response.choices[0].message.content or "",
         usage=_extract_usage(response.usage),
@@ -113,9 +117,12 @@ async def _invoke_dashscope(messages: list[dict]) -> LLMResult:
         base_url=settings.dashscope_base_url,
         http_client=httpx.AsyncClient(proxy=None, trust_env=False),
     )
-    response = await client.chat.completions.create(
+    response = cast(
+        Any,
+        await client.chat.completions.create(
         model=settings.dashscope_model,
-        messages=messages,
+            messages=cast(Any, messages),
+        ),
     )
     return LLMResult(
         content=response.choices[0].message.content or "",

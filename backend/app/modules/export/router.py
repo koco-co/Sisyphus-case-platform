@@ -38,6 +38,17 @@ async def export_csv(session: AsyncSessionDep, requirement_id: uuid.UUID | None 
     )
 
 
+@router.get("/excel")
+async def export_excel(session: AsyncSessionDep, requirement_id: uuid.UUID | None = None) -> Response:
+    svc = ExportService(session)
+    content = await svc.export_cases_excel(requirement_id)
+    return Response(
+        content=content,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=test_cases.xlsx"},
+    )
+
+
 @router.post("", response_model=ExportJobResponse, status_code=status.HTTP_201_CREATED)
 async def create_export_job(session: AsyncSessionDep, params: ExportJobCreate) -> ExportJobResponse:
     svc = ExportService(session)

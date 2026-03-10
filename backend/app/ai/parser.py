@@ -145,8 +145,28 @@ def parse_test_cases(text: str) -> list[dict]:
                 cases.append(case)
         if cases:
             return cases
+    elif isinstance(json_data, dict):
+        cases = _parse_test_cases_from_object(json_data)
+        if cases:
+            return cases
 
     return _parse_test_cases_from_markdown(text)
+
+
+def _parse_test_cases_from_object(payload: dict) -> list[dict]:
+    """Support single-case objects and keyed case maps."""
+    if any(key in payload for key in ("title", "标题", "用例标题", "steps", "步骤")):
+        case = _build_case_from_json(payload)
+        return [case] if case["title"] else []
+
+    cases: list[dict] = []
+    for item in payload.values():
+        if not isinstance(item, dict):
+            continue
+        case = _build_case_from_json(item)
+        if case["title"]:
+            cases.append(case)
+    return cases
 
 
 def _build_case_from_json(item: dict) -> dict:
@@ -173,10 +193,20 @@ def _build_case_from_json(item: dict) -> dict:
 def _normalise_step(step: dict | str, index: int) -> dict:
     """Convert a raw step value into a normalised step dict."""
     if isinstance(step, dict):
+        raw_step_num = step.get("step_num") or step.get("序号")
+        raw_step_text = step.get("step")
+        step_num = raw_step_num if isinstance(raw_step_num, int) else index + 1
+        action = step.get("action") or step.get("操作") or step.get("步骤") or ""
+        if not action and isinstance(raw_step_text, str):
+            action = raw_step_text
         return {
-            "step_num": step.get("step_num") or step.get("序号") or index + 1,
-            "action": step.get("action") or step.get("操作") or step.get("步骤") or "",
-            "expected_result": step.get("expected_result") or step.get("预期结果") or step.get("expected") or "",
+            "step_num": step_num,
+            "action": action,
+            "expected_result": step.get("expected_result")
+            or step.get("预期结果")
+            or step.get("expected")
+            or step.get("expect")
+            or "",
         }
     return {
         "step_num": index + 1,

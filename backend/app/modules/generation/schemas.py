@@ -18,3 +18,19 @@ class SessionResponse(BaseResponse):
 
 class ChatRequest(BaseSchema):
     message: str
+
+
+class GeneratedCaseStepResponse(BaseSchema):
+    step_num: int
+    action: str
+    expected_result: str
+
+
+class GeneratedCaseResponse(BaseSchema):
+    id: uuid.UUID
+    case_id: str
+    title: str
+    priority: str
+    case_type: str
+    status: str
+    steps: list[GeneratedCaseStepResponse]

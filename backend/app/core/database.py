@@ -1,14 +1,27 @@
+import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from functools import lru_cache
 
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
 
 from app.core.config import settings
 
 
+def _running_under_pytest() -> bool:
+    return "PYTEST_CURRENT_TEST" in os.environ or settings.app_env == "test"
+
+
 @lru_cache(maxsize=1)
 def get_engine() -> AsyncEngine:
+    if _running_under_pytest():
+        return create_async_engine(
+            settings.database_url,
+            echo=settings.app_debug,
+            poolclass=NullPool,
+        )
+
     return create_async_engine(
         settings.database_url,
         echo=settings.app_debug,

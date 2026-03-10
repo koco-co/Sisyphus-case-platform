@@ -6,6 +6,7 @@ from fastapi import APIRouter, Query
 from app.core.dependencies import AsyncSessionDep
 from app.modules.analytics.schemas import (
     DashboardResponse,
+    FrontendTrendResponse,
     QualityScoreResponse,
     SnapshotResponse,
     TrendDataResponse,
@@ -82,6 +83,17 @@ async def get_trend_data(
     svc = AnalyticsService(session)
     data = await svc.get_trend_data(iteration_id, days)
     return TrendDataResponse.model_validate(data)
+
+
+@router.get("/trends", response_model=FrontendTrendResponse)
+async def get_frontend_trends(
+    session: AsyncSessionDep,
+    iteration_id: OptionalIterationId = None,
+    days: Annotated[int, Query(ge=1, le=365)] = 30,
+) -> FrontendTrendResponse:
+    svc = AnalyticsService(session)
+    data = await svc.get_frontend_trends(iteration_id, days)
+    return FrontendTrendResponse.model_validate(data)
 
 
 @router.get("/quality-score/{iteration_id}", response_model=QualityScoreResponse)

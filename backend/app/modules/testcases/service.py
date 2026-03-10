@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from uuid import UUID
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.testcases.models import TestCase, TestCaseVersion
@@ -35,18 +35,54 @@ class TestCaseService:
         for col, val in (
             (TestCase.requirement_id, requirement_id),
             (TestCase.scene_node_id, scene_node_id),
-            (TestCase.status, status_filter),
             (TestCase.priority, priority),
-            (TestCase.case_type, case_type),
-            (TestCase.source, source),
         ):
             if val is not None:
                 q = q.where(col == val)
                 count_q = count_q.where(col == val)
 
+        if status_filter is not None:
+            statuses = [status_filter]
+            if status_filter == "approved":
+                statuses.append("active")
+            elif status_filter == "review":
+                statuses.append("pending_review")
+            if len(statuses) == 1:
+                q = q.where(TestCase.status == status_filter)
+                count_q = count_q.where(TestCase.status == status_filter)
+            else:
+                q = q.where(TestCase.status.in_(statuses))
+                count_q = count_q.where(TestCase.status.in_(statuses))
+
+        if case_type is not None:
+            case_types = [case_type]
+            if case_type == "functional":
+                case_types.append("normal")
+            if len(case_types) == 1:
+                q = q.where(TestCase.case_type == case_type)
+                count_q = count_q.where(TestCase.case_type == case_type)
+            else:
+                q = q.where(TestCase.case_type.in_(case_types))
+                count_q = count_q.where(TestCase.case_type.in_(case_types))
+
+        if source is not None:
+            sources = [source]
+            if source == "ai_generated":
+                sources.append("ai")
+            if len(sources) == 1:
+                q = q.where(TestCase.source == source)
+                count_q = count_q.where(TestCase.source == source)
+            else:
+                q = q.where(TestCase.source.in_(sources))
+                count_q = count_q.where(TestCase.source.in_(sources))
+
         if keyword:
-            q = q.where(TestCase.title.ilike(f"%{keyword}%"))
-            count_q = count_q.where(TestCase.title.ilike(f"%{keyword}%"))
+            keyword_filter = or_(
+                TestCase.title.ilike(f"%{keyword}%"),
+                TestCase.case_id.ilike(f"%{keyword}%"),
+            )
+            q = q.where(keyword_filter)
+            count_q = count_q.where(keyword_filter)
 
         total = (await self.session.execute(count_q)).scalar() or 0
         q = q.order_by(TestCase.created_at.desc()).offset((page - 1) * page_size).limit(page_size)

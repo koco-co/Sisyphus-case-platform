@@ -114,7 +114,10 @@ async def _embed_zhipu(texts: list[str]) -> list[list[float]]:
     """智谱 embedding-3。"""
     from zhipuai import ZhipuAI
 
-    client = ZhipuAI(api_key=settings.zhipu_api_key)
+    client = ZhipuAI(
+        api_key=settings.zhipu_api_key,
+        http_client=httpx.Client(proxy=None, trust_env=False),
+    )
 
     vectors: list[list[float]] = []
     for text in texts:

@@ -16,7 +16,10 @@ router = APIRouter(prefix="/recycle", tags=["recycle"])
 @router.get("", response_model=PaginatedResponse[RecycleItemResponse])
 async def list_deleted(
     session: AsyncSessionDep,
-    type: str | None = Query(None, description="实体类型: product/iteration/requirement/testcase"),
+    type: str | None = Query(
+        None,
+        description="实体类型: product/iteration/requirement/testcase/template/knowledge",
+    ),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
 ) -> dict:

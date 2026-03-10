@@ -66,6 +66,14 @@ async def mark_all_as_read(user_id: uuid.UUID, session: AsyncSessionDep) -> dict
     return {"marked_read": count}
 
 
+@router.delete("/{notification_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_notification(notification_id: uuid.UUID, session: AsyncSessionDep) -> None:
+    svc = NotificationService(session)
+    success = await svc.soft_delete(notification_id)
+    if not success:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
+
+
 class BroadcastRequest(PydanticBaseModel):
     user_ids: list[uuid.UUID]
     title: str

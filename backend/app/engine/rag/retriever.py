@@ -52,7 +52,11 @@ def _get_client() -> QdrantClient:
     """懒加载 Qdrant 客户端，避免导入时连接。"""
     global _client  # noqa: PLW0603
     if _client is None:
-        _client = QdrantClient(url=settings.qdrant_url, timeout=30)
+        _client = QdrantClient(
+            url=settings.qdrant_url,
+            timeout=30,
+            trust_env=False,
+        )
         logger.info("Qdrant 客户端已连接: %s", settings.qdrant_url)
     return _client
 
