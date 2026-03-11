@@ -1,6 +1,6 @@
 'use client';
 
-import { Bot, Check, Loader2, Save, Star, Zap } from 'lucide-react';
+import { Bot, Check, Eye, EyeOff, Key, Loader2, Save, Star, Zap } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { ConnectionTestButton } from '@/components/ui/ConnectionTestButton';
 import { ParamTooltip } from '@/components/ui/ParamTooltip';
@@ -105,6 +105,18 @@ const sliderParams: SliderParam[] = [
 
 const starKeys = ['s1', 's2', 's3', 's4', 's5'] as const;
 
+interface ProviderKeyInfo {
+  key: string;
+  label: string;
+  placeholder: string;
+}
+
+const providerKeys: ProviderKeyInfo[] = [
+  { key: 'zhipu', label: '智谱AI (GLM)', placeholder: 'xxxxxxxx.xxxxxxxxxx' },
+  { key: 'dashscope', label: '阿里云 (Qwen)', placeholder: 'sk-xxxxxxxxxxxxxxxx' },
+  { key: 'openai', label: 'OpenAI (GPT)', placeholder: 'sk-xxxxxxxxxxxxxxxx' },
+];
+
 function StarsRow({ label, count }: { label: string; count: number }) {
   return (
     <div className="flex items-center justify-between">
@@ -131,6 +143,8 @@ export function AIModelSettings() {
     concurrency: 3,
   });
   const [saved, setSaved] = useState(false);
+  const [apiKeys, setApiKeys] = useState<Record<string, string>>({ zhipu: '', dashscope: '', openai: '' });
+  const [visibleKeys, setVisibleKeys] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (!effectiveConfig) {
@@ -145,6 +159,9 @@ export function AIModelSettings() {
       topP: Number(outputPreference.top_p ?? 0.95),
       concurrency: Number(outputPreference.concurrency ?? 3),
     });
+    if (effectiveConfig.api_keys) {
+      setApiKeys((prev) => ({ ...prev, ...(effectiveConfig.api_keys as Record<string, string>) }));
+    }
   }, [effectiveConfig]);
 
   const activeModel = useMemo(
@@ -153,6 +170,9 @@ export function AIModelSettings() {
   );
 
   const handleSave = async () => {
+    const filteredKeys = Object.fromEntries(
+      Object.entries(apiKeys).filter(([, v]) => v.trim() !== ''),
+    );
     const ok = await saveGlobalConfig({
       llm_model: activeModel.id,
       llm_temperature: paramVals.temperature,
@@ -161,6 +181,7 @@ export function AIModelSettings() {
         top_p: paramVals.topP,
         concurrency: paramVals.concurrency,
       },
+      api_keys: Object.keys(filteredKeys).length > 0 ? filteredKeys : null,
     });
     if (!ok) return;
 
@@ -213,6 +234,46 @@ export function AIModelSettings() {
             </div>
           </button>
         ))}
+      </div>
+
+      <hr className="divider" />
+
+      <div className="sec-header">
+        <Key className="w-4 h-4 text-accent" />
+        <span className="sec-title">API Key 配置</span>
+      </div>
+      <div className="card flex flex-col gap-4 mb-6">
+        {providerKeys.map((provider) => (
+          <div key={provider.key}>
+            <label className="text-[12.5px] text-text2 mb-1.5 block">{provider.label}</label>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <input
+                  type={visibleKeys[provider.key] ? 'text' : 'password'}
+                  className="w-full bg-bg2 border border-border rounded-md px-3 py-1.5 text-[12.5px] text-text font-mono pr-9 focus:border-accent focus:outline-none transition-colors"
+                  placeholder={provider.placeholder}
+                  value={apiKeys[provider.key] ?? ''}
+                  onChange={(e) => setApiKeys((prev) => ({ ...prev, [provider.key]: e.target.value }))}
+                  disabled={loading || saving}
+                />
+                <button
+                  type="button"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-text3 hover:text-text2 transition-colors"
+                  onClick={() => setVisibleKeys((prev) => ({ ...prev, [provider.key]: !prev[provider.key] }))}
+                >
+                  {visibleKeys[provider.key] ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+              <ConnectionTestButton
+                testUrl={`/api/ai-config/test-llm?provider=${provider.key}`}
+                label="测试"
+              />
+            </div>
+          </div>
+        ))}
+        <p className="text-[11px] text-text3">
+          API Key 保存在数据库中，优先于 .env 环境变量。留空则使用 .env 中的配置。
+        </p>
       </div>
 
       <hr className="divider" />

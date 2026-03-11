@@ -43,6 +43,7 @@ export function useAiConfig() {
       output_preference?: Record<string, unknown> | null;
       llm_model?: string | null;
       llm_temperature?: number | null;
+      api_keys?: Record<string, string> | null;
     }) => {
       setSaving(true);
       setError(null);

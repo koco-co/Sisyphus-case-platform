@@ -70,6 +70,8 @@ class AiConfigService:
             "custom_checklist": [],
             "llm_model": None,
             "llm_temperature": None,
+            "api_keys": None,
+            "vector_config": None,
         }
 
         # Auto-resolve product_id from iteration
@@ -123,6 +125,11 @@ class AiConfigService:
                 result["custom_checklist"] = existing + override.custom_checklist
             else:
                 result["custom_checklist"] = override.custom_checklist
+
+        if override.api_keys:
+            result["api_keys"] = {**(result.get("api_keys") or {}), **override.api_keys}
+        if override.vector_config:
+            result["vector_config"] = {**(result.get("vector_config") or {}), **override.vector_config}
 
         return result
 
