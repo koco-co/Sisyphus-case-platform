@@ -84,6 +84,16 @@ async def load_testcases(engine) -> list[dict]:
 # 2. 用例 → 嵌入文本
 # ═══════════════════════════════════════════════════════════════════
 
+def _sanitize(text: str, max_len: int = 2000) -> str:
+    """清理文本：移除特殊 Unicode、控制字符，截断到 max_len。"""
+    import re as _re
+    # 移除控制字符（保留换行和空格）
+    text = _re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "", text)
+    # 替换可能导致 API 错误的特殊 Unicode 字符
+    text = text.replace("\u200b", "").replace("\ufeff", "")
+    return text[:max_len].strip()
+
+
 def testcase_to_text(tc: dict) -> str:
     """将一条用例转换为适合嵌入的文本描述。"""
     parts: list[str] = []
@@ -95,7 +105,7 @@ def testcase_to_text(tc: dict) -> str:
     if tc.get("req_title"):
         parts.append(f"需求: {tc['req_title']}")
 
-    parts.append(f"用例: {tc['title']}")
+    parts.append(f"用例: {tc['title'] or '(无标题)'}")
 
     if tc.get("priority"):
         parts.append(f"优先级: {tc['priority']}")
@@ -126,7 +136,7 @@ def testcase_to_text(tc: dict) -> str:
             if step_lines:
                 parts.append("步骤:\n" + "\n".join(step_lines))
 
-    return "\n".join(parts)
+    return _sanitize("\n".join(parts))
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -198,18 +208,29 @@ async def main(batch_size: int = 16, collection: str = COLLECTION) -> None:
         try:
             vectors = await embed_texts(texts, batch_size=batch_size)
         except Exception as e:
-            logger.error("嵌入失败 (batch %d-%d): %s", i, i + len(batch), e)
-            errors += len(batch)
-            # 遇到 rate limit 等待后重试一次
+            logger.warning("批量嵌入失败 (batch %d-%d): %s，降级为逐条处理", i, i + len(batch), e)
+            # 遇到 rate limit 等待
             if "429" in str(e) or "rate" in str(e).lower():
-                logger.info("Rate limited, 等待 10s 后重试...")
                 await asyncio.sleep(10)
+            # 降级：逐条嵌入，跳过失败的单条
+            vectors = []
+            failed_indices: set[int] = set()
+            for j, t in enumerate(texts):
                 try:
-                    vectors = await embed_texts(texts, batch_size=batch_size)
-                except Exception as e2:
-                    logger.error("重试失败: %s", e2)
-                    continue
-            else:
+                    v = await embed_texts([t], batch_size=1)
+                    vectors.append(v[0])
+                except Exception:
+                    logger.warning("  跳过用例: %s", batch[j].get("title", "?")[:50])
+                    vectors.append(None)  # type: ignore[arg-type]
+                    failed_indices.add(j)
+                    errors += 1
+
+            # 过滤掉失败的
+            batch = [tc for j, tc in enumerate(batch) if j not in failed_indices]
+            texts = [t for j, t in enumerate(texts) if j not in failed_indices]
+            vectors = [v for v in vectors if v is not None]
+
+            if not vectors:
                 continue
 
         points: list[models.PointStruct] = []
