@@ -218,7 +218,11 @@ export function AIModelSettings() {
 
   const handleSave = async () => {
     const apiKeys: Record<string, string> = {};
-    if (apiKey.trim()) apiKeys[activeProviderId] = apiKey.trim();
+    const trimmedKey = apiKey.trim();
+    // Only send the key if it was actually changed (not a masked value like "sk-a***z789")
+    if (trimmedKey && !trimmedKey.includes('***')) {
+      apiKeys[activeProviderId] = trimmedKey;
+    }
 
     const ok = await saveGlobalConfig({
       llm_model: activeModelId,

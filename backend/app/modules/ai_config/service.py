@@ -11,6 +11,7 @@ from app.ai.prompts import (
     DEFAULT_SCOPE_PREFERENCE,
     DEFAULT_TEAM_STANDARD,
 )
+from app.core.encryption import decrypt_api_key, encrypt_api_key, mask_api_key
 from app.modules.ai_config.models import AiConfiguration
 from app.modules.ai_config.schemas import AiConfigCreate, AiConfigUpdate
 from app.modules.products.models import Iteration
@@ -41,7 +42,10 @@ class AiConfigService:
         return result.scalar_one_or_none()
 
     async def create_config(self, data: AiConfigCreate) -> AiConfiguration:
-        config = AiConfiguration(**data.model_dump(exclude_none=True))
+        dump = data.model_dump(exclude_none=True)
+        if "api_keys" in dump and dump["api_keys"]:
+            dump["api_keys"] = self._encrypt_keys(dump["api_keys"])
+        config = AiConfiguration(**dump)
         self.session.add(config)
         await self.session.commit()
         await self.session.refresh(config)
@@ -49,14 +53,37 @@ class AiConfigService:
 
     async def update_config(self, config_id: UUID, data: AiConfigUpdate) -> AiConfiguration:
         config = await self.get_config(config_id)
-        for key, value in data.model_dump(exclude_unset=True).items():
+        updates = data.model_dump(exclude_unset=True)
+        if "api_keys" in updates:
+            if updates["api_keys"]:
+                updates["api_keys"] = self._encrypt_keys(updates["api_keys"])
+            else:
+                # Don't overwrite existing keys with null
+                del updates["api_keys"]
+        for key, value in updates.items():
             setattr(config, key, value)
         await self.session.commit()
         await self.session.refresh(config)
         return config
 
     async def get_effective_config(self, iteration_id: UUID | None = None, product_id: UUID | None = None) -> dict:
+        """Get merged config with MASKED API keys (safe for frontend display)."""
+        merged = await self._get_effective_raw(iteration_id, product_id)
+        return self._mask_keys_in_result(merged)
+
+    async def get_effective_config_with_secrets(
+        self, iteration_id: UUID | None = None, product_id: UUID | None = None
+    ) -> dict:
+        """Get merged config with DECRYPTED API keys (for internal LLM calls only)."""
+        merged = await self._get_effective_raw(iteration_id, product_id)
+        if merged.get("api_keys"):
+            merged["api_keys"] = self._decrypt_keys(merged["api_keys"])
+        return merged
+
+    async def _get_effective_raw(self, iteration_id: UUID | None = None, product_id: UUID | None = None) -> dict:
         """Get merged config following inheritance: iteration > product > global > default.
+
+        Returns raw encrypted API keys — callers must mask or decrypt before use.
 
         If iteration_id is given but product_id is not, automatically resolve
         the owning product so that product-level overrides are applied.
@@ -99,6 +126,40 @@ class AiConfigService:
                 merged = self._merge_config(merged, iteration_config)
 
         return merged
+
+    def _mask_keys_in_result(self, result: dict) -> dict:
+        """Mask API keys before returning to frontend."""
+        if result.get("api_keys"):
+            result["api_keys"] = self._mask_keys(result["api_keys"])
+        return result
+
+    @staticmethod
+    def _encrypt_keys(keys: dict) -> dict:
+        """Encrypt each API key value for DB storage."""
+        return {k: encrypt_api_key(v) for k, v in keys.items() if v}
+
+    @staticmethod
+    def _decrypt_keys(keys: dict) -> dict:
+        """Decrypt each API key value from DB storage."""
+        decrypted = {}
+        for k, v in keys.items():
+            try:
+                decrypted[k] = decrypt_api_key(v)
+            except Exception:
+                decrypted[k] = v
+        return decrypted
+
+    @staticmethod
+    def _mask_keys(keys: dict) -> dict:
+        """Mask each API key value for display."""
+        masked = {}
+        for k, v in keys.items():
+            try:
+                plain = decrypt_api_key(v)
+                masked[k] = mask_api_key(plain)
+            except Exception:
+                masked[k] = mask_api_key(v)
+        return masked
 
     def _merge_config(self, base: dict, override: AiConfiguration) -> dict:
         """Merge override config into base. Text fields override, JSONB deep merge."""
