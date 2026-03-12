@@ -75,6 +75,7 @@ export default function WorkbenchPage() {
             messages={wb.messages}
             streamingContent={wb.sse.content}
             streamingThinking={wb.sse.thinking}
+            streamingCases={wb.sse.cases}
             isStreaming={wb.sse.isStreaming}
           />
           <ChatInput

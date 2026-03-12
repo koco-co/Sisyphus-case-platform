@@ -9,10 +9,20 @@ interface SSEOptions {
   onError?: (error: Error) => void;
 }
 
+export interface SSEStreamingCase {
+  _idx: number;
+  title: string;
+  priority: string;
+  case_type: string;
+  precondition?: string;
+  steps: { step_num?: number; action: string; expected_result: string }[];
+}
+
 interface SSEState {
   isStreaming: boolean;
   content: string;
   thinking: string;
+  cases: SSEStreamingCase[];
   error: string | null;
 }
 
@@ -21,18 +31,21 @@ export function useSSE() {
     isStreaming: false,
     content: '',
     thinking: '',
+    cases: [],
     error: null,
   });
   const abortRef = useRef<AbortController | null>(null);
   const contentRef = useRef('');
   const thinkingRef = useRef('');
+  const casesRef = useRef<SSEStreamingCase[]>([]);
 
   const startStream = useCallback(
     async (path: string, options?: { method?: string; body?: unknown } & SSEOptions) => {
       // Reset state
       contentRef.current = '';
       thinkingRef.current = '';
-      setState({ isStreaming: true, content: '', thinking: '', error: null });
+      casesRef.current = [];
+      setState({ isStreaming: true, content: '', thinking: '', cases: [], error: null });
 
       abortRef.current = new AbortController();
 
@@ -74,6 +87,10 @@ export function useSSE() {
                   contentRef.current += data.delta;
                   setState((s) => ({ ...s, content: contentRef.current }));
                   options?.onContent?.(data.delta, contentRef.current);
+                } else if (eventType === 'case' && data.title) {
+                  const newCase = data as SSEStreamingCase;
+                  casesRef.current = [...casesRef.current, newCase];
+                  setState((s) => ({ ...s, cases: casesRef.current }));
                 } else if (eventType === 'error') {
                   const errMsg = data.message || 'AI 服务异常';
                   setState((s) => ({ ...s, error: errMsg }));

@@ -1,5 +1,5 @@
 ﻿用例编号,用例标题,所属模块,相关需求,前置条件,步骤,预期结果,优先级,用例类型
-168528,验证删除用户等级后对应功能正确,/版本迭代测试用例/v6.4.5/gate二期/【数据安全】用户等级和公共组件对接(#9658),【数据安全】用户等级和公共组件对接（公共组件支持自定义用户等级）(#15124),"<span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, &quot;background-color:rgba(245, 246, 247, 0.92);“>1.公共组件存在级别最高的用户等级名称：L1；</span><br /><span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, &quot;background-color:rgba(245, 246, 247, 0.92);“>级别第二高的用户等级名称：L2</span><br /><span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, &quot;background-color:rgba(245, 246, 247, 0.92);“>2.存在用户的级别名称为L1</span>","1. 进入【删除用户等级后对应功能正确】页面
+168528,验证删除用户等级后对应功能正确,数据资产-数据安全-分级管理,数据安全-用户等级和公共组件对接（公共组件支持自定义用户等级）,"<span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, ""background-color:rgba(245, 246, 247, 0.92);“>1.公共组件存在级别最高的用户等级名称：L1；</span><br /><span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, ""background-color:rgba(245, 246, 247, 0.92);“>级别第二高的用户等级名称：L2</span><br /><span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, ""background-color:rgba(245, 246, 247, 0.92);“>2.存在用户的级别名称为L1</span>","1. 进入【删除用户等级后对应功能正确】页面
 2. 删除L1
 3. 点击进入数据安全-级别管理-添加级别页面
 4. 鼠标移至开放用户等级右边“？”图标
@@ -13,7 +13,7 @@
 5. 显示为公共组件自定义的名称：最高级别对应的开放用户等级更改为L2
 6. 无法查看
 7. 可以查看到正确信息",2,功能测试
-168527,验证编辑用户等级后对应功能正确,/版本迭代测试用例/v6.4.5/gate二期/【数据安全】用户等级和公共组件对接(#9658),【数据安全】用户等级和公共组件对接（公共组件支持自定义用户等级）(#15124),"<span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, &quot;background-color:rgba(245, 246, 247, 0.92);“>1.公共组件存在级别最高的用户等级名称：L1</span><br /><span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, &quot;background-color:rgba(245, 246, 247, 0.92);“>2.存在用户的级别名称为L1</span>","1. 进入【编辑用户等级后对应功能正确】页面
+168527,验证编辑用户等级后对应功能正确,数据资产-数据安全-分级管理,数据安全-用户等级和公共组件对接（公共组件支持自定义用户等级）,"<span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, ""background-color:rgba(245, 246, 247, 0.92);“>1.公共组件存在级别最高的用户等级名称：L1</span><br /><span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, ""background-color:rgba(245, 246, 247, 0.92);“>2.存在用户的级别名称为L1</span>","1. 进入【编辑用户等级后对应功能正确】页面
 2. 编辑L1为L10
 3. 点击进入数据安全-级别管理-添加级别页面
 4. 鼠标移至开放用户等级右边“？”图标
@@ -27,7 +27,7 @@
 5. 显示为公共组件自定义的名称：最高级别对应的开放用户等级更改为L10
 6. 无法查看
 7. 可以查看到正确信息",2,功能测试
-168526,验证新增最高级别后对应功能正确,/版本迭代测试用例/v6.4.5/gate二期/【数据安全】用户等级和公共组件对接(#9658),【数据安全】用户等级和公共组件对接（公共组件支持自定义用户等级）(#15124),"<span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, &quot;background-color:rgba(245, 246, 247, 0.92);“>1.公共组件存在级别最高的用户等级名称：L1</span><br /><span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, &quot;background-color:rgba(245, 246, 247, 0.92);“>2.存在用户的级别名称为L1</span>","1. 进入【新增最高级别后对应功能正确】页面
+168526,验证新增最高级别后对应功能正确,数据资产-数据安全-分级管理,数据安全-用户等级和公共组件对接（公共组件支持自定义用户等级）,"<span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, ""background-color:rgba(245, 246, 247, 0.92);“>1.公共组件存在级别最高的用户等级名称：L1</span><br /><span style=“color:#27292A;font-family:NeverMindUI, -apple-system, BlinkMacSystemFont, ""background-color:rgba(245, 246, 247, 0.92);“>2.存在用户的级别名称为L1</span>","1. 进入【新增最高级别后对应功能正确】页面
 2. 新增一个最高级别，对应级别名称为L20
 3. 点击进入数据安全-级别管理-添加级别页面
 4. 鼠标移至开放用户等级右边“？”图标
@@ -41,7 +41,7 @@
 5. 显示为公共组件自定义的名称：最高级别对应的开放用户等级更改为L20
 6. 无法查看
 7. 可以查看到正确信息",2,功能测试
-168438,验证数据安全-级别管理-添加级别的开放用户等级提示内容修改,/版本迭代测试用例/v6.4.5/gate二期/【数据安全】用户等级和公共组件对接(#9658),【数据安全】用户等级和公共组件对接（公共组件支持自定义用户等级）(#15124),无；点击,"1. 进入数据安全-级别管理-添加级别页面
+168438,验证数据安全-级别管理-添加级别的开放用户等级提示内容修改,数据资产-数据安全-分级管理,数据安全-用户等级和公共组件对接（公共组件支持自定义用户等级）,无；点击,"1. 进入数据安全-级别管理-添加级别页面
 2. 鼠标移至开放用户等级右边“？”图标
 3. 查看“xx”取值","1. 成功进入目标页面，页面内容正常加载显示，无报错
 2. 显示提示信息：设置后，归属于该级别的字段只开放给对应用户等级的用户查看，默认开放给最高级别的用户

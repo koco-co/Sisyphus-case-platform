@@ -1,15 +1,15 @@
-﻿用例编号,用例标题,所属模块,相关需求,前置条件,步骤,预期结果,优先级,用例类型
-170711,验证自定义告警-飞书,/迭代版本测试用例/V6.4.2/告警格式化(#9783),告警格式化(#15368),"1、指标配置文件中：datasource.type=starrocks；
+﻿"用例编号","用例标题","所属模块","相关需求","前置条件","步骤","预期结果","优先级","用例类型"
+"170711","验证自定义告警-飞书","指标开发-告警管理","告警格式化","1、指标配置文件中：datasource.type=starrocks；
 2、控制台配置 StarRocks SQL 计算组件，版本选择3.x，测试连通性通过；
 3、以【超级管理员admin】账号操作；
 4、存在项目 easyproject_test，当前项目暂未对接数据服务，已进入项目内；
 5、SR数据源下存在${catalog}-$｛schema｝-全量分区表$｛quan_table｝，存在字段：{column1}（varchar类型）、{column2}（varchar类型）、{column3}（decimal类型）、{column4}（varchar类型）、分区字段{par_column}（date类型，格式yyyyMMdd）；
 插入测试数据：
 INSERT INTO sales_full VALUES
-(&#039;2025-12-01&#039;, &#039;ORD001&#039;, &#039;Alice&#039;, 100.50, &#039;North&#039;),
-(&#039;2025-12-01&#039;, &#039;ORD002&#039;, &#039;Bob&#039;, 200.00, &#039;South&#039;),
-(&#039;2025-12-02&#039;, &#039;ORD003&#039;, &#039;Charlie&#039;, 150.75, &#039;East&#039;),
-(&#039;2025-12-03&#039;, &#039;ORD004&#039;, &#039;Diana&#039;, 300.00, &#039;West&#039;);
+('2025-12-01', 'ORD001', 'Alice', 100.50, 'North'),
+('2025-12-01', 'ORD002', 'Bob', 200.00, 'South'),
+('2025-12-02', 'ORD003', 'Charlie', 150.75, 'East'),
+('2025-12-03', 'ORD004', 'Diana', 300.00, 'West');
 6、存在维度对象{object}，维度属性{column1，column2,column3,column4,par_column}；
 7、存在模型：{Model_name}，选择表：$｛quan_table｝，更新方式选择 ：全量分区表，分区字段：{par_column}，维度：{column1}、{column2}、{column4}、{par_column}，度量：{column3};
 8、模型新建原子指标{原子_test_01}：（sum(column3)），新建落表派生{派生_落表_test_01};
@@ -52,18 +52,18 @@ INSERT INTO sales_full VALUES
 更新人：admin@dtstack.com
 9. 弹窗展示具体的异常明细数据：
 10. 直接导出明细表格，toast提示导出成功，系统给出成功反馈，相关页面/数据状态更新为最新
-11. 表格数据展示正确，内容与预期完全一致，无异常或错误",1,功能测试
-170710,验证钉钉告警,/迭代版本测试用例/V6.4.2/告警格式化(#9783),告警格式化(#15368),"1、指标配置文件中：datasource.type=starrocks；
+11. 表格数据展示正确，内容与预期完全一致，无异常或错误","1","功能测试"
+"170710","验证钉钉告警","指标开发-告警管理","告警格式化","1、指标配置文件中：datasource.type=starrocks；
 2、控制台配置 StarRocks SQL 计算组件，版本选择3.x，测试连通性通过；
 3、以【超级管理员admin】账号操作；
 4、存在项目 easyproject_test，当前项目暂未对接数据服务，已进入项目内；
 5、SR数据源下存在${catalog}-$｛schema｝-全量分区表$｛quan_table｝，存在字段：{column1}（varchar类型）、{column2}（varchar类型）、{column3}（decimal类型）、{column4}（varchar类型）、分区字段{par_column}（date类型，格式yyyyMMdd）；
 插入测试数据：
 INSERT INTO sales_full VALUES
-(&#039;2025-12-01&#039;, &#039;ORD001&#039;, &#039;Alice&#039;, 100.50, &#039;North&#039;),
-(&#039;2025-12-01&#039;, &#039;ORD002&#039;, &#039;Bob&#039;, 200.00, &#039;South&#039;),
-(&#039;2025-12-02&#039;, &#039;ORD003&#039;, &#039;Charlie&#039;, 150.75, &#039;East&#039;),
-(&#039;2025-12-03&#039;, &#039;ORD004&#039;, &#039;Diana&#039;, 300.00, &#039;West&#039;);
+('2025-12-01', 'ORD001', 'Alice', 100.50, 'North'),
+('2025-12-01', 'ORD002', 'Bob', 200.00, 'South'),
+('2025-12-02', 'ORD003', 'Charlie', 150.75, 'East'),
+('2025-12-03', 'ORD004', 'Diana', 300.00, 'West');
 6、存在维度对象{object}，维度属性{column1，column2,column3,column4,par_column}；
 7、存在模型：{Model_name}，选择表：$｛quan_table｝，更新方式选择 ：全量分区表，分区字段：{par_column}，维度：{column1}、{column2}、{column4}、{par_column}，度量：{column3};
 8、模型新建原子指标{原子_test_01}：（sum(column3)），新建落表派生{派生_落表_test_01};
@@ -106,18 +106,18 @@ INSERT INTO sales_full VALUES
 更新人：admin@dtstack.com
 9. 弹窗展示具体的异常明细数据：
 10. 直接导出明细表格，toast提示导出成功，系统给出成功反馈，相关页面/数据状态更新为最新
-11. 表格数据展示正确，内容与预期完全一致，无异常或错误",2,功能测试
-170709,验证邮箱告警,/迭代版本测试用例/V6.4.2/告警格式化(#9783),告警格式化(#15368),"1、指标配置文件中：datasource.type=starrocks；
+11. 表格数据展示正确，内容与预期完全一致，无异常或错误","2","功能测试"
+"170709","验证邮箱告警","指标开发-告警管理","告警格式化","1、指标配置文件中：datasource.type=starrocks；
 2、控制台配置 StarRocks SQL 计算组件，版本选择3.x，测试连通性通过；
 3、以【超级管理员admin】账号操作；
 4、存在项目 easyproject_test，当前项目暂未对接数据服务，已进入项目内；
 5、SR数据源下存在${catalog}-$｛schema｝-全量分区表$｛quan_table｝，存在字段：{column1}（varchar类型）、{column2}（varchar类型）、{column3}（decimal类型）、{column4}（varchar类型）、分区字段{par_column}（date类型，格式yyyyMMdd）；
 插入测试数据：
 INSERT INTO sales_full VALUES
-(&#039;2025-12-01&#039;, &#039;ORD001&#039;, &#039;Alice&#039;, 100.50, &#039;North&#039;),
-(&#039;2025-12-01&#039;, &#039;ORD002&#039;, &#039;Bob&#039;, 200.00, &#039;South&#039;),
-(&#039;2025-12-02&#039;, &#039;ORD003&#039;, &#039;Charlie&#039;, 150.75, &#039;East&#039;),
-(&#039;2025-12-03&#039;, &#039;ORD004&#039;, &#039;Diana&#039;, 300.00, &#039;West&#039;);
+('2025-12-01', 'ORD001', 'Alice', 100.50, 'North'),
+('2025-12-01', 'ORD002', 'Bob', 200.00, 'South'),
+('2025-12-02', 'ORD003', 'Charlie', 150.75, 'East'),
+('2025-12-03', 'ORD004', 'Diana', 300.00, 'West');
 6、存在维度对象{object}，维度属性{column1，column2,column3,column4,par_column}；
 7、存在模型：{Model_name}，选择表：$｛quan_table｝，更新方式选择 ：全量分区表，分区字段：{par_column}，维度：{column1}、{column2}、{column4}、{par_column}，度量：{column3};
 8、模型新建原子指标{原子_test_01}：（sum(column3)），新建落表派生{派生_落表_test_01};
@@ -160,18 +160,18 @@ INSERT INTO sales_full VALUES
 更新人：admin@dtstack.com
 9. 弹窗展示具体的异常明细数据：
 10. 直接导出明细表格，toast提示导出成功，系统给出成功反馈，相关页面/数据状态更新为最新
-11. 表格数据展示正确，内容与预期完全一致，无异常或错误",2,功能测试
-170708,验证短信告警,/迭代版本测试用例/V6.4.2/告警格式化(#9783),告警格式化(#15368),"1、指标配置文件中：datasource.type=starrocks；
+11. 表格数据展示正确，内容与预期完全一致，无异常或错误","2","功能测试"
+"170708","验证短信告警","指标开发-告警管理","告警格式化","1、指标配置文件中：datasource.type=starrocks；
 2、控制台配置 StarRocks SQL 计算组件，版本选择3.x，测试连通性通过；
 3、以【超级管理员admin】账号操作；
 4、存在项目 easyproject_test，当前项目暂未对接数据服务，已进入项目内；
 5、SR数据源下存在${catalog}-$｛schema｝-全量分区表$｛quan_table｝，存在字段：{column1}（varchar类型）、{column2}（varchar类型）、{column3}（decimal类型）、{column4}（varchar类型）、分区字段{par_column}（date类型，格式yyyyMMdd）；
 插入测试数据：
 INSERT INTO sales_full VALUES
-(&#039;2025-12-01&#039;, &#039;ORD001&#039;, &#039;Alice&#039;, 100.50, &#039;North&#039;),
-(&#039;2025-12-01&#039;, &#039;ORD002&#039;, &#039;Bob&#039;, 200.00, &#039;South&#039;),
-(&#039;2025-12-02&#039;, &#039;ORD003&#039;, &#039;Charlie&#039;, 150.75, &#039;East&#039;),
-(&#039;2025-12-03&#039;, &#039;ORD004&#039;, &#039;Diana&#039;, 300.00, &#039;West&#039;);
+('2025-12-01', 'ORD001', 'Alice', 100.50, 'North'),
+('2025-12-01', 'ORD002', 'Bob', 200.00, 'South'),
+('2025-12-02', 'ORD003', 'Charlie', 150.75, 'East'),
+('2025-12-03', 'ORD004', 'Diana', 300.00, 'West');
 6、存在维度对象{object}，维度属性{column1，column2,column3,column4,par_column}；
 7、存在模型：{Model_name}，选择表：$｛quan_table｝，更新方式选择 ：全量分区表，分区字段：{par_column}，维度：{column1}、{column2}、{column4}、{par_column}，度量：{column3};
 8、模型新建原子指标{原子_test_01}：（sum(column3)），新建落表派生{派生_落表_test_01};
@@ -214,4 +214,4 @@ INSERT INTO sales_full VALUES
 更新人：admin@dtstack.com
 9. 弹窗展示具体的异常明细数据：
 10. 直接导出明细表格，toast提示导出成功，系统给出成功反馈，相关页面/数据状态更新为最新
-11. 表格数据展示正确，内容与预期完全一致，无异常或错误",2,功能测试
+11. 表格数据展示正确，内容与预期完全一致，无异常或错误","2","功能测试"

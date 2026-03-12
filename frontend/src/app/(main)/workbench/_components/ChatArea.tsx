@@ -1,11 +1,11 @@
 'use client';
 
-import { Bot, Loader2, User } from 'lucide-react';
+import { Bot, Brain, Loader2, User } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { ThinkingStream } from '@/components/ui/ThinkingStream';
 import { CaseCard } from '@/components/workspace/CaseCard';
 import { StreamCursor } from '@/components/workspace/StreamCursor';
+import type { SSEStreamingCase } from '@/hooks/useSSE';
 import type { WorkbenchMessage } from '@/stores/workspace-store';
 import { CaseSkeleton } from './CaseSkeleton';
 
@@ -13,79 +13,158 @@ interface ChatAreaProps {
   messages: WorkbenchMessage[];
   streamingContent: string;
   streamingThinking: string;
+  streamingCases: SSEStreamingCase[];
   isStreaming: boolean;
 }
 
-interface ParsedCase {
-  title?: string;
-  priority?: string;
-  case_type?: string;
-  precondition?: string;
-  steps?: { step_num?: number; action?: string; expected_result?: string }[];
-  keywords?: string[];
-}
-
-function parseCasesFromContent(content: string): ParsedCase[] {
-  try {
-    const match = content.match(/```json\s*([\s\S]*?)```/) || content.match(/(\[[\s\S]*\])/);
-    if (!match) return [];
-    const parsed = JSON.parse(match[1]);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
 function renderMarkdown(text: string): string {
-  // If content looks like a JSON case array, don't render as markdown
-  if (text.trim().startsWith('[') || text.includes('```json')) return text;
   return text
-    .replace(/### (.+)/g, '<h3 class="text-[13px] font-semibold text-text mt-3 mb-1">$1</h3>')
-    .replace(/## (.+)/g, '<h2 class="text-[14px] font-semibold text-text mt-3 mb-1">$1</h2>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-text">$1</strong>')
+    .replace(/### (.+)/g, '<h3 class="text-[13px] font-semibold text-sy-text mt-3 mb-1">$1</h3>')
+    .replace(/## (.+)/g, '<h2 class="text-[14px] font-semibold text-sy-text mt-3 mb-1">$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-sy-text">$1</strong>')
     .replace(
       /`([^`]+)`/g,
-      '<code class="px-1 py-0.5 rounded bg-bg3 text-accent font-mono text-[11px]">$1</code>',
+      '<code class="px-1 py-0.5 rounded bg-sy-bg-3 text-sy-accent font-mono text-[11px]">$1</code>',
     )
-    .replace(/^- (.+)$/gm, '<li class="ml-3 text-[12.5px] text-text2 leading-relaxed">• $1</li>')
+    .replace(
+      /^- (.+)$/gm,
+      '<li class="ml-3 text-[12.5px] text-sy-text-2 leading-relaxed">• $1</li>',
+    )
     .replace(/\n\n/g, '<br/><br/>')
     .replace(/\n/g, '<br/>');
 }
 
-/** 检测文本是否为 JSON 格式（LLM 返回的用例 JSON） */
-function isJsonContent(text: string): boolean {
+/** 检测文本是否包含 JSON 用例块（纯 JSON 或 ```json 代码块） */
+function hasJsonBlock(text: string): boolean {
   const t = text.trimStart();
-  return t.startsWith('{') || t.startsWith('[');
+  return t.startsWith('{') || t.startsWith('[') || text.includes('```json');
 }
 
-/** 从流式 JSON 中粗略计数已完整解析出的用例数量 */
-function countStreamedCases(text: string): number {
-  const matches = text.match(/"case_id"\s*:/g);
-  return matches ? matches.length : 0;
+/** 提取 JSON 块之前的自然语言部分（用于分段渲染） */
+function extractPreJsonText(content: string): string {
+  const idx = content.indexOf('```json');
+  if (idx !== -1) return content.slice(0, idx).trim();
+  const t = content.trimStart();
+  if (t.startsWith('[') || t.startsWith('{')) return '';
+  return '';
 }
 
 const AI_AVATAR = (
-  <div className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center bg-gradient-to-br from-accent/15 to-blue/15 border border-accent/30">
-    <Bot className="w-3.5 h-3.5 text-accent" />
+  <div className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center bg-gradient-to-br from-sy-accent/15 to-sy-info/15 border border-sy-accent/30">
+    <Bot className="w-3.5 h-3.5 text-sy-accent" />
   </div>
 );
 
-/** 流式 JSON 生成时的进度动画，替代裸 JSON 输出 */
-function CaseGeneratingPanel({ caseCount }: { caseCount: number }) {
+/** 思考中等待状态（尚无任何内容时显示） */
+function ThinkingWaitPanel() {
   return (
-    <div className="rounded-xl rounded-bl-sm px-3.5 py-3 bg-accent/4 border border-accent/15">
-      <div className="flex items-center gap-2 text-[12.5px] text-text2 mb-3">
-        <Loader2 className="w-3.5 h-3.5 animate-spin text-accent shrink-0" />
+    <div className="rounded-xl rounded-bl-sm px-3.5 py-3 bg-sy-accent/4 border border-sy-accent/15">
+      <div className="flex items-center gap-2.5">
+        <div className="relative flex items-center justify-center w-5 h-5">
+          <span className="absolute inline-flex w-full h-full rounded-full bg-sy-accent/20 animate-ping" />
+          <Brain className="w-3 h-3 text-sy-accent relative" />
+        </div>
+        <span className="text-[12.5px] text-sy-text-2">AI 正在思考</span>
+        <div className="flex gap-0.5 ml-0.5">
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className="w-1 h-1 rounded-full bg-sy-accent/60 animate-bounce"
+              style={{ animationDelay: `${i * 150}ms` }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** 思考内容流式展示（可折叠） */
+function ThinkingStreamPanel({ text, isStreaming }: { text: string; isStreaming: boolean }) {
+  const [collapsed, setCollapsed] = useState(false);
+  return (
+    <div className="mb-2 rounded-lg border border-sy-border overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setCollapsed(!collapsed)}
+        className="w-full flex items-center gap-2 px-3 py-2 bg-sy-bg-2 text-[11.5px] text-sy-text-3 hover:text-sy-text-2 transition-colors"
+      >
+        <Brain className="w-3 h-3 text-sy-purple shrink-0" />
+        <span className="text-sy-purple font-medium">思考过程</span>
+        {isStreaming && (
+          <span className="w-1.5 h-1.5 rounded-full bg-sy-accent animate-pulse ml-0.5" />
+        )}
+        <span className="ml-auto text-[10px]">{collapsed ? '▼' : '▲'}</span>
+      </button>
+      {!collapsed && (
+        <div className="px-3 py-2 bg-sy-bg text-sy-text-3 text-[12px] font-mono leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
+          {text}
+          {isStreaming && (
+            <span className="inline-block w-[2px] h-[13px] bg-sy-text-3 ml-0.5 animate-blink" />
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** 流式用例生成面板 — 实时渲染已完成的 case，末尾附 skeleton 表示还在生成 */
+function CaseGeneratingPanel({
+  cases,
+  preText,
+  isGenerating,
+}: {
+  cases: SSEStreamingCase[];
+  preText?: string;
+  isGenerating: boolean;
+}) {
+  return (
+    <div className="rounded-xl rounded-bl-sm px-3.5 py-3 bg-sy-accent/4 border border-sy-accent/15">
+      {/* JSON 前的自然语言 */}
+      {preText && (
+        <div
+          className="prose-sm text-[12.5px] leading-relaxed text-sy-text mb-3 pb-3 border-b border-sy-accent/10"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: pre-JSON natural language render
+          dangerouslySetInnerHTML={{ __html: renderMarkdown(preText) }}
+        />
+      )}
+
+      {/* 进度标题 */}
+      <div className="flex items-center gap-2 text-[12.5px] text-sy-text-2 mb-3">
+        <Loader2 className="w-3.5 h-3.5 animate-spin text-sy-accent shrink-0" />
         <span>
           AI 正在生成测试用例
-          {caseCount > 0 ? (
-            <span className="ml-1 text-accent font-semibold">（已完成 {caseCount} 个）</span>
+          {cases.length > 0 ? (
+            <span className="ml-1 text-sy-accent font-semibold">（已完成 {cases.length} 条）</span>
           ) : (
             <StreamCursor />
           )}
         </span>
       </div>
-      <CaseSkeleton count={Math.max(caseCount, 1)} />
+
+      {/* 已完成的 case 实时渲染 */}
+      {cases.length > 0 && (
+        <div className="space-y-2 mb-2">
+          {cases.map((c) => (
+            <CaseCard
+              key={c._idx}
+              caseId={`#${c._idx + 1}`}
+              title={c.title}
+              priority={(c.priority as 'P0' | 'P1' | 'P2' | 'P3') ?? 'P1'}
+              type={c.case_type}
+              precondition={c.precondition}
+              steps={(c.steps ?? []).map((s, i) => ({
+                no: s.step_num ?? i + 1,
+                action: s.action,
+                expected_result: s.expected_result,
+              }))}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* 还在生成中时展示 skeleton */}
+      {isGenerating && <CaseSkeleton count={1} />}
     </div>
   );
 }
@@ -94,10 +173,12 @@ function MessageBubble({ message }: { message: WorkbenchMessage }) {
   const isAI = message.role === 'assistant';
   const [thinkingOpen, setThinkingOpen] = useState(false);
 
-  // 如果 AI 消息内容是裸 JSON 但已有解析好的用例，隐藏 JSON 文本
+  // 如果 AI 消息含有 JSON 块（纯 JSON 或 ```json 代码块）且已解析出用例，隐藏 JSON 原文
   const hasCases = isAI && (message.cases?.length ?? 0) > 0;
-  const contentIsJson = isAI && isJsonContent(message.content);
-  const showRawContent = !contentIsJson || !hasCases;
+  const contentHasJson = isAI && hasJsonBlock(message.content);
+  const showRawContent = !contentHasJson || !hasCases;
+  // JSON 块前的自然语言部分
+  const preJsonText = contentHasJson ? extractPreJsonText(message.content) : '';
 
   return (
     <div className={`flex gap-2.5 mb-4 ${isAI ? '' : 'flex-row-reverse'}`}>
@@ -105,14 +186,14 @@ function MessageBubble({ message }: { message: WorkbenchMessage }) {
       <div
         className={`w-7 h-7 rounded-full shrink-0 flex items-center justify-center ${
           isAI
-            ? 'bg-gradient-to-br from-accent/15 to-blue/15 border border-accent/30'
-            : 'bg-bg3 border border-border'
+            ? 'bg-gradient-to-br from-sy-accent/15 to-sy-info/15 border border-sy-accent/30'
+            : 'bg-sy-bg-3 border border-sy-border'
         }`}
       >
         {isAI ? (
-          <Bot className="w-3.5 h-3.5 text-accent" />
+          <Bot className="w-3.5 h-3.5 text-sy-accent" />
         ) : (
-          <User className="w-3.5 h-3.5 text-text2" />
+          <User className="w-3.5 h-3.5 text-sy-text-2" />
         )}
       </div>
 
@@ -124,26 +205,26 @@ function MessageBubble({ message }: { message: WorkbenchMessage }) {
             <button
               type="button"
               onClick={() => setThinkingOpen(!thinkingOpen)}
-              className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] text-text3 bg-bg2 border border-border hover:border-border2 transition-colors"
+              className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] text-sy-text-3 bg-sy-bg-2 border border-sy-border hover:border-sy-border-2 transition-colors"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-purple" />
-              思考过程
+              <Brain className="w-2.5 h-2.5 text-sy-purple" />
+              <span className="text-sy-purple">思考过程</span>
               <span className="text-[10px]">{thinkingOpen ? '▲' : '▼'}</span>
             </button>
             {thinkingOpen && (
-              <div className="mt-1.5 px-3 py-2 rounded-md bg-bg2 border border-border text-[11px] text-text3 font-mono leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
+              <div className="mt-1.5 px-3 py-2 rounded-md bg-sy-bg-2 border border-sy-border text-[11px] text-sy-text-3 font-mono leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
                 {message.thinking_content}
               </div>
             )}
           </div>
         )}
 
-        {/* Message body — 纯 JSON 内容且已有解析用例时，仅显示摘要 */}
+        {/* Message body */}
         <div
           className={`rounded-xl px-3.5 py-2.5 text-[12.5px] leading-relaxed ${
             isAI
-              ? 'bg-accent/4 border border-accent/15 text-text rounded-bl-sm'
-              : 'bg-bg2 border border-border text-text rounded-br-sm'
+              ? 'bg-sy-accent/4 border border-sy-accent/15 text-sy-text rounded-bl-sm'
+              : 'bg-sy-bg-2 border border-sy-border text-sy-text rounded-br-sm'
           }`}
         >
           {isAI ? (
@@ -154,10 +235,21 @@ function MessageBubble({ message }: { message: WorkbenchMessage }) {
                 dangerouslySetInnerHTML={{ __html: renderMarkdown(message.content) }}
               />
             ) : (
-              <span className="text-text2">
-                AI 已生成 <span className="font-semibold text-accent">{message.cases?.length}</span>{' '}
-                个测试用例
-              </span>
+              <>
+                {/* 保留 JSON 块前的自然语言 */}
+                {preJsonText && (
+                  <div
+                    className="prose-sm mb-2 pb-2 border-b border-sy-accent/10"
+                    // biome-ignore lint/security/noDangerouslySetInnerHtml: pre-JSON text render
+                    dangerouslySetInnerHTML={{ __html: renderMarkdown(preJsonText) }}
+                  />
+                )}
+                <span className="text-sy-text-2">
+                  AI 已生成{' '}
+                  <span className="font-semibold text-sy-accent">{message.cases?.length}</span>{' '}
+                  个测试用例
+                </span>
+              </>
             )
           ) : (
             <span className="whitespace-pre-wrap">{message.content}</span>
@@ -184,7 +276,7 @@ function MessageBubble({ message }: { message: WorkbenchMessage }) {
         )}
 
         {/* Timestamp */}
-        <div className={`mt-1 text-[10px] text-text3 font-mono ${isAI ? '' : 'text-right'}`}>
+        <div className={`mt-1 text-[10px] text-sy-text-3 font-mono ${isAI ? '' : 'text-right'}`}>
           {message.created_at?.slice(11, 16)}
         </div>
       </div>
@@ -196,6 +288,7 @@ export function ChatArea({
   messages,
   streamingContent,
   streamingThinking,
+  streamingCases,
   isStreaming,
 }: ChatAreaProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -217,7 +310,7 @@ export function ChatArea({
     chatEndRef.current?.scrollIntoView({
       behavior: isStreaming ? 'instant' : 'smooth',
     });
-  }, [messages.length, streamingContent, streamingThinking, isStreaming]);
+  }, [messages.length, streamingContent, streamingThinking, streamingCases.length, isStreaming]);
 
   // 新消息到来（非流式）时强制回到底部并重置状态
   // biome-ignore lint/correctness/useExhaustiveDependencies: only reset on message count change
@@ -237,8 +330,9 @@ export function ChatArea({
     );
   }
 
-  const streamedCaseCount = countStreamedCases(streamingContent);
-  const streamIsJson = isJsonContent(streamingContent);
+  // 是否检测到 JSON 块（用于决定用哪种渲染模式）
+  const streamHasJson = hasJsonBlock(streamingContent) || streamingCases.length > 0;
+  const streamPreText = streamHasJson ? extractPreJsonText(streamingContent) : '';
 
   return (
     <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-4">
@@ -246,20 +340,31 @@ export function ChatArea({
         <MessageBubble key={msg.id} message={msg} />
       ))}
 
-      {/* Streaming thinking */}
+      {/* 流式 thinking 内容（可折叠） */}
       {isStreaming && streamingThinking && (
-        <ThinkingStream text={streamingThinking} isStreaming={!streamingContent} />
+        <div className="flex gap-2.5 mb-2">
+          {AI_AVATAR}
+          <div className="flex-1 max-w-[85%]">
+            <ThinkingStreamPanel text={streamingThinking} isStreaming={!streamingContent} />
+          </div>
+        </div>
       )}
 
-      {/* Streaming content — JSON 时显示进度动画，否则渲染 Markdown */}
-      {isStreaming && streamingContent && (
+      {/* 流式输出内容 */}
+      {isStreaming && (streamingContent || streamingCases.length > 0) && (
         <div className="flex gap-2.5 mb-4">
           {AI_AVATAR}
           <div className="flex-1 max-w-[85%]">
-            {streamIsJson ? (
-              <CaseGeneratingPanel caseCount={streamedCaseCount} />
+            {streamHasJson ? (
+              // JSON 模式：实时渲染 CaseCard + 末尾 skeleton
+              <CaseGeneratingPanel
+                cases={streamingCases}
+                preText={streamPreText || undefined}
+                isGenerating={isStreaming}
+              />
             ) : (
-              <div className="rounded-xl rounded-bl-sm px-3.5 py-2.5 bg-accent/4 border border-accent/15 text-[12.5px] leading-relaxed text-text">
+              // 普通文本：Markdown 渲染 + 光标
+              <div className="rounded-xl rounded-bl-sm px-3.5 py-2.5 bg-sy-accent/4 border border-sy-accent/15 text-[12.5px] leading-relaxed text-sy-text">
                 <div
                   className="prose-sm"
                   // biome-ignore lint/security/noDangerouslySetInnerHtml: streaming markdown content
@@ -272,15 +377,12 @@ export function ChatArea({
         </div>
       )}
 
-      {/* Loading indicator — 还没有任何内容时的等待状态 */}
-      {isStreaming && !streamingContent && !streamingThinking && (
+      {/* 等待状态 — 尚未收到任何内容时 */}
+      {isStreaming && !streamingContent && !streamingThinking && streamingCases.length === 0 && (
         <div className="flex gap-2.5 mb-4">
           {AI_AVATAR}
-          <div className="rounded-xl rounded-bl-sm px-3.5 py-2.5 bg-accent/4 border border-accent/15 text-text">
-            <div className="flex items-center gap-2 text-[12.5px] text-text2">
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-accent" />
-              AI 思考中...
-            </div>
+          <div className="flex-1 max-w-[85%]">
+            <ThinkingWaitPanel />
           </div>
         </div>
       )}

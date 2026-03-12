@@ -1,27 +1,29 @@
 ﻿用例编号,用例标题,所属模块,相关需求,前置条件,步骤,预期结果,优先级,用例类型
-134111,验证表单任务 - PySpark(资源上传) - 运行日志/结果,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【表单任务】-【PySpark(资源上传)】页面
+134111,验证表单任务 - PySpark(资源上传) - 运行日志/结果,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【表单任务】-【PySpark(资源上传)】页面
 2. 立即运行任务，查看运行日志","1. 成功进入【表单任务】-【PySpark(资源上传)】页面，页面内容正常加载显示，无报错
 2. 日志展示正确，内容与预期完全一致，无异常或错误",2,功能测试
-134110,验证表单任务 - 数据同步任务 - 语法错误提示,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归&nbsp;,"1. 进入【表单任务】-【数据同步任务】页面
+134110,验证表单任务 - 数据同步任务 - 语法错误提示,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归 ,"1. 进入【表单任务】-【数据同步任务】页面
 2. 编辑数据同步任务，“数据来源”步骤，“自定义SQL”输入错误SQL语法
 3. 编辑数据同步任务，“选择目标”步骤，“一键生成目标表”，查看建表语句","1. 成功进入【表单任务】-【数据同步任务】页面，页面内容正常加载显示，无报错
 2. 1）语法错误飘红提示；
 2）删除错误的语句后，错误飘红消失；
 3. 无语法错误飘红提示",1,功能测试
-134109,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 帮助文档,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
+134109,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 帮助文档,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
 2. 点击【帮助文档】","1. 成功进入【脚本任务】-【数据同步任务(脚本模式)】页面，页面内容正常加载显示，无报错
 2. 跳转至“同步任务配置”的帮助文档页",3,功能测试
-134108,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 导入模板,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
+134108,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 导入模板,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
 2. 点击【导入模版】
 3. 配置来源和目标后，点击【确定】","1. 成功进入【脚本任务】-【数据同步任务(脚本模式)】页面，页面内容正常加载显示，无报错
 2. 弹出“导入模版”弹窗
 3. 编辑区域直接显示对应的json脚本，且数据正确，内容与预期完全一致，无异常或错误",2,功能测试
-134107,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 任务锁定/解锁,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归；用户A,"1. 进入用户B保存的周期任务的编辑页
-2. 点击【解锁】","1. 成功进入用户B保存的周期任务的编辑页，页面内容正常加载显示，无报错
+134107,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 任务锁定/解锁,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归；用户A,"1. 进入用户B保存的周期任务的编辑页
+2. 点击【解锁】
+3. 检查相关状态和结果
+4. 检查相关状态和结果","1. 成功进入用户B保存的周期任务的编辑页，页面内容正常加载显示，无报错
 2. 1）显示锁定提示；
 3. 2）任务不可编辑
 4. 任务变为可编辑状态",3,功能测试
-134106,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 推送/拉取,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
+134106,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 推送/拉取,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
 2. 1）修改任务代码，点击【拉取】-选择分支；
 2）查看代码比对内容；
 3）点击【确定】
@@ -32,28 +34,28 @@
 2）确定拉取后，任务SQL被远端分支代码覆盖
 3. 1）代码修改/增加的内容红绿高亮提示；
 2）确定推送后，远端分支代码被本地代码覆盖",3,功能测试
-134105,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 停止,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
+134105,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 停止,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
 2. 任务未运行
 3. 运行任务
 4. 点击【停止】按钮","1. 成功进入【脚本任务】-【数据同步任务(脚本模式)】页面，页面内容正常加载显示，无报错
 2. 【停止】按钮禁用
 3. 【停止】按钮可用
-4. 调用停止任务接口且任务能够正常停止",2,功能测试
-134104,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 编辑,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
+4. 任务停止成功，任务状态更新为""已停止""，无报错",2,功能测试
+134104,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 编辑,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
 2. 对指定内容进行查找/替换/回撤
 3. 点击【命令面板】","1. 成功进入【脚本任务】-【数据同步任务(脚本模式)】页面，页面内容正常加载显示，无报错
 2. 1）匹配到的内容高亮提示；
 2）替换结果正确；
 3）回撤内容成功，系统给出成功反馈，相关页面/数据状态更新为最新
 3. 面板打开正确，内容与预期完全一致，无异常或错误",3,功能测试
-134103,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 运行,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
+134103,验证脚本任务 - 数据同步任务(脚本模式) - IDE ToolBar按钮 - 运行,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
 2. 输入正确脚本
 点击【运行】
 3. 输入语法错误脚本
 点击【运行】","1. 成功进入【脚本任务】-【数据同步任务(脚本模式)】页面，页面内容正常加载显示，无报错
 2. 运行进度、运行日志和运行结果正常，功能行为符合预期，无报错或异常
 3. 运行进度、运行日志和运行结果正常，功能行为符合预期，无报错或异常",2,功能测试
-134102,验证脚本任务 - 数据同步任务(脚本模式) - 版本对比,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"注意：历史任务回归
+134102,验证脚本任务 - 数据同步任务(脚本模式) - 版本对比,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"注意：历史任务回归
 ----
 特别注意：代码、调度时间、任务依赖的回滚","1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
 2. 多次修改任务，勾选任意两个版本进行“版本比对”，查看“版本比对”弹窗数据
@@ -61,21 +63,23 @@
 2. 1）两个版本基本信息、代码、调度配置、任务参数、环境参数等内容正确；
 2）代码、调度配置、任务参数、环境参数不同内容标记正确
 3. 代码、调度配置、任务参数、环境参数内容回滚至该历史版本",3,功能测试
-134101,验证脚本任务 - 数据同步任务(脚本模式) - 运行日志/结果,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
+134101,验证脚本任务 - 数据同步任务(脚本模式) - 运行日志/结果,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
 2. 立即运行任务，查看运行日志","1. 成功进入【脚本任务】-【数据同步任务(脚本模式)】页面，页面内容正常加载显示，无报错
 2. 日志展示正确，内容与预期完全一致，无异常或错误",2,功能测试
-134100,验证脚本任务 - 数据同步任务(脚本模式) - 语法错误提示,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
+134100,验证脚本任务 - 数据同步任务(脚本模式) - 语法错误提示,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【数据同步任务(脚本模式)】页面
 2. 编辑周期任务/手动任务，输入错误脚本语法；
 3. 编辑周期任务/手动任务，输入错误脚本语法，并立即运行后查看“运行历史”","1. 成功进入【脚本任务】-【数据同步任务(脚本模式)】页面，页面内容正常加载显示，无报错
 2. 1）语法错误飘红提示；
 2）删除错误的语句后，错误飘红消失；
 3. 语法错误飘红提示；",1,功能测试
-134099,验证脚本任务 - Shell/Shell on Agent - IDE ToolBar按钮 - 任务锁定/解锁,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归；用户A,"1. 进入用户B保存的周期任务的编辑页
-2. 点击【解锁】","1. 成功进入用户B保存的周期任务的编辑页，页面内容正常加载显示，无报错
+134099,验证脚本任务 - Shell/Shell on Agent - IDE ToolBar按钮 - 任务锁定/解锁,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归；用户A,"1. 进入用户B保存的周期任务的编辑页
+2. 点击【解锁】
+3. 检查相关状态和结果
+4. 检查相关状态和结果","1. 成功进入用户B保存的周期任务的编辑页，页面内容正常加载显示，无报错
 2. 1）显示锁定提示；
 3. 2）任务不可编辑
 4. 任务变为可编辑状态",3,功能测试
-134098,验证脚本任务 - Shell/Shell on Agent - IDE ToolBar按钮 - 推送/拉取,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
+134098,验证脚本任务 - Shell/Shell on Agent - IDE ToolBar按钮 - 推送/拉取,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 1）修改任务代码，点击【拉取】-选择分支；
 2）查看代码比对内容；
 3）点击【确定】
@@ -86,28 +90,28 @@
 2）确定拉取后，任务SQL被远端分支代码覆盖
 3. 1）代码修改/增加的内容红绿高亮提示；
 2）确定推送后，远端分支代码被本地代码覆盖",3,功能测试
-134097,验证脚本任务 - Shell/Shell on Agent - IDE ToolBar按钮 - 停止,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
+134097,验证脚本任务 - Shell/Shell on Agent - IDE ToolBar按钮 - 停止,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 任务未运行
 3. 运行任务
 4. 点击【停止】按钮","1. 成功进入数据开发模块，新建向导模式的数据同步任务，页面内容正常加载显示，无报错
 2. 【停止】按钮禁用
 3. 【停止】按钮可用
-4. 调用停止任务接口且任务能够正常停止",2,功能测试
-134096,验证脚本任务 - Shell/Shell on Agent - IDE ToolBar按钮 - 编辑,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
+4. 任务停止成功，任务状态更新为""已停止""，无报错",2,功能测试
+134096,验证脚本任务 - Shell/Shell on Agent - IDE ToolBar按钮 - 编辑,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 对指定内容进行查找/替换/回撤
 3. 点击【命令面板】","1. 成功进入数据开发模块，新建向导模式的数据同步任务，页面内容正常加载显示，无报错
 2. 1）匹配到的内容高亮提示；
 2）替换结果正确；
 3）回撤内容成功，系统给出成功反馈，相关页面/数据状态更新为最新
 3. 面板打开正确，内容与预期完全一致，无异常或错误",3,功能测试
-134095,验证脚本任务 - Shell/Shell on Agent - IDE ToolBar按钮 - 运行,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
+134095,验证脚本任务 - Shell/Shell on Agent - IDE ToolBar按钮 - 运行,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 输入正确脚本
 点击【运行】
 3. 输入语法错误脚本
 点击【运行】","1. 成功进入数据开发模块，新建向导模式的数据同步任务，页面内容正常加载显示，无报错
 2. 运行进度、运行日志和运行结果正常，功能行为符合预期，无报错或异常
 3. 运行进度、运行日志和运行结果正常，功能行为符合预期，无报错或异常",1,功能测试
-134094,验证脚本任务 - Shell/Shell on Agent - 版本对比,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"注意：历史任务回归
+134094,验证脚本任务 - Shell/Shell on Agent - 版本对比,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"注意：历史任务回归
 ----
 特别注意：代码、调度时间、任务依赖的回滚","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 多次修改任务，勾选任意两个版本进行“版本比对”，查看“版本比对”弹窗数据
@@ -115,21 +119,23 @@
 2. 1）两个版本基本信息、代码、调度配置、任务参数、环境参数等内容正确；
 2）代码、调度配置、任务参数、环境参数不同内容标记正确
 3. 代码、调度配置、任务参数、环境参数内容回滚至该历史版本",3,功能测试
-134093,验证脚本任务 - Shell/Shell on Agent - 运行日志/结果,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
+134093,验证脚本任务 - Shell/Shell on Agent - 运行日志/结果,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 立即运行任务，查看运行日志","1. 成功进入数据开发模块，新建向导模式的数据同步任务，页面内容正常加载显示，无报错
 2. 日志展示正确，内容与预期完全一致，无异常或错误",2,功能测试
-134092,验证脚本任务 - Shell/Shell on Agent - 语法错误提示,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
+134092,验证脚本任务 - Shell/Shell on Agent - 语法错误提示,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 编辑周期任务/手动任务/临时查询/组件/模板，输入错误脚本语法；
 3. 编辑周期任务/手动任务/临时查询/组件/模板，输入错误脚本语法，并立即运行后查看“运行历史”","1. 成功进入数据开发模块，新建向导模式的数据同步任务，页面内容正常加载显示，无报错
 2. 1）语法错误飘红提示；
 2）删除错误的语句后，错误飘红消失；
 3. 语法错误飘红提示；",1,功能测试
-134091,验证脚本任务 - PySpark(WEB编辑) - IDE ToolBar按钮 - 任务锁定/解锁,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归；用户A,"1. 进入用户B保存的周期任务的编辑页
-2. 点击【解锁】","1. 成功进入用户B保存的周期任务的编辑页，页面内容正常加载显示，无报错
+134091,验证脚本任务 - PySpark(WEB编辑) - IDE ToolBar按钮 - 任务锁定/解锁,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归；用户A,"1. 进入用户B保存的周期任务的编辑页
+2. 点击【解锁】
+3. 检查相关状态和结果
+4. 检查相关状态和结果","1. 成功进入用户B保存的周期任务的编辑页，页面内容正常加载显示，无报错
 2. 1）显示锁定提示；
 3. 2）任务不可编辑
 4. 任务变为可编辑状态",3,功能测试
-134090,验证脚本任务 - PySpark(WEB编辑) - IDE ToolBar按钮 - 推送/拉取 -- 不支持,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
+134090,验证脚本任务 - PySpark(WEB编辑) - IDE ToolBar按钮 - 推送/拉取 -- 不支持,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
 2. 1）修改任务代码，点击【拉取】-选择分支；
 2）查看代码比对内容；
 3）点击【确定】
@@ -140,28 +146,28 @@
 2）确定拉取后，任务SQL被远端分支代码覆盖
 3. 1）代码修改/增加的内容红绿高亮提示；
 2）确定推送后，远端分支代码被本地代码覆盖",3,功能测试
-134089,验证脚本任务 - PySpark(WEB编辑) - IDE ToolBar按钮 - 停止,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
+134089,验证脚本任务 - PySpark(WEB编辑) - IDE ToolBar按钮 - 停止,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
 2. 任务未运行
 3. 运行任务
 4. 点击【停止】按钮","1. 成功进入【脚本任务】-【PySpark(WEB编辑)】页面，页面内容正常加载显示，无报错
 2. 【停止】按钮禁用
 3. 【停止】按钮可用
-4. 调用停止任务接口且任务能够正常停止",2,功能测试
-134088,验证脚本任务 - PySpark(WEB编辑) - IDE ToolBar按钮 - 编辑,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
+4. 任务停止成功，任务状态更新为""已停止""，无报错",2,功能测试
+134088,验证脚本任务 - PySpark(WEB编辑) - IDE ToolBar按钮 - 编辑,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
 2. 对指定内容进行查找/替换/回撤
 3. 点击【命令面板】","1. 成功进入【脚本任务】-【PySpark(WEB编辑)】页面，页面内容正常加载显示，无报错
 2. 1）匹配到的内容高亮提示；
 2）替换结果正确；
 3）回撤内容成功，系统给出成功反馈，相关页面/数据状态更新为最新
 3. 面板打开正确，内容与预期完全一致，无异常或错误",3,功能测试
-134087,验证脚本任务 - PySpark(WEB编辑) - IDE ToolBar按钮 - 运行,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
+134087,验证脚本任务 - PySpark(WEB编辑) - IDE ToolBar按钮 - 运行,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
 2. 输入正确脚本
 点击【运行】
 3. 输入语法错误脚本
 点击【运行】","1. 成功进入【脚本任务】-【PySpark(WEB编辑)】页面，页面内容正常加载显示，无报错
 2. 运行进度、运行日志和运行结果正常，功能行为符合预期，无报错或异常
 3. 运行进度、运行日志和运行结果正常，功能行为符合预期，无报错或异常",2,功能测试
-134086,验证脚本任务 - PySpark(WEB编辑) - 版本对比,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"注意：历史任务回归
+134086,验证脚本任务 - PySpark(WEB编辑) - 版本对比,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"注意：历史任务回归
 ----
 特别注意：代码、调度时间、任务依赖的回滚","1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
 2. 多次修改任务，勾选任意两个版本进行“版本比对”，查看“版本比对”弹窗数据
@@ -169,10 +175,10 @@
 2. 1）两个版本基本信息、代码、调度配置、任务参数、环境参数等内容正确；
 2）代码、调度配置、任务参数、环境参数不同内容标记正确
 3. 代码、调度配置、任务参数、环境参数内容回滚至该历史版本",3,功能测试
-134085,验证脚本任务 - PySpark(WEB编辑) - 运行日志/结果,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
+134085,验证脚本任务 - PySpark(WEB编辑) - 运行日志/结果,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
 2. 立即运行任务，查看运行日志","1. 成功进入【脚本任务】-【PySpark(WEB编辑)】页面，页面内容正常加载显示，无报错
 2. 日志展示正确，内容与预期完全一致，无异常或错误",2,功能测试
-134084,验证脚本任务 - PySpark(WEB编辑) - 语法错误提示,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
+134084,验证脚本任务 - PySpark(WEB编辑) - 语法错误提示,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入【脚本任务】-【PySpark(WEB编辑)】页面
 2. 编辑周期任务/手动任务/临时查询/组件/模板，输入错误脚本语法；
 3. 编辑周期任务/手动任务/临时查询/组件/模板，输入错误脚本语法，并立即运行后查看“运行历史”
 4. 查看周期任务/手动任务/临时查询 - 环境参数，输入错误脚本语法；
@@ -200,12 +206,14 @@
 8. 语法错误飘红提示；
 9. 1）语法错误飘红提示；
 2）还原后，法错误飘红提示；",2,功能测试
-134083,验证脚本任务 - Python/Python on Agent - IDE ToolBar按钮 - 任务锁定/解锁,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归；用户A,"1. 进入用户B保存的周期任务的编辑页
-2. 点击【解锁】","1. 成功进入用户B保存的周期任务的编辑页，页面内容正常加载显示，无报错
+134083,验证脚本任务 - Python/Python on Agent - IDE ToolBar按钮 - 任务锁定/解锁,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归；用户A,"1. 进入用户B保存的周期任务的编辑页
+2. 点击【解锁】
+3. 检查相关状态和结果
+4. 检查相关状态和结果","1. 成功进入用户B保存的周期任务的编辑页，页面内容正常加载显示，无报错
 2. 1）显示锁定提示；
 3. 2）任务不可编辑
 4. 任务变为可编辑状态",3,功能测试
-134082,验证脚本任务 - Python/Python on Agent - IDE ToolBar按钮 - 推送/拉取,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
+134082,验证脚本任务 - Python/Python on Agent - IDE ToolBar按钮 - 推送/拉取,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 1）修改任务代码，点击【拉取】-选择分支；
 2）查看代码比对内容；
 3）点击【确定】
@@ -216,28 +224,28 @@
 2）确定拉取后，任务SQL被远端分支代码覆盖
 3. 1）代码修改/增加的内容红绿高亮提示；
 2）确定推送后，远端分支代码被本地代码覆盖",3,功能测试
-134081,验证脚本任务 - Python/Python on Agent - IDE ToolBar按钮 - 停止,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
+134081,验证脚本任务 - Python/Python on Agent - IDE ToolBar按钮 - 停止,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 任务未运行
 3. 运行任务
 4. 点击【停止】按钮","1. 成功进入数据开发模块，新建向导模式的数据同步任务，页面内容正常加载显示，无报错
 2. 【停止】按钮禁用
 3. 【停止】按钮可用
-4. 调用停止任务接口且任务能够正常停止",2,功能测试
-134080,验证脚本任务 - Python/Python on Agent - IDE ToolBar按钮 - 编辑,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
+4. 任务停止成功，任务状态更新为""已停止""，无报错",2,功能测试
+134080,验证脚本任务 - Python/Python on Agent - IDE ToolBar按钮 - 编辑,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 对指定内容进行查找/替换/回撤
 3. 点击【命令面板】","1. 成功进入数据开发模块，新建向导模式的数据同步任务，页面内容正常加载显示，无报错
 2. 1）匹配到的内容高亮提示；
 2）替换结果正确；
 3）回撤内容成功，系统给出成功反馈，相关页面/数据状态更新为最新
 3. 面板打开正确，内容与预期完全一致，无异常或错误",3,功能测试
-134079,验证脚本任务 - Python/Python on Agent - IDE ToolBar按钮 - 运行,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
+134079,验证脚本任务 - Python/Python on Agent - IDE ToolBar按钮 - 运行,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 输入正确脚本
 点击【运行】
 3. 输入语法错误脚本
 点击【运行】","1. 成功进入数据开发模块，新建向导模式的数据同步任务，页面内容正常加载显示，无报错
 2. 运行进度、运行日志和运行结果正常，功能行为符合预期，无报错或异常
 3. 运行进度、运行日志和运行结果正常，功能行为符合预期，无报错或异常",2,功能测试
-134078,验证脚本任务 - Python/Python on Agent - 版本对比,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"注意：历史任务回归
+134078,验证脚本任务 - Python/Python on Agent - 版本对比,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"注意：历史任务回归
 ----
 特别注意：代码、调度时间、任务依赖的回滚","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 多次修改任务，勾选任意两个版本进行“版本比对”，查看“版本比对”弹窗数据
@@ -245,10 +253,10 @@
 2. 1）两个版本基本信息、代码、调度配置、任务参数、环境参数等内容正确；
 2）代码、调度配置、任务参数、环境参数不同内容标记正确
 3. 代码、调度配置、任务参数、环境参数内容回滚至该历史版本",3,功能测试
-134077,验证脚本任务 - Python/Python on Agent - 运行日志/结果,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
+134077,验证脚本任务 - Python/Python on Agent - 运行日志/结果,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 立即运行任务，查看运行日志","1. 成功进入数据开发模块，新建向导模式的数据同步任务，页面内容正常加载显示，无报错
 2. 日志展示正确，内容与预期完全一致，无异常或错误",2,功能测试
-134076,验证脚本任务 - Python/Python on Agent - 语法错误提示,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
+134076,验证脚本任务 - Python/Python on Agent - 语法错误提示,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),注意：历史任务回归,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 编辑周期任务/手动任务/临时查询/组件/模板，输入错误脚本语法；
 3. 编辑周期任务/手动任务/临时查询/组件/模板，输入错误脚本语法，并立即运行后查看“运行历史”
 4. 查看周期任务/手动任务/临时查询 - 环境参数，输入错误脚本语法；
@@ -276,30 +284,32 @@
 8. 语法错误飘红提示；
 9. 1）语法错误飘红提示；
 2）还原后，法错误飘红提示；",2,功能测试
-134075,验证SQL任务 - IDE ToolBar按钮 - 任务锁定/解锁,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134075,验证SQL任务 - IDE ToolBar按钮 - 任务锁定/解锁,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 
 注意：历史任务回归；用户A","1. 进入用户B保存的周期任务的编辑页
-2. 点击【解锁】","1. 成功进入用户B保存的周期任务的编辑页，页面内容正常加载显示，无报错
+2. 点击【解锁】
+3. 检查相关状态和结果
+4. 检查相关状态和结果","1. 成功进入用户B保存的周期任务的编辑页，页面内容正常加载显示，无报错
 2. 1）显示锁定提示；
 3. 2）任务不可编辑
 4. 任务变为可编辑状态",3,功能测试
-134074,验证SQL任务 - IDE ToolBar按钮 - SQL语法帮助面板,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134074,验证SQL任务 - IDE ToolBar按钮 - SQL语法帮助面板,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 
 注意：历史任务回归","1. 进入【SQL任务】-【IDE ToolBar按钮】页面
 2. 点击SQL语法帮助面板","1. 成功进入【SQL任务】-【IDE ToolBar按钮】页面，页面内容正常加载显示，无报错
 2. 唤出面板，展示Hive SQL语法导航",3,功能测试
-134073,验证SQL任务 - IDE ToolBar按钮 - 表信息帮助面板,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134073,验证SQL任务 - IDE ToolBar按钮 - 表信息帮助面板,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 
 注意：历史任务回归","1. 进入【SQL任务】-【IDE ToolBar按钮】页面
 2. 点击表信息帮助面板","1. 成功进入【SQL任务】-【IDE ToolBar按钮】页面，页面内容正常加载显示，无报错
 2. 唤出面板，展示已同步的Hive表以及对应的字段名和字段类型",3,功能测试
-134072,验证SQL任务 - IDE ToolBar按钮 - 推送/拉取,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134072,验证SQL任务 - IDE ToolBar按钮 - 推送/拉取,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 
@@ -314,7 +324,7 @@
 2）确定拉取后，任务SQL被远端分支代码覆盖
 3. 1）代码修改/增加的内容红绿高亮提示；
 2）确定推送后，远端分支代码被本地代码覆盖",3,功能测试
-134071,验证SQL任务 - IDE ToolBar按钮 - SQL检查,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134071,验证SQL任务 - IDE ToolBar按钮 - SQL检查,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 
@@ -328,7 +338,7 @@ Hive SQL、Spark SQL、Impala SQL、Inceptor SQL","1. 进入【SQL任务】-【I
 2）日志tab页展示语法检查通过/失败提示
 3. 1）触发规范性检查接口；
 2）“SQL规范性检查”tab页展示阻断/提示类SQL",2,功能测试
-134070,验证SQL任务 - IDE ToolBar按钮 - 执行计划,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134070,验证SQL任务 - IDE ToolBar按钮 - 执行计划,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 
@@ -340,7 +350,7 @@ Hive SQL、Spark SQL、Impala SQL、Inceptor SQL","1. 进入【SQL任务】-【I
 2. 日志打印错误信息
 3. 1）分结果TAB页显示每句SELECT语句的执行计划信息；
 2）结果TAB页切换正确，内容与预期完全一致，无异常或错误",3,功能测试
-134069,验证SQL任务 - IDE ToolBar按钮 - 停止,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134069,验证SQL任务 - IDE ToolBar按钮 - 停止,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 
@@ -350,8 +360,8 @@ Hive SQL、Spark SQL、Impala SQL、Inceptor SQL","1. 进入【SQL任务】-【I
 4. 点击【停止】按钮","1. 成功进入【SQL任务】-【IDE ToolBar按钮】页面，页面内容正常加载显示，无报错
 2. 【停止】按钮禁用
 3. 【停止】按钮可用
-4. 调用停止任务接口且任务能够正常停止",2,功能测试
-134068,验证SQL任务 - IDE ToolBar按钮 - 编辑,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+4. 任务停止成功，任务状态更新为""已停止""，无报错",2,功能测试
+134068,验证SQL任务 - IDE ToolBar按钮 - 编辑,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 
@@ -362,7 +372,7 @@ Hive SQL、Spark SQL、Impala SQL、Inceptor SQL","1. 进入【SQL任务】-【I
 2）替换结果正确；
 3）回撤内容成功，系统给出成功反馈，相关页面/数据状态更新为最新
 3. 面板打开正确，内容与预期完全一致，无异常或错误",3,功能测试
-134067,验证SQL任务 - IDE ToolBar按钮 - 分段运行,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134067,验证SQL任务 - IDE ToolBar按钮 - 分段运行,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 
@@ -409,7 +419,7 @@ SELECT * from test WHERE 1=1;
 8. 1)运行进度、运行日志和运行结果正常，功能行为符合预期，无报错或异常
 2) 简单查询语句不提交到yarn上运行；复杂查询语句提交到yarn上运行
 9. ",2,功能测试
-134066,验证SQL任务 - IDE ToolBar按钮 - 整段运行,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134066,验证SQL任务 - IDE ToolBar按钮 - 整段运行,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 注意：历史任务回归","1. 进入【SQL任务】-【IDE ToolBar按钮】页面
 2. 输入以下SQL：
@@ -448,27 +458,27 @@ SELECT * from test WHERE 1=1;
 7. 1)运行进度、运行日志和运行结果正常，功能行为符合预期，无报错或异常
 2) 任务提交到yarn上运行
 8. ",1,功能测试
-134065,验证SQL任务 - IDE ToolBar按钮 - 格式化,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134065,验证SQL任务 - IDE ToolBar按钮 - 格式化,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 
 注意：历史任务回归","1. 进入【SQL任务】-【IDE ToolBar按钮】页面
 2. 输入一段SQL语句，点击【格式化】","1. 成功进入【SQL任务】-【IDE ToolBar按钮】页面，页面内容正常加载显示，无报错
 2. SQL格式化结果正确，内容与预期完全一致，无异常或错误",3,功能测试
-134064,验证SQL任务 - 自动补全,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134064,验证SQL任务 - 自动补全,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 注意：历史任务回归","1. 进入【SQL任务】-【自动补全】页面
 2. 输入任意字母","1. 成功进入【SQL任务】-【自动补全】页面，页面内容正常加载显示，无报错
 2. 1)自动联想提示对应的关键字、离线已同步的数据库/数据表/、系统函数、自定义函数等;
 2) 回车选中正确;
 3) 联想接口只会在打开任务时调用以及每次编写的时候会调用",2,功能测试
-134063,验证SQL任务 - 版本对比,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等 <br /><strong>冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL </strong><br /><strong>注意：历史任务回归 </strong><br /><strong>特别注意：代码、调度时间、任务依赖的回滚</strong>,"1. 进入【SQL任务】-【版本对比】页面
+134063,验证SQL任务 - 版本对比,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等 <br /><strong>冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL </strong><br /><strong>注意：历史任务回归 </strong><br /><strong>特别注意：代码、调度时间、任务依赖的回滚</strong>,"1. 进入【SQL任务】-【版本对比】页面
 2. 多次修改任务，勾选任意两个版本进行“版本比对”，查看“版本比对”弹窗数据
 3. 触发“回滚此版本”","1. 成功进入【SQL任务】-【版本对比】页面，页面内容正常加载显示，无报错
 2. 1）两个版本基本信息、代码、调度配置、任务参数、环境参数等内容正确；
 2）代码、调度配置、任务参数、环境参数不同内容标记正确
 3. 代码、调度配置、任务参数、环境参数内容回滚至该历史版本",1,功能测试
-134062,验证SQL任务 - DDL语句检测,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134062,验证SQL任务 - DDL语句检测,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 注意：历史任务回归
 ----
@@ -481,7 +491,7 @@ SELECT * from test WHERE 1=1;
 运行/分段运行任务","1. 成功进入【SQL任务】-【DDL语句检测】页面，页面内容正常加载显示，无报错
 2. SQL执行成功；
 3. 提示“禁止DDL操作“",2,功能测试
-134061,验证SQL任务 - 运行日志/结果,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134061,验证SQL任务 - 运行日志/结果,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 注意：历史任务回归
 ----
@@ -498,7 +508,7 @@ SELECT * from test WHERE 1=1;
 5. 1）各结果页数据展示正确；
 2）结果页间切换正确，内容与预期完全一致，无异常或错误
 6. 任务保存运行正确，内容与预期完全一致，无异常或错误",1,功能测试
-134060,验证SQL任务 - 语法错误提示,/版本迭代测试用例/BatchWork_6.3.1/第一批/SQL语法提示优化(#7971),SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
+134060,验证SQL任务 - 语法错误提示,离线开发-数据开发-SQL语法,SQL语法提示优化(#13508),"测试任务范围：Spark SQL、Hive SQL、Impala SQL、Inceptor SQL、MySQL、Oracle SQL、SQL Server、OceanBase for MySQL、OceanBase for Oracle、StarRocks、Doris、Greenplum SQL、OuShu、HashData、SapHana等
 冒烟测试任务范围：HiveSQL、MySQL、TrinoSQL、GreenplumSQL
 注意：历史任务回归","1. 进入【SQL任务】-【语法错误提示】页面
 2. 编辑周期任务/手动任务/临时查询/组件/模板，输入错误SQL语法；

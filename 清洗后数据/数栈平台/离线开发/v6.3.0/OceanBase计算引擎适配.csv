@@ -1,34 +1,36 @@
 ﻿用例编号,用例标题,所属模块,相关需求,前置条件,步骤,预期结果,优先级,用例类型
-132690,验证oceanbase for mysql及for oracle名称显示正常,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132690,验证oceanbase for mysql及for oracle名称显示正常,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 全离线检查相关计算引擎名称显示","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 显示正常，功能行为符合预期，无报错或异常",3,功能测试
-132689,验证函数管理创建带存储过程的sql语句时，函数正常使用,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),<p>存在包含存储过程sql语句的资源</p>,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132689,验证函数管理创建带存储过程的sql语句时，函数正常使用,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),<p>存在包含存储过程sql语句的资源</p>,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击新建自定义函数-资源包选择存在存储过程语句的资源包
-3. 创建一个ob sql任务，输入sql语句调用所创建的自定义函数后点击运行","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
+3. 创建一个ob sql任务，输入sql语句调用所创建的自定义函数后点击运行
+4. 检查相关状态和结果","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 自定义函数创建成功，系统给出创建成功提示，列表中出现新创建的记录
-3. 1.任务运行成功，状态更新为「成功」，运行/执行结果符合预期，日志无报错
+3. 1.任务运行成功，状态更新为【成功】，运行/执行结果符合预期，日志无报错
 4. 运行结果符合预期，实现了存储过程sql",2,功能测试
-132688,验证创建项目时不对接或创建计算引擎成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),<p>ob引擎已在控制台配置</p>,"1. 进入项目列表-点击创建项目
+132688,验证创建项目时不对接或创建计算引擎成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),<p>ob引擎已在控制台配置</p>,"1. 进入项目列表-点击创建项目
 2. 填写必填项，计算引擎列ob计算引擎勾选不对接且不创建计算引擎选项后点击确定
-3. 进入所创建的项目新增ob sql任务，输入sql进行运行","1. 进入创建项目页面
+3. 进入所创建的项目新增ob sql任务，输入sql进行运行
+4. 检查相关状态和结果","1. 进入创建项目页面
 2. 1.勾选成功，页面无报错
 3. 项目创建成功，系统给出创建成功提示，列表中出现新创建的记录
 4. 选择schema后运行sql成功，系统给出成功反馈，相关页面/数据状态更新为最新",3,功能测试
-132656,验证OceanBase for MySQL/OceanBase for Oracle SQL任务临时查询正常运行,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132656,验证OceanBase for MySQL/OceanBase for Oracle SQL任务临时查询正常运行,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle SQL任务
 3. 输入sql后点击保存（sql语句至少包含创建、插入数据、查询、清除数据、增加列、删除等）
 4. 进行临时运行","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
-2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为「待提交/草稿」
+2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为【待提交/草稿】
 3. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 4. 1.任务运行成功2.所执行的sql语句产生对应的结果3.数据无乱码错位等异常",2,功能测试
-132655,验证OceanBase for MySQL/OceanBase for Oracle SQL任务手动任务正常运行,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132655,验证OceanBase for MySQL/OceanBase for Oracle SQL任务手动任务正常运行,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle SQL手动任务
 3. 输入sql后点击保存（sql语句至少包含创建、插入数据、查询、清除数据、增加列、删除等）
 4. 进行临时运行","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
-2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为「待提交/草稿」
+2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为【待提交/草稿】
 3. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 4. 1.任务运行成功2.所执行的sql语句产生对应的结果3.数据无乱码错位等异常",2,功能测试
-132654,验证OceanBase for MySQL/OceanBase for Oracle代码模版正常新增及使用,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132654,验证OceanBase for MySQL/OceanBase for Oracle代码模版正常新增及使用,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle SQL代码模版：test_moban_ob001
 3. 输入sql后点击保存（sql语句至少包含创建、插入数据、查询、清除数据、增加列、删除等）
 4. 新建一个OceanBase for MySQL/OceanBase for Oracle SQL任务：test_ob001（新建任务时选择使用模版，选择模版test_moban_ob001）
@@ -37,7 +39,7 @@
 3. 模版保存成功，系统给出保存成功提示，配置/数据已持久化，页面更新为最新状态
 4. 1.任务新建成功2.新建任务sql编辑界面显示模版代码
 5. 1.任务运行成功2.所执行的语句产生对应的结果3.数据无乱码错位等异常",2,功能测试
-132653,验证项目管理 按个人绑定数据库账号——验证OceanBase for MySQL/OceanBase for Oracle数据源按个人绑定数据库账号正常应用,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132653,验证项目管理 按个人绑定数据库账号——验证OceanBase for MySQL/OceanBase for Oracle数据源按个人绑定数据库账号正常应用,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 控制台选择集群点击绑定租户
 3. 选择OceanBase for MySQL/OceanBase for Oracle引擎后点击绑定账号
 4. 依次输入产品账号、数据库账号、数据库密码后点击确定（该账号密码只有查询权限）
@@ -46,7 +48,7 @@
 3. 弹出绑定账号弹框
 4. 系统提示保存成功，修改内容已生效并在页面中更新显示
 5. 1.查询语句执行成功、建表语句执行失败2.所执行的语句产生对应的结果3.数据无乱码错位等异常4.后台使用所绑定的数据库账号进行执行sql语句",2,功能测试
-132652,验证项目管理 按项目绑定数据库账号——验证OceanBase for MySQL/OceanBase for Oracle数据源按项目绑定数据库账号正常应用,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132652,验证项目管理 按项目绑定数据库账号——验证OceanBase for MySQL/OceanBase for Oracle数据源按项目绑定数据库账号正常应用,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建一个项目：test_project_ob001（项目勾选必要数据源OceanBase for MySQL/OceanBase for Oracle2.x）
 3. 再次新建一个项目：test_project_ob002（项目勾选必要数据源OceanBase for MySQL/OceanBase for Oracle2.x）
 4. 进入项目test_project_ob001点击项目管理-选择OceanBase for MySQL/OceanBase for Oracle数据源点击配置
@@ -57,17 +59,17 @@
 4. 弹出配置数据库账户密码弹窗
 5. OceanBase for MySQL/OceanBase for Oracle数据源配置成功
 6. 1.任务新建成功2.建表语句运行失败3.查询语句运行成功且展示结果正确",2,功能测试
-132651,验证数据同步 【OceanBase for MySQL/OceanBase for Oracle-hive】数据同步任务-周期运行-脏数据能正常保存，任务能正常运行,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"1.默认集群与租户、 2.数据源中心已引入 OceanBase for MySQL/OceanBase for Oracle、hive数据源 3.离线已引入 OceanBase for MySQL/OceanBase for Oracle、hive数据源OceanBase for MySQL/OceanBase for Oracle表：create table putong_OceanBase for MySQL/OceanBase for Oracle(id int,name string);insert into putong_OceanBase for MySQL/OceanBase for Oracle values(1,&#039;das&#039;),(2,&#039;dads&#039;),(3,&#039;dasw&#039;);hive表：create table putong_hive(id int);","1. 进入数据开发，创建数据同步任务
+132651,验证数据同步 【OceanBase for MySQL/OceanBase for Oracle-hive】数据同步任务-周期运行-脏数据能正常保存，任务能正常运行,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"1.默认集群与租户、 2.数据源中心已引入 OceanBase for MySQL/OceanBase for Oracle、hive数据源 3.离线已引入 OceanBase for MySQL/OceanBase for Oracle、hive数据源OceanBase for MySQL/OceanBase for Oracle表：create table putong_OceanBase for MySQL/OceanBase for Oracle(id int,name string);insert into putong_OceanBase for MySQL/OceanBase for Oracle values(1,'das'),(2,'dads'),(3,'dasw');hive表：create table putong_hive(id int);","1. 进入数据开发，创建数据同步任务
 2. 来源选择OceanBase for MySQL/OceanBase for Oracle，目标选择hive，
 将name映射到id，点击下一步
 修改 通道控制页面，脏数据保存到默认表，保存、提交到运维中心
 3. 周期运行任务","1. 系统提示创建成功，列表中出现新创建的记录，记录内容与填写一致
 2. 系统提示提交成功，记录状态更新，列表中可见该条记录
 3. 任务运行完成，脏数据保存成功，在脏数据管理能查询到数据",1,功能测试
-132650,验证数据同步任务，编辑字段‘age’为string类型，点击刷新按钮，按数据库的age字段类型生效,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"OceanBase for MySQL/OceanBase for Oracle表：create table putong(id int,name string,age int)","1. 进入数据开发，新建数据同步任务，选择来源表与目标表，进入第三步
+132650,验证数据同步任务，编辑字段‘age’为string类型，点击刷新按钮，按数据库的age字段类型生效,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"OceanBase for MySQL/OceanBase for Oracle表：create table putong(id int,name string,age int)","1. 进入数据开发，新建数据同步任务，选择来源表与目标表，进入第三步
 2. 编辑字段age为string，保存后，点击刷新按钮","1. 显示‘刷新’按钮
 2. 目标表字段中age字段变成int类型，连线消失",2,功能测试
-132649,验证数据同步写OceanBase for MySQL/OceanBase for Oracle导入导出包功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.当前项目中存在新建成功的写sybase向导模式的数据同步任务 3.当前项目已经成功绑定发布目标项目，且OceanBase for MySQL/OceanBase for Oracle成功配置了映射配置（发布目标）,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132649,验证数据同步写OceanBase for MySQL/OceanBase for Oracle导入导出包功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.当前项目中存在新建成功的写sybase向导模式的数据同步任务 3.当前项目已经成功绑定发布目标项目，且OceanBase for MySQL/OceanBase for Oracle成功配置了映射配置（发布目标）,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 选择写 {OceanBase for MySQL/OceanBase for Oracle}的数据同步任务上方的“发布”
 3. 勾选该数据同步任务打包
 4. 输入正确的发布描述，点击确定
@@ -80,7 +82,7 @@
 5. 导出包成功，系统给出成功反馈，相关页面/数据状态更新为最新
 6. 弹出发布包检查弹窗
 7. 环境配置无误的话，导入发布包成功，系统给出成功反馈，相关页面/数据状态更新为最新",1,功能测试
-132648,验证数据同步OceanBase for MySQL/OceanBase for Oracle发布至目标项目功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.当前项目中存在新建成功的写sybase向导模式的数据同步任务 3.当前项目已经成功绑定发布目标项目，且OceanBase for MySQL/OceanBase for Oracle成功配置了映射配置（发布目标）,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132648,验证数据同步OceanBase for MySQL/OceanBase for Oracle发布至目标项目功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.当前项目中存在新建成功的写sybase向导模式的数据同步任务 3.当前项目已经成功绑定发布目标项目，且OceanBase for MySQL/OceanBase for Oracle成功配置了映射配置（发布目标）,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 选择写{OceanBase for MySQL/OceanBase for Oracle}的数据同步任务上方的“发布”
 3. 勾选该数据同步任务打包
 4. 输入正确的发布描述，点击确定
@@ -95,9 +97,9 @@
 5. 映射配置配置与环境信息配置无误的话，发布成功，系统给出成功反馈，相关页面/数据状态更新为最新
 6. 有从测试项目发布过来的任务
 7. 该任务的来源数据源与目标数据源均替换为与测试环境配置映射的OceanBase for MySQL/OceanBase for Oracle的数据源
-8. 配置无误的情况下运行成功，状态更新为「成功」，运行/执行结果符合预期，日志无报错
+8. 配置无误的情况下运行成功，状态更新为【成功】，运行/执行结果符合预期，日志无报错
 9. 成功从源表中同步过来",1,功能测试
-132647,验证向导模式转脚本，所有参数均正确,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132647,验证向导模式转脚本，所有参数均正确,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择来源数据源，选择选择{OceanBase for MySQL/OceanBase for Oracle}数据源，选择一张有数据的分区表ods_order_header1，点击下一步
 4. 点击数据同步目标下拉框
@@ -122,17 +124,17 @@
 11. 系统提示克隆成功，列表中新增一条内容相同的记录
 12. 系统提示转换成功，数据已按规则转换，转换结果正确显示
 13. 与选择的数据源填写参数一致，所有填写的参数均正确，内容与预期完全一致，无异常或错误",1,功能测试
-132646,验证脚本模式，目标类型不支持OceanBase for MySQL/OceanBase for Oracle数据源,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建脚本模式的数据同步任务
+132646,验证脚本模式，目标类型不支持OceanBase for MySQL/OceanBase for Oracle数据源,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建脚本模式的数据同步任务
 2. 点击导入模版
 3. 点击目标类型下拉框","1. 系统提示新建成功，列表顶部出现新建的记录，记录内容与填写一致
 2. 当前页面弹窗导入模版弹窗
 3. 目标源数据下拉框中不支持OceanBase for MySQL/OceanBase for Oracle数据源",2,功能测试
-132645,验证脚本模式，来源类型支持OceanBase for MySQL/OceanBase for Oracle数据源,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建脚本模式的数据同步任务
+132645,验证脚本模式，来源类型支持OceanBase for MySQL/OceanBase for Oracle数据源,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建脚本模式的数据同步任务
 2. 点击导入模版
 3. 点击来源类型下拉框","1. 系统提示新建成功，列表顶部出现新建的记录，记录内容与填写一致
 2. 当前页面弹窗导入模版弹窗
 3. 来源数据下拉框中支持OceanBase for MySQL/OceanBase for Oracle数据源",2,功能测试
-132644,验证数据同步 周期运行--检查向导模式读OceanBase for MySQL/OceanBase for Oracle，OceanBase for MySQL/OceanBase for Oracle表中有多类型字段，写hive数据同步任务同步成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment &#039;订单头id&#039; ,order_date bigint comment &#039;订单日期&#039; ,shop_id string comment &#039;店铺id&#039; ,customer_id string comment &#039;客户id&#039; ,order_status bigint comment &#039;订单状态&#039; ,pay_date DATE comment &#039;支付日期&#039; ,pay_boolen BOOLEAN comment &#039;是否支付&#039; ,pay_decli DECIMAL comment &#039;支付11&#039; )comment &#039;销售订单明细表&#039;; 向ods_order_header1中插入10条数据","1. 进入数据开发模块，新建向导模式的数据同步任务
+132644,验证数据同步 周期运行--检查向导模式读OceanBase for MySQL/OceanBase for Oracle，OceanBase for MySQL/OceanBase for Oracle表中有多类型字段，写hive数据同步任务同步成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment '订单头id' ,order_date bigint comment '订单日期' ,shop_id string comment '店铺id' ,customer_id string comment '客户id' ,order_status bigint comment '订单状态' ,pay_date DATE comment '支付日期' ,pay_boolen BOOLEAN comment '是否支付' ,pay_decli DECIMAL comment '支付11' )comment '销售订单明细表'; 向ods_order_header1中插入10条数据","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择来源数据源，选择选择{OceanBase for MySQL/OceanBase for Oracle}数据源，选择ods_order_header1，点击下一步
 4. 点击数据同步目标下拉框
@@ -155,9 +157,9 @@
 9. 进入通道控制页面
 10. 弹出提交弹窗
 11. 成功提交至运维中心
-12. 配置无误的话周期运行成功，状态更新为「成功」，运行/执行结果符合预期，日志无报错
+12. 配置无误的话周期运行成功，状态更新为【成功】，运行/执行结果符合预期，日志无报错
 13. 成功从{OceanBase for MySQL/OceanBase for Oracle}中表同步过来",1,功能测试
-132643,验证数据同步 补数据运行--检查向导模式读OceanBase for MySQL/OceanBase for Oracle，OceanBase for MySQL/OceanBase for Oracle表中有多类型字段，写hive数据同步任务同步成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment &#039;订单头id&#039; ,order_date bigint comment &#039;订单日期&#039; ,shop_id string comment &#039;店铺id&#039; ,customer_id string comment &#039;客户id&#039; ,order_status bigint comment &#039;订单状态&#039; ,pay_date DATE comment &#039;支付日期&#039; ,pay_boolen BOOLEAN comment &#039;是否支付&#039; ,pay_decli DECIMAL comment &#039;支付11&#039; )comment &#039;销售订单明细表&#039;; 向ods_order_header1中插入10条数据","1. 进入数据开发模块，新建向导模式的数据同步任务
+132643,验证数据同步 补数据运行--检查向导模式读OceanBase for MySQL/OceanBase for Oracle，OceanBase for MySQL/OceanBase for Oracle表中有多类型字段，写hive数据同步任务同步成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment '订单头id' ,order_date bigint comment '订单日期' ,shop_id string comment '店铺id' ,customer_id string comment '客户id' ,order_status bigint comment '订单状态' ,pay_date DATE comment '支付日期' ,pay_boolen BOOLEAN comment '是否支付' ,pay_decli DECIMAL comment '支付11' )comment '销售订单明细表'; 向ods_order_header1中插入10条数据","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择来源数据源，选择选择OceanBase for MySQL/OceanBase for Oracle数据源，选择ods_order_header1，点击下一步
 4. 点击数据同步目标下拉框
@@ -184,7 +186,7 @@
 12. 弹出补数据弹窗
 13. 1.补数据包生成成功，系统给出成功反馈，相关页面/数据状态更新为最新
 14. 成功从OceanBase for MySQL/OceanBase for Oracle中表同步过来",1,功能测试
-132642,验证数据同步 临时运行--验证向导模式读OceanBase for MySQL/OceanBase for Oracle，写hive数据，原表为分区表，同步任务同步成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment &#039;订单头id&#039; ,order_date bigint comment &#039;订单日期&#039; ,shop_id string comment &#039;店铺id&#039; ,customer_id string comment &#039;客户id&#039; ,order_status bigint comment &#039;订单状态&#039; ,pay_date DATE comment &#039;支付日期&#039; ,pay_boolen BOOLEAN comment &#039;是否支付&#039; ,pay_decli DECIMAL comment &#039;支付11&#039; )comment &#039;销售订单明细表&#039;; 向ods_order_header1中插入10条数据，其中有空值","1. 进入数据开发模块，新建向导模式的数据同步任务
+132642,验证数据同步 临时运行--验证向导模式读OceanBase for MySQL/OceanBase for Oracle，写hive数据，原表为分区表，同步任务同步成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment '订单头id' ,order_date bigint comment '订单日期' ,shop_id string comment '店铺id' ,customer_id string comment '客户id' ,order_status bigint comment '订单状态' ,pay_date DATE comment '支付日期' ,pay_boolen BOOLEAN comment '是否支付' ,pay_decli DECIMAL comment '支付11' )comment '销售订单明细表'; 向ods_order_header1中插入10条数据，其中有空值","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择来源数据源，选择选择{OceanBase for MySQL/OceanBase for Oracle}数据源，选择一张有数据的分区表ods_order_header1，点击下一步
 4. 点击数据同步目标下拉框
@@ -205,7 +207,7 @@
 9. 进入通道控制页面
 10. 配置以及环境无误的话，任务成功，系统给出成功反馈，相关页面/数据状态更新为最新
 11. 成功从{OceanBase for MySQL/OceanBase for Oracle}中表同步过来",2,功能测试
-132641,验证数据同步 临时运行--验证向导模式读OceanBase for MySQL/OceanBase for Oracle，写hive数据，源表中字段值含有null，同步任务同步成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment &#039;订单头id&#039; ,order_date bigint comment &#039;订单日期&#039; ,shop_id string comment &#039;店铺id&#039; ,customer_id string comment &#039;客户id&#039; ,order_status bigint comment &#039;订单状态&#039; ,pay_date DATE comment &#039;支付日期&#039; ,pay_boolen BOOLEAN comment &#039;是否支付&#039; ,pay_decli DECIMAL comment &#039;支付11&#039; )comment &#039;销售订单明细表&#039;; 向ods_order_header1中插入10条数据，其中有空值","1. 进入数据开发模块，新建向导模式的数据同步任务
+132641,验证数据同步 临时运行--验证向导模式读OceanBase for MySQL/OceanBase for Oracle，写hive数据，源表中字段值含有null，同步任务同步成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment '订单头id' ,order_date bigint comment '订单日期' ,shop_id string comment '店铺id' ,customer_id string comment '客户id' ,order_status bigint comment '订单状态' ,pay_date DATE comment '支付日期' ,pay_boolen BOOLEAN comment '是否支付' ,pay_decli DECIMAL comment '支付11' )comment '销售订单明细表'; 向ods_order_header1中插入10条数据，其中有空值","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择来源数据源，选择选择{OceanBase for MySQL/OceanBase for Oracle}数据源，选择ods_order_header1，点击下一步
 4. 点击数据同步目标下拉框
@@ -226,7 +228,7 @@
 9. 进入通道控制页面
 10. 配置以及环境无误的话，任务成功，系统给出成功反馈，相关页面/数据状态更新为最新
 11. 成功从{OceanBase for MySQL/OceanBase for Oracle}中表同步过来",1,功能测试
-132640,验证数据同步 临时运行--验证向导模式读OceanBase for MySQL/OceanBase for Oracle，写hive数据，源表与目标表中字段个数不一致，同步任务同步成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment &#039;订单头id&#039; ,order_date bigint comment &#039;订单日期&#039; ,shop_id string comment &#039;店铺id&#039; ,customer_id string comment &#039;客户id&#039; ,order_status bigint comment &#039;订单状态&#039; ,pay_date DATE comment &#039;支付日期&#039; ,pay_boolen BOOLEAN comment &#039;是否支付&#039; ,pay_decli DECIMAL comment &#039;支付11&#039; )comment &#039;销售订单明细表&#039;; 向ods_order_header1中插入10条数据；","1. 进入数据开发模块，新建向导模式的数据同步任务
+132640,验证数据同步 临时运行--验证向导模式读OceanBase for MySQL/OceanBase for Oracle，写hive数据，源表与目标表中字段个数不一致，同步任务同步成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment '订单头id' ,order_date bigint comment '订单日期' ,shop_id string comment '店铺id' ,customer_id string comment '客户id' ,order_status bigint comment '订单状态' ,pay_date DATE comment '支付日期' ,pay_boolen BOOLEAN comment '是否支付' ,pay_decli DECIMAL comment '支付11' )comment '销售订单明细表'; 向ods_order_header1中插入10条数据；","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择来源数据源，选择选择OceanBase for MySQL/OceanBase for Oracle数据源，选择ods_order_header1，点击下一步
 4. 点击数据同步目标下拉框
@@ -247,7 +249,7 @@
 9. 1.源表与目标表字段映射成功，其中目标表中pay_declii字段没有产生映射关系
 10. 配置以及环境无误的话，任务成功，系统给出成功反馈，相关页面/数据状态更新为最新
 11. 成功从源表中同步过来，其中目标表多的pay_decili字段值为null",2,功能测试
-132639,验证数据同步 临时运行--验证向导模式读OceanBase for MySQL/OceanBase for Oracle，OceanBase for MySQL/OceanBase for Oracle中有一张大数据表，写hive数据同步任务同步成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment &#039;订单头id&#039; ,order_date bigint comment &#039;订单日期&#039; ,shop_id string comment &#039;店铺id&#039; ,customer_id string comment &#039;客户id&#039; ,order_status bigint comment &#039;订单状态&#039; ,pay_date DATE comment &#039;支付日期&#039; ,pay_boolen BOOLEAN comment &#039;是否支付&#039; ,pay_decli DECIMAL comment &#039;支付11&#039; )comment &#039;销售订单明细表&#039;; 向ods_order_header1中插入上万条数据","1. 进入数据开发模块，新建向导模式的数据同步任务
+132639,验证数据同步 临时运行--验证向导模式读OceanBase for MySQL/OceanBase for Oracle，OceanBase for MySQL/OceanBase for Oracle中有一张大数据表，写hive数据同步任务同步成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment '订单头id' ,order_date bigint comment '订单日期' ,shop_id string comment '店铺id' ,customer_id string comment '客户id' ,order_status bigint comment '订单状态' ,pay_date DATE comment '支付日期' ,pay_boolen BOOLEAN comment '是否支付' ,pay_decli DECIMAL comment '支付11' )comment '销售订单明细表'; 向ods_order_header1中插入上万条数据","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择来源数据源，选择选择{OceanBase for MySQL/OceanBase for Oracle}数据源，选择ods_order_header1，点击下一步
 4. 点击数据同步目标下拉框
@@ -268,7 +270,7 @@
 9. 进入通道控制页面
 10. 配置以及环境无误的话，任务成功，系统给出成功反馈，相关页面/数据状态更新为最新
 11. 成功从OceanBase for MySQL/OceanBase for Oracle中表同步过来",2,功能测试
-132638,验证数据同步 临时运行--检查向导模式读OceanBase for MySQL/OceanBase for Oracle，OceanBase for MySQL/OceanBase for Oracle表中有多类型字段，写hive数据同步任务同步成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment &#039;订单头id&#039; ,order_date bigint comment &#039;订单日期&#039; ,shop_id string comment &#039;店铺id&#039; ,customer_id string comment &#039;客户id&#039; ,order_status bigint comment &#039;订单状态&#039; ,pay_date DATE comment &#039;支付日期&#039; ,pay_boolen BOOLEAN comment &#039;是否支付&#039; ,pay_decli DECIMAL comment &#039;支付11&#039; )comment &#039;销售订单明细表&#039;; 向ods_order_header1中插入10条数据","1. 进入数据开发模块，新建向导模式的数据同步任务
+132638,验证数据同步 临时运行--检查向导模式读OceanBase for MySQL/OceanBase for Oracle，OceanBase for MySQL/OceanBase for Oracle表中有多类型字段，写hive数据同步任务同步成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment '订单头id' ,order_date bigint comment '订单日期' ,shop_id string comment '店铺id' ,customer_id string comment '客户id' ,order_status bigint comment '订单状态' ,pay_date DATE comment '支付日期' ,pay_boolen BOOLEAN comment '是否支付' ,pay_decli DECIMAL comment '支付11' )comment '销售订单明细表'; 向ods_order_header1中插入10条数据","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择来源数据源，选择选择OceanBase for MySQL/OceanBase for Oracle数据源，选择ods_order_header1，点击下一步
 4. 点击数据同步目标下拉框
@@ -287,7 +289,7 @@
 8. 进入通道控制页面
 9. 配置以及环境无误的话，任务成功，系统给出成功反馈，相关页面/数据状态更新为最新
 10. 成功从OceanBase for MySQL/OceanBase for Oracle中表数据同步过来",1,功能测试
-132637,验证数据同步 检查向导模式-OceanBase for MySQL/OceanBase for Oracle作为目标数据源支持断点续传,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132637,验证数据同步 检查向导模式-OceanBase for MySQL/OceanBase for Oracle作为目标数据源支持断点续传,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择来源数据源，点击下一步
 4. 点击数据同步目标下拉框
@@ -300,7 +302,7 @@
 5. 满足筛选条件的表被筛选出来
 6. 进入字段映射页面，不支持拷贝源表字段
 7. 任务运行失败后会从失败的点进行继续同步",1,功能测试
-132636,验证数据同步 检查向导模式-OceanBase for MySQL/OceanBase for Oracle作为来源数据源不支持拷贝源表字段,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132636,验证数据同步 检查向导模式-OceanBase for MySQL/OceanBase for Oracle作为来源数据源不支持拷贝源表字段,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择OceanBase for MySQL/OceanBase for Oracle，点击数据库下拉框
 4. 选择来源数据源，点击下一步
@@ -311,7 +313,7 @@
 4. 进入选择目标页面，OceanBase for MySQL/OceanBase for Oracle不支持作为目标表，选择其他任意数据源
 5. 满足筛选条件的表被筛选出来
 6. 进入字段映射页面，不支持拷贝源表字段",1,功能测试
-132635,验证向导模式中读OceanBase for MySQL/OceanBase for Oracle，OceanBase for MySQL/OceanBase for Oracle表中有多类型字段，写hive一键建表功能正常（所有OceanBase for MySQL/OceanBase for Oracle支持的字段类型）,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment &#039;订单头id&#039; ,order_date bigint comment &#039;订单日期&#039; ,shop_id string comment &#039;店铺id&#039; ,customer_id string comment &#039;客户id&#039; ,order_status bigint comment &#039;订单状态&#039; ,pay_date DATE comment &#039;支付日期&#039; ,pay_boolen BOOLEAN comment &#039;是否支付&#039; ,pay_decli DECIMAL comment &#039;支付11&#039; )comment &#039;销售订单明细表&#039;;","1. 进入数据开发模块，新建向导模式的数据同步任务
+132635,验证向导模式中读OceanBase for MySQL/OceanBase for Oracle，OceanBase for MySQL/OceanBase for Oracle表中有多类型字段，写hive一键建表功能正常（所有OceanBase for MySQL/OceanBase for Oracle支持的字段类型）,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"1.当前项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.sybase中存在含有多个字段的表，如建表语句为 create table if not exists ods_order_header1 ( order_header_id string comment '订单头id' ,order_date bigint comment '订单日期' ,shop_id string comment '店铺id' ,customer_id string comment '客户id' ,order_status bigint comment '订单状态' ,pay_date DATE comment '支付日期' ,pay_boolen BOOLEAN comment '是否支付' ,pay_decli DECIMAL comment '支付11' )comment '销售订单明细表';","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 配置正确的数据来源，如选择{OceanBase for MySQL/OceanBase for Oracle}数据源，选择表ods_order_header1,点击下一步
 3. 点击数据同步目标下拉框
 4. 点击数据库下拉框
@@ -324,7 +326,7 @@
 5. 1.页面弹出建表弹窗，建表语句中表名默认为来源表的表名（ods_order_header1），字段内容默认为源表字段内容，字段类型能映射的按原类型映射，不能的统一映射成目标表的字符型；建表语句后面带上源表注释与字段注释（string）
 6. 一键建表成功，系统给出成功反馈，相关页面/数据状态更新为最新
 7. 配置以及环境无误的话，任务成功，系统给出成功反馈，相关页面/数据状态更新为最新",1,功能测试
-132634,验证数据同步 可选范围为选中数据库下所有表，下拉菜单最多展示前200个选项,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132634,验证数据同步 可选范围为选中数据库下所有表，下拉菜单最多展示前200个选项,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择来源数据源，点击下一步
 4. 点击数据同步目标下拉框
@@ -337,7 +339,7 @@
 5. 可选范围为数据库连接用户下的所有数据库
 6. 满足筛选条件的表被筛选出来
 7. ",2,功能测试
-132633,验证数据同步 检查向导模式是否可以展示OceanBase for MySQL/OceanBase for Oracle下所选数据库下的所有表,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132633,验证数据同步 检查向导模式是否可以展示OceanBase for MySQL/OceanBase for Oracle下所选数据库下的所有表,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择目标数据源，点击下一步
 4. 点击数据同步目标下拉框
@@ -346,15 +348,15 @@
 3. 进入选择目标页面
 4. 来源类型不支持OceanBase for MySQL/OceanBase for Oracle类型，选择其他任意数据库
 5. 可选范围为选中数据库下所有表，下拉菜单最多展示前200个选项",2,功能测试
-132632,验证数据同步 检查向导模式是否可以展示OceanBase for MySQL/OceanBase for Oracle下所有数据库,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132632,验证数据同步 检查向导模式是否可以展示OceanBase for MySQL/OceanBase for Oracle下所有数据库,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据来源--数据源下拉列表
 3. 选择来源数据源，点击下一步
 4. 点击数据同步目标下拉框","1. 系统提示新建成功，列表顶部出现新建的记录，记录内容与填写一致
 2. 来源数据源支持OceanBase for MySQL/OceanBase for Oracle数据源，下拉选择数据表，可选范围为数据库连接用户下的所有数据库
 3. 进入选择目标页面
 4. 来源类型不支持OceanBase for MySQL/OceanBase for Oracle类型，选择其他任意数据库",2,功能测试
-132631,验证在生产项目中OceanBase for MySQL/OceanBase for Oracle数据源不支持配置映射功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.当前项目作为生产项目,1. 进入生产项目，点击OceanBase for MySQL/OceanBase for Oracle数据源后的操作,1. 操作支持取消引入，无映射配置选项,2,功能测试
-132630,验证OceanBase for MySQL/OceanBase for Oracle数据源在测试项目中映射配置功能正常,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.离线测试项目与生产项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.当前项目（测试项目）已经成功绑定发布目标项目,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132631,验证在生产项目中OceanBase for MySQL/OceanBase for Oracle数据源不支持配置映射功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.当前项目作为生产项目,1. 进入生产项目，点击OceanBase for MySQL/OceanBase for Oracle数据源后的操作,1. 操作支持取消引入，无映射配置选项,2,功能测试
+132630,验证OceanBase for MySQL/OceanBase for Oracle数据源在测试项目中映射配置功能正常,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.离线测试项目与生产项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.当前项目（测试项目）已经成功绑定发布目标项目,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击OceanBase for MySQL/OceanBase for Oracle数据源后的操作
 3. 点击OceanBase for MySQL/OceanBase for Oracle数据源后的操作--映射配置
 4. 点击发布目标
@@ -363,40 +365,40 @@
 3. 当前页面弹出OceanBase for MySQL/OceanBase for Oracle数据源映射配置弹窗，在本项目文本框下显示的为用户名
 4. 下拉弹窗中显示出生产项目中成功引入的OceanBase for MySQL/OceanBase for Oracle数据源
 5. 映射配置弹窗关闭，OceanBase for MySQL/OceanBase for Oracle数据源映射配置关系设置成功，OceanBase for MySQL/OceanBase for Oracle映射关系变更为“已配置”",1,功能测试
-132629,验证筛选OceanBase for MySQL/OceanBase for Oracle数据源功能正常,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132629,验证筛选OceanBase for MySQL/OceanBase for Oracle数据源功能正常,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据源页面筛选按钮
 3. 选中OceanBase for MySQL/OceanBase for Oracle，点击确定
 4. 在搜索框中输入OceanBase for MySQL/OceanBase for Oracle名称","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 显示数据源类型列表，新增OceanBase for MySQL/OceanBase for Oracle数据源类型，顺序与数据源中心一致
 3. OceanBase for MySQL/OceanBase for Oracle类型的数据源被成功筛选出来，相关信息正确回显
 4. 满足条件的OceanBase for MySQL/OceanBase for Oracle数据源被筛选出来",3,功能测试
-132628,验证未在任务中使用的OceanBase for MySQL/OceanBase for Oracle数据源取消引入--取消成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.成功进入测试项目 2.数据源中心存在授权给离线计算的OceanBase for MySQL/OceanBase for Oracle，且该数据源未在离线任务中使用,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132628,验证未在任务中使用的OceanBase for MySQL/OceanBase for Oracle数据源取消引入--取消成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.成功进入测试项目 2.数据源中心存在授权给离线计算的OceanBase for MySQL/OceanBase for Oracle，且该数据源未在离线任务中使用,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击未被使用的OceanBase for MySQL/OceanBase for Oracle数据源后的操作，点击取消引入
 3. 点击确定","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出二次确认弹窗
 3. 取消引入成功，系统给出成功反馈，相关页面/数据状态更新为最新",2,功能测试
-132627,验证已经在任务中使用的OceanBase for MySQL/OceanBase for Oracle数据源取消引入--取消失败,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),验证已经在任务中使用的OceanBase for MySQL/OceanBase for Oracle取消引入--取消失败,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132627,验证已经在任务中使用的OceanBase for MySQL/OceanBase for Oracle数据源取消引入--取消失败,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),验证已经在任务中使用的OceanBase for MySQL/OceanBase for Oracle取消引入--取消失败,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击已经被任务使用的OceanBase for MySQL/OceanBase for Oracle数据源后的操作，点击取消引入
 3. 点击确定","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出二次确认弹窗
 3. 取消引入失败，页面弹出对应的提示信息",2,功能测试
-132626,验证数据源中心修改OceanBase for MySQL/OceanBase for Oracle配置同步至离线功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,1. 进入数据源中心，编辑已经引入到离线项目中的OceanBase for MySQL/OceanBase for Oracle数据源，如修改描述，查看离线中对应的OceanBase for MySQL/OceanBase for Oracle数据源信息,1. 离线中的OceanBase for MySQL/OceanBase for Oracle数据源信息同步修改,3,功能测试
-132625,验证支持引入OceanBase for MySQL/OceanBase for Oracle数据源功能正常,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.成功进入测试项目 2.数据源中心存在授权给离线计算的OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132626,验证数据源中心修改OceanBase for MySQL/OceanBase for Oracle配置同步至离线功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,1. 进入数据源中心，编辑已经引入到离线项目中的OceanBase for MySQL/OceanBase for Oracle数据源，如修改描述，查看离线中对应的OceanBase for MySQL/OceanBase for Oracle数据源信息,1. 离线中的OceanBase for MySQL/OceanBase for Oracle数据源信息同步修改,3,功能测试
+132625,验证支持引入OceanBase for MySQL/OceanBase for Oracle数据源功能正常,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.成功进入测试项目 2.数据源中心存在授权给离线计算的OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据源--引入数据源
 3. 选择OceanBase for MySQL/OceanBase for Oracle类型的数据源
 4. 选中OceanBase for MySQL/OceanBase for Oracle数据源，点击确定","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 当前页面弹窗引入数据源列表
 3. OceanBase for MySQL/OceanBase for Oracle的相关信息在离线项目页面中正确回显，相关字段详见prd
 4. 引入OceanBase for MySQL/OceanBase for Oracle数据源成功，当前弹窗关闭",2,功能测试
-132624,验证OceanBase for MySQL/OceanBase for Oracle SQL类型建的表不进入数据地图功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已经成功对接OceanBase for MySQL/OceanBase for Oracle引擎	2.当前项目已经成功绑定生产项目3.当前项目OceanBase for MySQL/OceanBase for Oracle数据源已经成功配置映射,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132624,验证OceanBase for MySQL/OceanBase for Oracle SQL类型建的表不进入数据地图功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已经成功对接OceanBase for MySQL/OceanBase for Oracle引擎	2.当前项目已经成功绑定生产项目3.当前项目OceanBase for MySQL/OceanBase for Oracle数据源已经成功配置映射,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在数据开发模块新增OceanBase for MySQL/OceanBase for Oracle SQL类型的任务，输入以下sql：
 obop table if exists putong_table
 create table if not exists putong_table(id int,name varchar(255));
 点击临时运行
 3. 进入数据地图查看","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
-2. 临时运行成功，状态更新为「成功」，运行/执行结果符合预期，日志无报错
+2. 临时运行成功，状态更新为【成功】，运行/执行结果符合预期，日志无报错
 3. 数据地图模块不显示OceanBase for MySQL/OceanBase for Oracle类型的表",1,功能测试
-132623,验证OceanBase for MySQL/OceanBase for Oracle SQL任务类型发布至目标项目功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已经成功对接OceanBase for MySQL/OceanBase for Oracle引擎	2.当前项目已经成功绑定生产项目3.当前项目OceanBase for MySQL/OceanBase for Oracle数据源已经成功配置映射,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132623,验证OceanBase for MySQL/OceanBase for Oracle SQL任务类型发布至目标项目功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已经成功对接OceanBase for MySQL/OceanBase for Oracle引擎	2.当前项目已经成功绑定生产项目3.当前项目OceanBase for MySQL/OceanBase for Oracle数据源已经成功配置映射,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在数据开发模块新增OceanBase for MySQL/OceanBase for Oracle SQL类型的任务，输入以下sql：
 obop table if exists putong_table
 create table if not exists putong_table(id int,name varchar(255));
@@ -412,7 +414,7 @@ create table if not exists putong_table(id int,name varchar(255));
 5. 进入发布至目标项目页面
 6. 配置无误发布成功，系统给出成功反馈，相关页面/数据状态更新为最新
 7. 该任务被成功发布至目标项目，且相关信息正确回显",1,功能测试
-132622,验证OceanBase for MySQL/OceanBase for Oracle SQL任务类型导入导出功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已经成功对接OceanBase for MySQL/OceanBase for Oracle引擎,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132622,验证OceanBase for MySQL/OceanBase for Oracle SQL任务类型导入导出功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已经成功对接OceanBase for MySQL/OceanBase for Oracle引擎,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在数据开发模块新增OceanBase for MySQL/OceanBase for Oracle SQL类型的任务，输入以下sql：
 obop table if exists putong_table
 create table if not exists putong_table(id int,name varchar(255));
@@ -428,7 +430,7 @@ create table if not exists putong_table(id int,name varchar(255));
 5. 进入发布至目标项目页面
 6. 导出发布包成功，系统给出成功反馈，相关页面/数据状态更新为最新
 7. 导入发布包成功，系统给出成功反馈，相关页面/数据状态更新为最新",2,功能测试
-132621,验证周期实例中按照OceanBase for MySQL/OceanBase for Oracle SQL类型筛选数据功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已经成功对接OceanBase for MySQL/OceanBase for Oracle引擎,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132621,验证周期实例中按照OceanBase for MySQL/OceanBase for Oracle SQL类型筛选数据功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已经成功对接OceanBase for MySQL/OceanBase for Oracle引擎,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在数据开发模块新增OceanBase for MySQL/OceanBase for Oracle SQL类型的任务，输入以下sql：
 obop table if exists putong_table
 create table if not exists putong_table(id int,name varchar(255));
@@ -438,15 +440,15 @@ create table if not exists putong_table(id int,name varchar(255));
 2. 提交至运维中心成功，系统给出成功反馈，相关页面/数据状态更新为最新
 3. 可选数据新增OceanBase for MySQL/OceanBase for Oracle SQL类型
 4. OceanBase for MySQL/OceanBase for Oracle SQL类型的周期实例被成功筛选出来",1,功能测试
-132620,验证OceanBase for MySQL/OceanBase for Oracle SQL任务周期运行功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已经成功对接OceanBase for MySQL/OceanBase for Oracle引擎,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132620,验证OceanBase for MySQL/OceanBase for Oracle SQL任务周期运行功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已经成功对接OceanBase for MySQL/OceanBase for Oracle引擎,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在数据开发模块新增OceanBase for MySQL/OceanBase for Oracle SQL类型的任务，输入以下sql：
 obop table if exists putong_table
 create table if not exists putong_table(id int,name varchar(255));
 点击保存，提交
 3. 将该任务生成周期实例，待该周期实例运行完成查看该实例运行结果","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 提交至运维中心成功，系统给出成功反馈，相关页面/数据状态更新为最新
-3. 配置无误周期运行成功，状态更新为「成功」，运行/执行结果符合预期，日志无报错",2,功能测试
-132619,验证OceanBase for MySQL/OceanBase for Oracle SQL任务手动任务运行功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+3. 配置无误周期运行成功，状态更新为【成功】，运行/执行结果符合预期，日志无报错",2,功能测试
+132619,验证OceanBase for MySQL/OceanBase for Oracle SQL任务手动任务运行功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在数据开发模块新增OceanBase for MySQL/OceanBase for Oracle SQL类型的任务，输入以下sql：
 obop table if exists putong_table
 create table if not exists putong_table(id int,name varchar(255));
@@ -455,8 +457,8 @@ create table if not exists putong_table(id int,name varchar(255));
 4. 进入手动任务实例模块，查看该任务实例运行结果","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 提交至运维中心成功，系统给出成功反馈，相关页面/数据状态更新为最新
 3. 生成补数据实例成功，系统给出成功反馈，相关页面/数据状态更新为最新
-4. 配置无误手动任务运行成功，状态更新为「成功」，运行/执行结果符合预期，日志无报错",2,功能测试
-132618,验证OceanBase for MySQL/OceanBase for Oracle SQL任务补数据运行功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已经成功对接OceanBase for MySQL/OceanBase for Oracle引擎,"1. 进入数据开发模块，新建向导模式的数据同步任务
+4. 配置无误手动任务运行成功，状态更新为【成功】，运行/执行结果符合预期，日志无报错",2,功能测试
+132618,验证OceanBase for MySQL/OceanBase for Oracle SQL任务补数据运行功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已经成功对接OceanBase for MySQL/OceanBase for Oracle引擎,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在数据开发模块新增OceanBase for MySQL/OceanBase for Oracle SQL类型的任务，输入以下sql：
 obop table if exists putong_table
 create table if not exists putong_table(id int,name varchar(255));
@@ -465,8 +467,8 @@ create table if not exists putong_table(id int,name varchar(255));
 4. 进入补数据实例模块，查看该任务实例运行结果","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 提交至运维中心成功，系统给出成功反馈，相关页面/数据状态更新为最新
 3. 生成补数据实例成功，系统给出成功反馈，相关页面/数据状态更新为最新
-4. 配置无误补数据运行成功，状态更新为「成功」，运行/执行结果符合预期，日志无报错",2,功能测试
-132617,验证表管理 显示当前用户有权限的表 权限应用-2,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+4. 配置无误补数据运行成功，状态更新为【成功】，运行/执行结果符合预期，日志无报错",2,功能测试
+132617,验证表管理 显示当前用户有权限的表 权限应用-2,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 创建角色
 3. 赋予角色权限
 4. 将角色赋予用户
@@ -477,7 +479,7 @@ create table if not exists putong_table(id int,name varchar(255));
 4. grant role_1 to userputong;
 5. 绑定putong至userputong，操作成功，系统给出成功反馈，相关页面/数据状态更新为最新
 6. 对aaa下的aaa001有权限，且权限为select, update, delete, insert，其他无权限的表不展示",3,功能测试
-132616,验证表管理 显示当前用户有权限的表 权限应用-1,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132616,验证表管理 显示当前用户有权限的表 权限应用-1,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 创建用户
 3. 将权限赋予用户
 4. 数栈绑定账号
@@ -490,14 +492,14 @@ create table if not exists putong_table(id int,name varchar(255));
 5. 对aaa下的aaa001有权限，且权限为select, update, delete, insert，其他无权限的表不展示
 6. revoke select, update, delete, insert on schema1.table1 to userputong;
 7. 数据刷新，对aaa下的aaa001无权限，无权限的表不展示",3,功能测试
-132615,验证表管理 显示当前用户有权限的表 table展示,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132615,验证表管理 显示当前用户有权限的表 table展示,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建/编辑项目，引擎选择OceanBase for MySQL/OceanBase for Oracle
 3. 数据开发
 4. 表查询
 5. 选择OceanBase for MySQL/OceanBase for Oracle数据源
 6. 选择表
-7. 开启「仅展示有权限的表」开关
-8. 关闭「仅展示有权限的表」开关
+7. 开启【仅展示有权限的表】开关
+8. 关闭【仅展示有权限的表】开关
 9. hover具体的表","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示操作成功，页面/数据状态更新为最新
 3. 系统提示操作成功，页面/数据状态更新为最新
@@ -506,8 +508,8 @@ create table if not exists putong_table(id int,name varchar(255));
 6. 显示指定schema下的table
 7. 页面刷新，展示用户在控制台一对一绑定的数据库账号权限下的table
 8. 页面刷新，展示所有已同步的table
-9. 展示信息栏新增「权限类型」字段，枚举当前用户对该表的权限类型。",1,功能测试
-132614,验证表管理 显示当前用户有权限的表 schema展示,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+9. 展示信息栏新增【权限类型】字段，枚举当前用户对该表的权限类型。",1,功能测试
+132614,验证表管理 显示当前用户有权限的表 schema展示,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建/编辑项目，引擎选择OceanBase for MySQL/OceanBase for Oracle
 3. 数据开发
 4. 表查询
@@ -516,14 +518,14 @@ create table if not exists putong_table(id int,name varchar(255));
 3. 系统提示操作成功，页面/数据状态更新为最新
 4. 系统提示操作成功，页面/数据状态更新为最新
 5. 显示OceanBase for MySQL/OceanBase for Oracle下的有权限查看的schema",1,功能测试
-132613,验证表管理 创建表可查询,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新增OceanBase for MySQL/OceanBase for Oracle任务
+132613,验证表管理 创建表可查询,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新增OceanBase for MySQL/OceanBase for Oracle任务
 2. 输入sql：create table putong(id int);点击保存
 3. 点击运行
 4. 进入表查询界面，选择OceanBase for MySQL/OceanBase for Oracle数据源，找到当前scheama","1. 系统提示新增成功，列表顶部出现一条新建记录，内容与填写一致
 2. 系统提示保存成功，修改内容已生效并在页面中更新显示
-3. 任务状态更新为「运行成功」，运行日志无错误信息，输出结果符合预期
+3. 任务状态更新为【运行成功】，运行日志无错误信息，输出结果符合预期
 4. 查询到表putong",3,功能测试
-132612,验证表管理 显示OceanBase for MySQL/OceanBase for Oracle数据源,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132612,验证表管理 显示OceanBase for MySQL/OceanBase for Oracle数据源,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 数据开发-表查询
 3. 显示OceanBase for MySQL/OceanBase for Oracle数据源
 4. 点击OceanBase for MySQL/OceanBase for Oracle数据源
@@ -536,7 +538,7 @@ create table if not exists putong_table(id int,name varchar(255));
 5. 显示schema下数据地图中存在的表，数据正确，内容与预期完全一致，无异常或错误
 6. 显示表的详细字段信息，数据正确，内容与预期完全一致，无异常或错误
 7. 预览对应表的所有数据，数据正确，内容与预期完全一致，无异常或错误",1,功能测试
-132611,验证OceanBase for MySQL/OceanBase for Oracle发布至本地项目功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132611,验证OceanBase for MySQL/OceanBase for Oracle发布至本地项目功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 选择写函数上方的“发布”
 3. 勾选该函数打包
 4. 输入正确的发布描述，点击确定
@@ -549,7 +551,7 @@ create table if not exists putong_table(id int,name varchar(255));
 5. 导出包成功，系统给出成功反馈，相关页面/数据状态更新为最新
 6. 弹出发布包检查弹窗
 7. 环境配置无误的话，导入发布包成功，系统给出成功反馈，相关页面/数据状态更新为最新",3,功能测试
-132610,验证OceanBase for MySQL/OceanBase for Oracle发布至目标项目功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132610,验证OceanBase for MySQL/OceanBase for Oracle发布至目标项目功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 选择函数任务上方的“发布”
 3. 勾选该函数任务打包
 4. 输入正确的发布描述，点击确定
@@ -558,38 +560,38 @@ create table if not exists putong_table(id int,name varchar(255));
 3. 弹出创建发布包弹窗
 4. 创建包完成，进入发布至目标项目页面
 5. 映射配置配置与环境信息配置无误的话，发布成功，系统给出成功反馈，相关页面/数据状态更新为最新",3,功能测试
-132609,验证创建发布包时，对象名称新增函数类型后缀,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132609,验证创建发布包时，对象名称新增函数类型后缀,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 创建发布包：点击打包进入打包详情页：对象名称；函数列表函数的名称
 3. 发布至目标项目：点击查看进入详情页：对象名称
 4. 发布至本项目：点击查看进入详情页：对象名称","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 对象名称后添加函数类型如：test（OceanBase for MySQL/OceanBase for OracleSQL）
 3. 对象名称后添加函数类型如：test（OceanBase for MySQL/OceanBase for OracleSQL）
 4. 对象名称后添加函数类型如：test（OceanBase for MySQL/OceanBase for OracleSQL）",2,功能测试
-132608,验证删除OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132608,验证删除OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 自定义函数文件夹file_test上，右键删除按钮
 3. 点击取消按钮
 4. 点击确定按钮","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出二次确认删除弹窗，内容：确定要删除此文件夹吗，删除的文件夹无法恢复
 3. 弹窗关闭，文件夹仍存在
 4. 文件夹删除成功，对应目录下该文件夹已不展示,数据库rdos_",3,功能测试
-132607,验证编辑OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹到当前目录的子目录功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132607,验证编辑OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹到当前目录的子目录功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 自定义函数文件夹file_testB上，右键编辑按钮
 3. 编辑目录位置为子目录file_testB_01下，点击确定按钮","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出编辑弹窗
 3. 弹出提示：该目录不允许移动至当前目录和子目录",3,功能测试
-132606,验证编辑OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹到当前目录功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132606,验证编辑OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹到当前目录功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 自定义函数文件夹file_testA_01上，右键编辑按钮
 3. 编辑目录位置为当前目录file_testA_01下，点击确定按钮","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出编辑弹窗
 3. 弹出提示：该目录不允许移动至当前目录和子目录",3,功能测试
-132605,验证编辑OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132605,验证编辑OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 自定义函数文件夹上，右键编辑按钮
 3. 编辑新的目录名称B，点击取消按钮
 4. 编辑新的目录名称B，选择目录位置，点击确认","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出编辑弹窗
 3. 弹窗关闭，文件夹内容不变
 4. 新建文件夹成功，在相应目录位置展示该文件夹",3,功能测试
-132604,验证新建重名OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132604,验证新建重名OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 自定义函数文件夹上，右键新建文件夹
 3. 填写已存在的目录名称A，选择目录位置，点击确认
 4. 自定义函数文件夹B上，右键编辑按钮
@@ -598,14 +600,14 @@ create table if not exists putong_table(id int,name varchar(255));
 3. 弹出提示：文件夹已存在
 4. 弹出编辑弹窗
 5. 弹出提示：文件夹已存在",3,功能测试
-132603,验证新建OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132603,验证新建OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 自定义函数文件夹上，右键新建文件夹
 3. 点击取消按钮
 4. 填写目录名称A，选择目录位置，点击确认","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出新建文件夹弹窗
 3. 弹窗关闭，文件夹没有被创建
 4. 新建文件夹成功，在相应目录位置展示该文件夹",1,功能测试
-132602,验证OceanBase for MySQL/OceanBase for Oracle自定义函数在已被使用，删除自定义函数成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132602,验证OceanBase for MySQL/OceanBase for Oracle自定义函数在已被使用，删除自定义函数成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建》创建任务
 3. 其他信息默认，点击确认按钮
 4. 在开发任务中使用test1函数
@@ -622,7 +624,7 @@ create table if not exists putong_table(id int,name varchar(255));
 7. 删除成功，该自定义函数在函数列表中删除
 8. 该自定义函数被删除不显示
 9. 该自定义函数软删除，is_deleted=1",3,功能测试
-132601,验证删除OceanBase for MySQL/OceanBase for Oracle自定义函数功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132601,验证删除OceanBase for MySQL/OceanBase for Oracle自定义函数功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 已存在的自定义函数test1，右键菜单，点击删除按钮
 3. 点击取消按钮
 4. 点击确认按钮
@@ -633,19 +635,19 @@ create table if not exists putong_table(id int,name varchar(255));
 4. 删除成功，该自定义函数在函数列表中删除
 5. 该自定义函数被删除不显示
 6. 该自定义函数软删除，is_deleted=1",3,功能测试
-132600,验证移动OceanBase for MySQL/OceanBase for Oracle自定义函数功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132600,验证移动OceanBase for MySQL/OceanBase for Oracle自定义函数功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 已存在的自定义函数test1，右键菜单，点击移动按钮
 3. 选择存储位置file_test1，点击确认","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出编辑弹窗
 3. 函数移动至目录下",3,功能测试
-132599,验证编辑OceanBase for MySQL/OceanBase for Oracle自定义函数功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132599,验证编辑OceanBase for MySQL/OceanBase for Oracle自定义函数功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 已存在的自定义函数test1，右键菜单，点击编辑按钮
 3. 函数类型，函数名称不可编辑，编辑弹窗中的用途，sql，参数说明，存储位置，点击确认按钮
 4. 查看编辑后的自定义函数","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出编辑弹窗
 3. 弹窗关闭
 4. 函数数据更改为编辑后的数据",3,功能测试
-132598,验证数据开发页面OceanBase for MySQL/OceanBase for Oracle SQL任务OceanBase for MySQL/OceanBase for Oracle自定义函数的删除,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132598,验证数据开发页面OceanBase for MySQL/OceanBase for Oracle SQL任务OceanBase for MySQL/OceanBase for Oracle自定义函数的删除,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 自定义函数文件上右键-新建自定义函数
 3. 弹出自定义函数弹窗
 4. 函数名称填写：test1
@@ -668,7 +670,7 @@ language plpgsql;
 7. 正确回显函数数据
 8. OceanBase for MySQL/OceanBase for Oracle自定义函数文件夹中函数删除，数据库中rdos_batch_function软删除，is_deleted=1
 9. 函数删除成功，系统给出删除成功提示，该记录从列表中消失",3,功能测试
-132597,验证数据开发页面OceanBase for MySQL/OceanBase for Oracle SQL任务OceanBase for MySQL/OceanBase for Oracle自定义函数test2在delete语句中的使用,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132597,验证数据开发页面OceanBase for MySQL/OceanBase for Oracle SQL任务OceanBase for MySQL/OceanBase for Oracle自定义函数test2在delete语句中的使用,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 数据开发->函数管理左侧菜单右上角：右键-新建自定义函数
 3. 弹出自定义函数弹窗
 4. 函数名称填写：test2
@@ -688,7 +690,7 @@ COST 100
 6. 关闭弹窗后，弹出toast提示：创建成功，系统给出创建成功提示，列表中出现新创建的记录
 7. 正确回显函数数据
 8. 姓名为ab的用户信息数据被删除",3,功能测试
-132596,验证数据开发页面OceanBase for MySQL/OceanBase for Oracle SQL任务OceanBase for MySQL/OceanBase for Oracle自定义函数test2在update语句中的使用,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132596,验证数据开发页面OceanBase for MySQL/OceanBase for Oracle SQL任务OceanBase for MySQL/OceanBase for Oracle自定义函数test2在update语句中的使用,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 数据开发->函数管理左侧菜单右上角：右键-新建自定义函数
 3. 弹出自定义函数弹窗
 4. 函数名称填写：test2
@@ -708,7 +710,7 @@ COST 100
 6. 关闭弹窗后，弹出toast提示：创建成功，系统给出创建成功提示，列表中出现新创建的记录
 7. 正确回显函数数据
 8. ab的年龄在原有基础上加1",3,功能测试
-132595,验证数据开发页面OceanBase for MySQL/OceanBase for Oracle SQL任务OceanBase for MySQL/OceanBase for Oracle自定义函数getCity在select语句中的使用,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132595,验证数据开发页面OceanBase for MySQL/OceanBase for Oracle SQL任务OceanBase for MySQL/OceanBase for Oracle自定义函数getCity在select语句中的使用,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 数据开发->函数管理左侧菜单右上角：右键-新建自定义函数
 3. 弹出自定义函数弹窗
 4. 函数名称填写：getCity
@@ -729,7 +731,7 @@ language plpgsql;
 6. 关闭弹窗后，弹出toast提示：创建成功，系统给出创建成功提示，列表中出现新创建的记录
 7. 正确回显函数数据
 8. 可以正确返回全部数据",1,功能测试
-132594,验证自定义函数文件夹-新增OceanBase for MySQL/OceanBase for Oracle自定义函数失败,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132594,验证自定义函数文件夹-新增OceanBase for MySQL/OceanBase for Oracle自定义函数失败,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 自定义函数文件上右键-新建自定义函数
 3. 弹出自定义函数弹窗
 4. 函数名称填写：test1
@@ -740,7 +742,7 @@ language plpgsql;
 4. 函数名称自动填充到sql语句中的“schemaName.“，“create or replace function “schemaName.“”
 5. 填写错误格式的自定义函数
 6. 弹出报错信息：新增失败，execute sql报错",3,功能测试
-132593,验证自定义函数文件夹-新增OceanBase for MySQL/OceanBase for Oracle自定义函数,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132593,验证自定义函数文件夹-新增OceanBase for MySQL/OceanBase for Oracle自定义函数,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 自定义函数文件上右键-新建自定义函数
 3. 弹出自定义函数弹窗
 4. 函数名称填写：test1
@@ -762,7 +764,7 @@ COST 100
 7. 正确回显函数数据
 8. 插入新增自定义函数
 9. 可以正确返回全部数据",1,功能测试
-132592,验证菜单上方按钮右键-新增OceanBase for MySQL/OceanBase for Oracle自定义函数,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132592,验证菜单上方按钮右键-新增OceanBase for MySQL/OceanBase for Oracle自定义函数,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 数据开发->函数管理左侧菜单右上角：右键-新建自定义函数
 3. 弹出自定义函数弹窗
 4. 函数名称填写：getCity
@@ -782,32 +784,33 @@ COST 100
 6. 关闭弹窗后，弹出toast提示：创建成功，系统给出创建成功提示，列表中出现新创建的记录
 7. 正确回显函数数据
 8. 插入新增自定义函数",3,功能测试
-132591,验证OceanBase for MySQL/OceanBase for Oracle系统函数的使用,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132591,验证OceanBase for MySQL/OceanBase for Oracle系统函数的使用,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建》创建任务
 3. 其他信息默认，点击确认按钮
 4. 输入系统函数名称（每个类型挑选两种进行验证）高亮且有快捷写入
-5. 输入相关sql，sql内包含对应系统函数的调用（每种系统函数类型选择两个进行调用），点击运行","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
+5. 输入相关sql，sql内包含对应系统函数的调用（每种系统函数类型选择两个进行调用），点击运行
+6. 检查相关状态和结果","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 任务名称为OceanBase for MySQL/OceanBase for Oracle_test，任务类型选择OceanBase for MySQL/OceanBase for OracleSQL
 3. 创建ABD_test的sql任务
 4. 系统提示操作成功，页面/数据状态更新为最新
-5. 1.运行成功，状态更新为「成功」，运行/执行结果符合预期，日志无报错
+5. 1.运行成功，状态更新为【成功】，运行/执行结果符合预期，日志无报错
 6. 结果符合预期",2,功能测试
-132590,验证OceanBase for MySQL/OceanBase for Oracle系统函数展示正确,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132590,验证OceanBase for MySQL/OceanBase for Oracle系统函数展示正确,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 系统函数与OceanBase for MySQL/OceanBase for Oracle的系统函数相同
 3. 单击每个函数","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 对比OceanBase for MySQL/OceanBase for Oracle的系统函数
 3. 弹出查看函数详情弹窗",1,功能测试
-132589,验证函数管理新增OceanBase for MySQL/OceanBase for Oracle成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132589,验证函数管理新增OceanBase for MySQL/OceanBase for Oracle成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 项目管理》开发设置：添加计算引擎，选择OceanBase for MySQL/OceanBase for Oracle，其他选项默认
 3. 数据开发》函数管理左侧菜单：新增OceanBase for MySQL/OceanBase for Oracle
 4. 验证数据库rdos_dict表","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 点击确认，添加成功，系统给出成功反馈，相关页面/数据状态更新为最新
 3. 包含系统函数，自定义函数
 4. 增加OceanBase for MySQL/OceanBase for Oracle For PG系统函数",1,功能测试
-132588,验证wps和office的版本,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132588,验证wps和office的版本,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. wps的.xlsx和.xls,office的xlsx和.xls文件都导入测试","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致",3,功能测试
-132587,验证导入模式为追加，导入数据正确,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"准备文件格式为.xlsx的文件test，有单个sheet页面有数据，标题:id ,name","1. 进入数据开发模块，新建向导模式的数据同步任务
+132587,验证导入模式为追加，导入数据正确,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"准备文件格式为.xlsx的文件test，有单个sheet页面有数据，标题:id ,name","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 上传test文件
 3. 其它值为默认填写
 4. 选择表类型为OceanBase for MySQL/OceanBase for Oracle
@@ -818,7 +821,7 @@ COST 100
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test表中追加写入此次导入的数据",3,功能测试
-132586,验证导入模式为覆盖，导入数据正确,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"准备文件格式为.xlsx的文件test，有单个sheet页面有数据，标题:id ,name","1. 进入数据开发模块，新建向导模式的数据同步任务
+132586,验证导入模式为覆盖，导入数据正确,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"准备文件格式为.xlsx的文件test，有单个sheet页面有数据，标题:id ,name","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 上传test文件
 3. 其它值为默认填写
 4. 选择表类型为OceanBase for MySQL/OceanBase for Oracle
@@ -829,7 +832,7 @@ COST 100
 4. 选择一张表test（表里已存在数据）
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test表中只有此次导入的数据",1,功能测试
-132585,验证按名称匹配，导入数据正确,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"准备文件格式为.xlsx的文件test，有单个sheet页面有数据，标题:sex ,name
+132585,验证按名称匹配，导入数据正确,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"准备文件格式为.xlsx的文件test，有单个sheet页面有数据，标题:sex ,name
 
 新建表create table test（sex，name）","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 上传test文件
@@ -845,7 +848,7 @@ COST 100
 name的源字段对应sex
 6. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 7. test文件中的sex，name分别对应test表中的name，sex字段",3,功能测试
-132584,验证按位置匹配，导入数据正确,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"准备文件格式为.xlsx的文件test，有单个sheet页面有数据，标题:sex ,name
+132584,验证按位置匹配，导入数据正确,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"准备文件格式为.xlsx的文件test，有单个sheet页面有数据，标题:sex ,name
 新建表create table test（sex，name）","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 上传test文件
 3. 其它值为默认填写
@@ -857,7 +860,7 @@ name的源字段对应sex
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test文件中的sex，name分别对应test表中的sex，name字段",1,功能测试
-132583,验证导入数据页面功能正确,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132583,验证导入数据页面功能正确,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 分割符默认选中逗号，自定义按钮可选
 3. 原始字符集：下拉列表，默认utf-8
 4. 导入起始行：默认1，所支持的数字大于等于1的正整数
@@ -867,7 +870,7 @@ name的源字段对应sex
 4. 显示的数据即为导入的数据
 5. 默认勾选：第一行数据为标题
 去掉勾选，使用默认标题",3,功能测试
-132582,验证log文档，文件为多个sheet，导入数据成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132582,验证log文档，文件为多个sheet，导入数据成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 上传test文件
 3. 其它值为默认填写
 4. 选择表类型为OceanBase for MySQL/OceanBase for Oracle
@@ -878,7 +881,7 @@ name的源字段对应sex
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test中第一个sheet中的数据被写入",3,功能测试
-132581,验证csv文档，文件为多个sheet，导入数据成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132581,验证csv文档，文件为多个sheet，导入数据成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 上传test文件
 3. 其它值为默认填写
 4. 选择表类型为OceanBase for MySQL/OceanBase for Oracle
@@ -889,7 +892,7 @@ name的源字段对应sex
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test中第一个sheet中的数据被写入",1,功能测试
-132580,验证txt文档，文件为多个sheet，导入数据成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132580,验证txt文档，文件为多个sheet，导入数据成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 上传test文件
 3. 其它值为默认填写
 4. 选择表类型为OceanBase for MySQL/OceanBase for Oracle
@@ -900,7 +903,7 @@ name的源字段对应sex
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test中第一个sheet中的数据被写入",1,功能测试
-132579,验证03版本的.xls文档，文件为多个sheet，导入数据成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"准备文件格式为.xls的文件test，有多个sheet页面有数据，标题:id ,name","1. 进入数据开发模块，新建向导模式的数据同步任务
+132579,验证03版本的.xls文档，文件为多个sheet，导入数据成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"准备文件格式为.xls的文件test，有多个sheet页面有数据，标题:id ,name","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 上传test文件
 3. 其它值为默认填写
 4. 选择表类型为OceanBase for MySQL/OceanBase for Oracle
@@ -911,7 +914,7 @@ name的源字段对应sex
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test中第一个sheet中的数据被写入",3,功能测试
-132578,验证03版本的.xls文档，文件为单个sheet，导入数据成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"准备文件格式为.xls的文件test，有单个sheet页面有数据，标题:id ,name","1. 进入数据开发模块，新建向导模式的数据同步任务
+132578,验证03版本的.xls文档，文件为单个sheet，导入数据成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"准备文件格式为.xls的文件test，有单个sheet页面有数据，标题:id ,name","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 上传test文件
 3. 其它值为默认填写
 4. 选择表类型为OceanBase for MySQL/OceanBase for Oracle
@@ -922,7 +925,7 @@ name的源字段对应sex
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test中的数据文件正常导入",3,功能测试
-132577,验证07版本的.xlsx文档，文件为多个sheet页，导入数据成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"准备文件格式为.xlsx的文件test，有多个sheet页面有数据，标题:id ,name","1. 进入数据开发模块，新建向导模式的数据同步任务
+132577,验证07版本的.xlsx文档，文件为多个sheet页，导入数据成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"准备文件格式为.xlsx的文件test，有多个sheet页面有数据，标题:id ,name","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 上传test文件
 3. 其它值为默认填写
 4. 选择表类型为OceanBase for MySQL/OceanBase for Oracle
@@ -933,7 +936,7 @@ name的源字段对应sex
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test中第一个sheet中的数据被写入",3,功能测试
-132576,验证07版本的.xlsx文档，文件为单个sheet页，导入数据成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),"准备文件格式为.xlsx的文件test，有单个sheet页面有数据，标题:id ,name","1. 进入数据开发模块，新建向导模式的数据同步任务
+132576,验证07版本的.xlsx文档，文件为单个sheet页，导入数据成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),"准备文件格式为.xlsx的文件test，有单个sheet页面有数据，标题:id ,name","1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 上传test_file文件
 3. 其它值为默认填写
 4. 选择表类型为OceanBase for MySQL/OceanBase for Oracle
@@ -944,10 +947,10 @@ name的源字段对应sex
 4. 新建一张包含文件中字段的表test_table
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test_file中的数据文件正常导入",3,功能测试
-132575,验证导入数据交互,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132575,验证导入数据交互,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 数据开发页面导入-导入本地文件","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 注释调整为“支持.txt、.csv、.log、.xls和.xlsx格式文件，若.xlsx和.xls的文件有多个sheet页，只导入第一个sheet页内容”",3,功能测试
-132574,验证数据开发--> 支持运行历史,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132574,验证数据开发--> 支持运行历史,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 创建OceanBase for MySQL/OceanBase for Oracle任务
 3. 运行任务
 4. 去运行历史查看数据
@@ -956,33 +959,33 @@ name的源字段对应sex
 7. 下载日志
 8. 跳转到","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示操作成功，页面/数据状态更新为最新
-3. 任务运行成功，状态显示为「运行成功/成功」，无报错信息
+3. 任务运行成功，状态显示为【运行成功/成功】，无报错信息
 4. 有最新一条的运行记录，所有数据均正确，内容与预期完全一致，无异常或错误
 5. 打开页面，展示当时执行的sql，所有数据均正确，内容与预期完全一致，无异常或错误
 6. 返回运行时的日志，数据正确，内容与预期完全一致，无异常或错误
 7. 下载日志成功，数据正确，内容与预期完全一致，无异常或错误
 8. 点击跳转到对应任务",1,功能测试
-132573,验证数据开发--> 支持语法提示，语法校验 输入关键字后的排序,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132573,验证数据开发--> 支持语法提示，语法校验 输入关键字后的排序,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle sql任务
 3. 输入select，开始联想","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示创建成功，列表中出现新创建的记录，记录内容与填写一致
 3. 提示正确关键字，字段名，库名，表名，函数名",2,功能测试
-132572,验证数据开发--> 支持语法提示，语法校验 输入开始前,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132572,验证数据开发--> 支持语法提示，语法校验 输入开始前,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle sql任务
 3. 焦点停留在sql页面，开始联想","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示创建成功，列表中出现新创建的记录，记录内容与填写一致
 3. 提示正确关键字，字段名，库名，表名，函数名",2,功能测试
-132571,验证生命周期正常运行,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132571,验证生命周期正常运行,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle SQL任务
 3. 输入sql后点击保存：
 CREATE TABLE test (c1 INT PRIMARY KEY, c2 VARCHAR(3)) lifecycle 1;
 4. 临时运行语句
 5. 第二天再次查询该表","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
-2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为「待提交/草稿」
+2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为【待提交/草稿】
 3. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 4. 1.任务运行成功2.所执行的sql语句产生对应的结果3.数据无乱码错位等异常
 5. 1.表不存在",2,功能测试
-132570,验证sql基础操作正常执行,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132570,验证sql基础操作正常执行,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle SQL任务
 3. 输入sql后点击保存：
 CREATE TABLE test (c1 INT PRIMARY KEY, c2 VARCHAR(3));
@@ -1034,10 +1037,10 @@ SELECT * FROM t_insert;
 ROLLBACK;
 SELECT * FROM t_insert;
 4. 临时运行语句","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
-2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为「待提交/草稿」
+2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为【待提交/草稿】
 3. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 4. 1.任务运行成功2.所执行的sql语句产生对应的结果3.数据无乱码错位等异常",2,功能测试
-132569,验证存储过程sql正常执行,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132569,验证存储过程sql正常执行,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle SQL任务
 3. 输入sql后点击保存：
 CREATE TABLE loghistory
@@ -1058,10 +1061,10 @@ END;
 SELECT * FROM loghistory;
 COMMIT;
 4. 临时运行语句","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
-2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为「待提交/草稿」
+2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为【待提交/草稿】
 3. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 4. 1.任务运行成功2.所执行的sql语句产生对应的结果3.数据无乱码错位等异常",2,功能测试
-132568,验证复合查询sql正常执行,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132568,验证复合查询sql正常执行,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle SQL任务
 3. 输入sql后点击保存：
 CREATE TABLE table_a(PK INT, name VARCHAR(25));
@@ -1095,10 +1098,10 @@ SELECT PK, NAME FROM table_a
 MINUS
 SELECT PK, NAME FROM table_b;
 4. 临时运行语句","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
-2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为「待提交/草稿」
+2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为【待提交/草稿】
 3. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 4. 1.任务运行成功2.所执行的sql语句产生对应的结果3.数据无乱码错位等异常",2,功能测试
-132567,验证子查询sql正常执行,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132567,验证子查询sql正常执行,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle SQL任务
 3. 输入sql后点击保存：
 CREATE TABLE table_a(PK INT, name VARCHAR(25));
@@ -1124,10 +1127,10 @@ SELECT * FROM TABLE_A T1 WHERE T1.PK IN (SELECT T2.PK FROM TABLE_B T2 WHERE T2.P
 EXPLAIN SELECT * FROM TABLE_A T1
 WHERE T1.PK IN (SELECT T2.NAME FROM TABLE_B T2 WHERE T2.NAME = T1.NAME);
 4. 临时运行语句","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
-2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为「待提交/草稿」
+2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为【待提交/草稿】
 3. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 4. 1.任务运行成功2.所执行的sql语句产生对应的结果3.数据无乱码错位等异常",2,功能测试
-132566,验证分区操作正常执行,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132566,验证分区操作正常执行,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle SQL任务
 3. 输入sql后点击保存：
 CREATE TABLE tbl1(c1 INT PRIMARY KEY, c2 DATE);
@@ -1152,10 +1155,10 @@ INSERT INTO tbl2 (c1, c2) VALUES (5, TO_DATE('2115-12-31', 'YYYY-MM-DD'));
 ALTER TABLE tbl2 TRUNCATE PARTITION p2;
 ALTER TABLE tbl2 obOP PARTITION p2;
 4. 临时运行语句","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
-2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为「待提交/草稿」
+2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为【待提交/草稿】
 3. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 4. 1.任务运行成功2.所执行的sql语句产生对应的结果3.数据无乱码错位等异常",2,功能测试
-132565,验证外键操作正常执行,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132565,验证外键操作正常执行,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle SQL任务
 3. 输入sql后点击保存：
 CREATE TABLE primary_table (id NUMBER PRIMARY KEY, names VARCHAR(100) NOT NULL, foreign_col NUMBER);
@@ -1168,10 +1171,10 @@ AND TABLE_NAME = 'primary_table'
 AND CONSTRAINT_NAME = 'cons_fk1';
 ALTER TABLE primary_table obOP CONSTRAINT cons_fk1;
 4. 临时运行语句","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
-2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为「待提交/草稿」
+2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为【待提交/草稿】
 3. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 4. 1.任务运行成功2.所执行的sql语句产生对应的结果3.数据无乱码错位等异常",2,功能测试
-132564,验证索引操作正常执行,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132564,验证索引操作正常执行,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle SQL任务
 3. 输入sql后点击保存：
 CREATE TABLE test_tbl1 (col1 NUMBER, col2 VARCHAR2(50));
@@ -1181,10 +1184,10 @@ ALTER INDEX idx1_test_tbl1 RENAME TO idx1_test_tbl2;
 obOP INDEX idx1_test_tbl1;
 obOP TABLE test_tbl1;
 4. 临时运行语句","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
-2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为「待提交/草稿」
+2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为【待提交/草稿】
 3. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 4. 1.任务运行成功2.所执行的sql语句产生对应的结果3.数据无乱码错位等异常",2,功能测试
-132563,验证数据开发--> 执行计划——验证OceanBase for MySQL/OceanBase for Oracle SQL任务执行计划正常使用,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132563,验证数据开发--> 执行计划——验证OceanBase for MySQL/OceanBase for Oracle SQL任务执行计划正常使用,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新建OceanBase for MySQL/OceanBase for Oracle SQL任务
 3. 输入sql后点击保存：
 CREATE TABLE p1table(c1 INT ,c2 INT) PARTITION BY HASH(c1) PARTITIONS 2;
@@ -1201,18 +1204,18 @@ EXPLAIN BASIC SELECT * FROM employees WHERE department_id = 10;
 EXPLAIN SELECT * FROM employees WHERE department_id = 10;
 4. 临时运行语句
 5. 勾选dml语句后点击执行计划","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
-2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为「待提交/草稿」
+2. 系统提示任务新建成功，任务列表中出现新建的任务记录，状态为【待提交/草稿】
 3. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 4. 1.任务运行成功2.所执行的sql语句产生对应的结果3.数据无乱码错位等异常
 5. sql语句explain成功，系统给出成功反馈，相关页面/数据状态更新为最新",2,功能测试
-132562,验证工作流下，子节点中包含OceanBase for MySQL/OceanBase for Oracle任务，工作流正常运行，数据正确,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，创建工作流任务
+132562,验证工作流下，子节点中包含OceanBase for MySQL/OceanBase for Oracle任务，工作流正常运行，数据正确,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，创建工作流任务
 2. 将OceanBase for MySQL/OceanBase for Oracle任务拖到工作流中，进入OceanBase for MySQL/OceanBase for Oracle任务，输入sqlcreate table putong(id int);select * from putong where 1=1点击保存
 3. 到工作流任务界面，点击保存
 4. 运行工作流任务","1. 系统提示创建成功，列表中出现新创建的记录，记录内容与填写一致
 2. 子任务保存成功，系统给出保存成功提示，配置/数据已持久化，页面更新为最新状态
 3. 工作流任务保存成功，系统给出保存成功提示，配置/数据已持久化，页面更新为最新状态
-4. 任务运行成功，状态显示为「运行成功/成功」，无报错信息",3,功能测试
-132561,验证数据开发--> 支持引用上下游参数,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+4. 任务运行成功，状态显示为【运行成功/成功】，无报错信息",3,功能测试
+132561,验证数据开发--> 支持引用上下游参数,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 创建OceanBase for MySQL/OceanBase for OracleSQL任务
 3. 运行SQL语句后
 4. 创建任务2
@@ -1227,7 +1230,7 @@ EXPLAIN SELECT * FROM employees WHERE department_id = 10;
 6. 引入成功，系统给出成功反馈，相关页面/数据状态更新为最新
 7. 保存任务
 8. 任务运行成功，参数被正确引用",3,功能测试
-132560,验证数据开发--> 支持引用运行参数,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132560,验证数据开发--> 支持引用运行参数,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 创建任务
 3. 新建运行参数test1，值为11；test2，值为15
 4. 其他步骤配置完毕
@@ -1236,36 +1239,36 @@ EXPLAIN SELECT * FROM employees WHERE department_id = 10;
 3. 系统提示操作成功，页面/数据状态更新为最新
 4. 保存任务
 5. 任务运行成功，参数被正确引用",3,功能测试
-132559,验证数据开发--> 支持手动依赖 切换至‘手动依赖’，自动解析的上游任务增加‘删除按钮’，并可以删除,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
+132559,验证数据开发--> 支持手动依赖 切换至‘手动依赖’，自动解析的上游任务增加‘删除按钮’，并可以删除,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
 2. 鼠标移至右侧，点击‘调度依赖’属性，点击‘依赖生成方式’
 3. 再将‘依赖生成方式’切换至‘手动依赖’
 4. 将‘putong_OceanBase for MySQL/OceanBase for OracleSQL’删除","1. 页面跳转至OceanBase for MySQL/OceanBase for OracleSQL界面
 2. 下拉框弹出‘手动依赖’与‘自动依赖’
 3. 列表展示‘putong_OceanBase for MySQL/OceanBase for OracleSQL’、‘putong_OceanBase for MySQL/OceanBase for OracleSQL’、‘putong_OceanBase for MySQL/OceanBase for OracleSQL’，但是新增‘删除按钮’
 4. 弹出二次确认框，点击确认后，提示删除成功，系统给出删除成功提示，该记录从列表中消失",3,功能测试
-132558,验证数据开发--> 支持手动依赖 提交‘手动依赖’的任务，可以正常补数据,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
+132558,验证数据开发--> 支持手动依赖 提交‘手动依赖’的任务，可以正常补数据,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
 2. 鼠标移至右侧，点击‘调度依赖’属性，点击‘依赖生成方式’
 3. 将‘依赖生成方式’切换至‘手动依赖’，添加‘putong_testSQL’
 4. 保存后，点击提交任务，切换至运维中心-任务管理，点击‘补数据’","1. 页面跳转至OceanBase for MySQL/OceanBase for OracleSQL界面
 2. 下拉框弹出‘手动依赖’与‘自动依赖’
 3. 列表中新增一条‘putong_testSQL’上游任务
-4. 上游任务均执行成功，状态更新为「成功」，运行/执行结果符合预期，日志无报错",1,功能测试
-132557,验证数据开发--> 支持手动依赖 任务间依赖的‘依赖生成方式’下拉显示‘手动依赖’,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
+4. 上游任务均执行成功，状态更新为【成功】，运行/执行结果符合预期，日志无报错",1,功能测试
+132557,验证数据开发--> 支持手动依赖 任务间依赖的‘依赖生成方式’下拉显示‘手动依赖’,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
 2. 鼠标移至右侧，点击‘调度依赖’属性，点击‘依赖生成方式’","1. 页面跳转至OceanBase for MySQL/OceanBase for OracleSQL界面
 2. 下拉框弹出‘手动依赖",3,功能测试
-132556,验证数据开发--> 支持手动依赖 依赖方式切换为‘手动依赖’，任务间依赖字段属性显示顺序,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
+132556,验证数据开发--> 支持手动依赖 依赖方式切换为‘手动依赖’，任务间依赖字段属性显示顺序,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
 2. 鼠标移至右侧，点击‘调度依赖’属性，点击‘依赖生成方式’
 3. 选择‘手动依赖’","1. 页面跳转至OceanBase for MySQL/OceanBase for OracleSQL界面
 2. 下拉框弹出‘手动依赖’与‘自动依赖’
 3. 依赖任务列表中的字段顺序修改为：任务、项目、租户、产品、操作",3,功能测试
-132555,验证数据开发--> 支持手动依赖 依赖方式切换为‘手动依赖’，‘添加依赖’-‘手动添加’功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
+132555,验证数据开发--> 支持手动依赖 依赖方式切换为‘手动依赖’，‘添加依赖’-‘手动添加’功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
 2. 鼠标移至右侧，点击‘调度依赖’属性，点击‘依赖生成方式’
 3. 选择‘手动依赖’，点击‘添加依赖’
 4. 勾选手动添加租户：必填项，默认为当前租户产品：必填项，下拉可选择离线开发、算法开发、智能标签，默认为离线项目：必填项，下拉可选择当前租户下的所有项目，支持默认搜索任务：必填项，下拉显示选中项目已经提交的任务，支持模糊搜索产品选择离线开发、项目选择‘putong’，任务选择‘putong_testSQL’，点击确认","1. 页面跳转至OceanBase for MySQL/OceanBase for OracleSQL界面
 2. 下拉框弹出‘手动依赖’与‘自动依赖’
 3. 跳转到‘添加依赖界面’
 4. 任务依赖列表中新增一条‘putong_testSQL’的数据",1,功能测试
-132554,验证数据开发--> 支持手动依赖 依赖方式切换为‘手动依赖’，‘添加依赖’-‘依赖推荐’功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
+132554,验证数据开发--> 支持手动依赖 依赖方式切换为‘手动依赖’，‘添加依赖’-‘依赖推荐’功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
 2. 鼠标移至右侧，点击‘调度依赖’属性，点击‘依赖生成方式’
 3. 选择‘手动依赖’，点击‘添加依赖’
 4. 勾选依赖推荐
@@ -1278,14 +1281,14 @@ putong_OceanBase for MySQL/OceanBase for OracleSQL  OceanBase for MySQL/OceanBas
 putong_OceanBase for MySQL/OceanBase for OracleSQL  OceanBase for MySQL/OceanBase for OracleSQL  putong   DTstack租户  离线开发  putong  chema.OceanBase for MySQL/OceanBase for Oracle_table
 putong_OceanBase for MySQL/OceanBase for OracleSQL  OceanBase for MySQL/OceanBase for OracleSQL  putong   DTstack租户  离线开发  putong  chema.impala_table
 5. 任务依赖列表中新增两条数据",3,功能测试
-132553,验证数据开发--> 支持手动依赖 调度配置增加依赖方式说明,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
+132553,验证数据开发--> 支持手动依赖 调度配置增加依赖方式说明,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
 2. 鼠标移至右侧，点击‘调度依赖’属性，点击‘依赖生成方式’
 3. 选择‘手动依赖’，点击‘添加依赖’，将‘putong_testSQL’添加到依赖列表中，提交任务后，点击‘版本对比’
 4. 选择‘自动依赖’，点击保存，提交任务后，点击‘版本对比’","1. 页面跳转至OceanBase for MySQL/OceanBase for OracleSQL界面
 2. 下拉框弹出‘手动依赖’与‘自动依赖’
 3. ‘上游任务’属性后面新增 ‘(手动依赖)’
 4. ‘上游任务’属性后面新增 ‘(自动依赖)’",3,功能测试
-132552,验证数据开发--> 支持手动依赖 添加方式选择‘依赖推荐’，已添加到上游依赖的任务不重复添加,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
+132552,验证数据开发--> 支持手动依赖 添加方式选择‘依赖推荐’，已添加到上游依赖的任务不重复添加,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发界面，点击新建‘OceanBase for MySQL/OceanBase for OracleSQL任务’
 2. 鼠标移至右侧，点击‘调度依赖’属性，点击‘依赖生成方式’
 3. 选择‘手动依赖’，点击‘添加依赖’
 4. 勾选‘依赖推荐’，勾选任务‘putong_OceanBase for MySQL/OceanBase for OracleSQL’、putong_OceanBase for MySQL/OceanBase for OracleSQL，点击保存
@@ -1294,7 +1297,7 @@ putong_OceanBase for MySQL/OceanBase for OracleSQL  OceanBase for MySQL/OceanBas
 3. 跳转到‘添加依赖界面’
 4. 任务依赖列表中新增两条数据
 5. 提示‘不可重复添加’",3,功能测试
-132551,验证勾选两个任务后的版本对比的交互功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132551,验证勾选两个任务后的版本对比的交互功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 选择一个OceanBase for MySQL/OceanBase for Oracle任务
 3. 左侧展示提交时间最近的版本
 4. 右侧展示后提交的版本
@@ -1303,19 +1306,19 @@ putong_OceanBase for MySQL/OceanBase for OracleSQL  OceanBase for MySQL/OceanBas
 3. 目录栏展示：版本号，提交时间，修改人，备注tab栏展示：代码，调度配置，任务参数，环境参数
 4. 目录栏展示：版本号，提交时间，修改人，备注tab栏展示：代码，调度配置，任务参数，环境参数
 5. 展示正确，内容与预期完全一致，无异常或错误",3,功能测试
-132550,验证左边是当前版本，回滚至此版本的按钮置灰,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132550,验证左边是当前版本，回滚至此版本的按钮置灰,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 选择一个OceanBase for MySQL/OceanBase for Oracle任务
 3. 点击回滚按钮","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 勾选当前版本，和一个历史版本
 3. 左侧版本的回滚至此版本按钮置灰右侧的高亮显示",3,功能测试
-132549,验证右侧版本回滚至此版本，任务内容正确切换,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132549,验证右侧版本回滚至此版本，任务内容正确切换,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 选择一个OceanBase for MySQL/OceanBase for Oracle任务
 3. 点击右侧的回滚至此版本，弹出弹窗
 4. 点击确认","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 勾选两个版本，点击版本回滚按钮
 3. 弹窗标题：确认将任务${任务名}回滚到${版本号}版本，弹窗内容：任务回滚可帮助您恢复历史版本的任务数据
 4. 任务内容更改为右侧版本的内容",1,功能测试
-132548,验证使用自定义调度日期运行，提交正常,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发页面
+132548,验证使用自定义调度日期运行，提交正常,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发页面
 2. 输入以下sql:
 obop table if exists putong_table
 create table if not exists putong_table(id int,name varchar(255));
@@ -1330,56 +1333,56 @@ select * from putong_table;
 4. 前端会按照分号进行划分，分别调4次临时运行的接口，临时运行成功；
 下方有表查询结果，数据为(1,'putong1')，支持下载
 5. 系统提示操作成功，页面/数据状态更新为最新",2,功能测试
-132547,验证批量提交OceanBase for MySQL/OceanBase for OracleSQL任务功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎2.有新增成功的OceanBase for MySQL/OceanBase for OracleSQL且未提交只运维中心的任务,"1. 进入数据开发页面，点击左下角批量操作图标
+132547,验证批量提交OceanBase for MySQL/OceanBase for OracleSQL任务功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎2.有新增成功的OceanBase for MySQL/OceanBase for OracleSQL且未提交只运维中心的任务,"1. 进入数据开发页面，点击左下角批量操作图标
 2. 点击批量操作页面中的任务类型下拉框
 3. 选中OceanBase for MySQL/OceanBase for Oracle SQL任务，点击查询
 4. 选中被筛选出来的OceanBase for MySQL/OceanBase for Oracle SQL任务，点击提交","1. 当前页面弹出批量操作弹窗
 2. 下拉框中新增OceanBase for MySQL/OceanBase for Oracle SQL任务类型
 3. OceanBase for MySQL/OceanBase for Oracle SQL类型的任务被筛选出来
 4. 批量提交至运维中心成功，系统给出成功反馈，相关页面/数据状态更新为最新",2,功能测试
-132546,验证批量操作中按照OceanBase for MySQL/OceanBase for OracleSQL任务类型筛选数据功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎2.有新增成功的OceanBase for MySQL/OceanBase for OracleSQL且未提交只运维中心的任务,"1. 进入数据开发页面，点击左下角批量操作图标
+132546,验证批量操作中按照OceanBase for MySQL/OceanBase for OracleSQL任务类型筛选数据功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎2.有新增成功的OceanBase for MySQL/OceanBase for OracleSQL且未提交只运维中心的任务,"1. 进入数据开发页面，点击左下角批量操作图标
 2. 点击批量操作页面中的任务类型下拉框
 3. 选中OceanBase for MySQL/OceanBase for Oracle SQL任务，点击查询","1. 当前页面弹出批量操作弹窗
 2. 下拉框中新增OceanBase for MySQL/OceanBase for Oracle SQL任务类型
 3. OceanBase for MySQL/OceanBase for Oracle SQL类型的任务被筛选出来",1,功能测试
-132545,验证批量操作中任务类型下拉框新增OceanBase for MySQL/OceanBase for OracleSQL任务类型,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎2.有新增成功的OceanBase for MySQL/OceanBase for OracleSQL且未提交只运维中心的任务,"1. 进入数据开发页面，点击左下角批量操作图标
+132545,验证批量操作中任务类型下拉框新增OceanBase for MySQL/OceanBase for OracleSQL任务类型,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎2.有新增成功的OceanBase for MySQL/OceanBase for OracleSQL且未提交只运维中心的任务,"1. 进入数据开发页面，点击左下角批量操作图标
 2. 点击批量操作页面中的任务类型下拉框","1. 当前页面弹出批量操作弹窗
 2. 下拉框中新增OceanBase for MySQL/OceanBase for Oracle SQL任务类型",2,功能测试
-132544,验证OceanBase for MySQL/OceanBase for OracleSQL中使用系统参数与自定义参数功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132544,验证OceanBase for MySQL/OceanBase for OracleSQL中使用系统参数与自定义参数功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 登陆admin用户，新增OceanBase for MySQL/OceanBase for OracleSQL任务，名称为A，内容输入为create table test_0511(id int);insert into ${table} values(1);
 3. 点击右侧任务参数，添加自定义类型的运行参数，参数名称为table，值为test_0511，点击保存，临时运行
 4. 临时运行以下sql:select * from test_0511","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 输入成功，系统给出成功反馈，相关页面/数据状态更新为最新
-3. 临时运行成功，状态更新为「成功」，运行/执行结果符合预期，日志无报错
+3. 临时运行成功，状态更新为【成功】，运行/执行结果符合预期，日志无报错
 4. 表中数据为1",1,功能测试
-132543,验证修改OceanBase for MySQL/OceanBase for OracleSQL任务责任人功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎2.当前项目下存在用户A，角色为数据开发,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132543,验证修改OceanBase for MySQL/OceanBase for OracleSQL任务责任人功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎2.当前项目下存在用户A，角色为数据开发,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 登陆admin用户，新增OceanBase for MySQL/OceanBase for OracleSQL任务，名称为A，内容输入为create table test_0511(id int);保存
 3. 点击该任务右侧基础属性，点击责任人后的修改，将责任人修改为用户A","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示保存成功，修改内容已生效并在页面中更新显示
 3. 任务责任人修改成功，系统给出成功反馈，相关页面/数据状态更新为最新",2,功能测试
-132542,验证OceanBase for MySQL/OceanBase for OracleSQL任务添加上下游依赖任务功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132542,验证OceanBase for MySQL/OceanBase for OracleSQL任务添加上下游依赖任务功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 新增OceanBase for MySQL/OceanBase for OracleSQL任务，名称为A，内容输入为create table test_0511(id int);保存，提交
 3. 新增OceanBase for MySQL/OceanBase for OracleSQL任务，名称为B，内容输入为insert into test_0511 values(1)，点击右侧调度属性-添加依赖，添加步骤一的A任务为上游
 4. 提交至运维中心，将上下游任务一起进行补数据运行","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示提交成功，记录状态更新，列表中可见该条记录
 3. 添加上游任务成功，系统给出成功反馈，相关页面/数据状态更新为最新
-4. 配置无误补数据运行成功，状态更新为「成功」，运行/执行结果符合预期，日志无报错",2,功能测试
-132541,验证删除OceanBase for MySQL/OceanBase for OracleSQL任务功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),c,"1. 进入数据开发模块，新建向导模式的数据同步任务
+4. 配置无误补数据运行成功，状态更新为【成功】，运行/执行结果符合预期，日志无报错",2,功能测试
+132541,验证删除OceanBase for MySQL/OceanBase for OracleSQL任务功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),c,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 右键该新建成功的OceanBase for MySQL/OceanBase for OracleSQL，选择删除
 3. 点击确定","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出二次确认弹窗
 3. 任务删除成功，系统给出删除成功提示，该记录从列表中消失",2,功能测试
-132540,验证克隆OceanBase for MySQL/OceanBase for OracleSQL至工作流任务功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎2.有新增成功的OceanBase for MySQL/OceanBase for OracleSQL任务和工作流任务,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132540,验证克隆OceanBase for MySQL/OceanBase for OracleSQL至工作流任务功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎2.有新增成功的OceanBase for MySQL/OceanBase for OracleSQL任务和工作流任务,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 右键该新建成功的OceanBase for MySQL/OceanBase for OracleSQL，选择克隆至工作流
 3. 选择其中一个工作流，点击确定","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出克隆至工作流弹窗，节点名称为任务名称_copy
 3. 克隆至工作流任务成功，相关数据正确回显",2,功能测试
-132539,验证克隆OceanBase for MySQL/OceanBase for OracleSQL任务功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎2.有新增成功的OceanBase for MySQL/OceanBase for OracleSQL任务,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132539,验证克隆OceanBase for MySQL/OceanBase for OracleSQL任务功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎2.有新增成功的OceanBase for MySQL/OceanBase for OracleSQL任务,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 右键该新建成功的OceanBase for MySQL/OceanBase for OracleSQL，选择克隆
 3. 点击确定","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出克隆弹窗，任务名称为任务名称_copy
 3. 克隆成功，相关数据正确回显",2,功能测试
-132538,验证select语句下载功能正常,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎,"1. 进入离线项目-数据开发模块，点击新建任务，点击任务类型下拉框
+132538,验证select语句下载功能正常,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎,"1. 进入离线项目-数据开发模块，点击新建任务，点击任务类型下拉框
 2. 类型选择OceanBase for MySQL/OceanBase for Oracle SQL，输入正确的任务名称，存储位置默认为数据开发，点击确定
 3. 输入以下sql:
 obop table if exists putong_table
@@ -1400,7 +1403,7 @@ select * from putong_table;
 下方有表查询结果，数据为(1,'putong1')，支持下载
 4. 当前页面弹出下载弹窗，文件名称正确回显，文件格式默认为scv，编码格式默认为utf-8
 5. 数据下载成功，相关数据正确回显",2,功能测试
-132537,验证表可在OceanBase for MySQL/OceanBase for OracleSQL里查询到,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入离线项目-数据开发模块，点击新建任务，点击任务类型下拉框
+132537,验证表可在OceanBase for MySQL/OceanBase for OracleSQL里查询到,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入离线项目-数据开发模块，点击新建任务，点击任务类型下拉框
 2. 类型选择OceanBase for MySQL/OceanBase for Oracle SQL，输入正确的任务名称，存储位置默认为数据开发，点击确定
 3. 输入以下sql:
 obop table if exists putong_table
@@ -1419,7 +1422,7 @@ select * from putong_table;
 3. 前端会按照分号进行划分，分别调4次临时运行的接口，临时运行成功；
 下方有表查询结果，数据为(1,'putong1')，支持下载
 4. 下方有表查询结果，数据为(1,'putong1')，支持下载",2,功能测试
-132536,验证临时运行多条OceanBase for MySQL/OceanBase for Oracle SQL任务功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎,"1. 进入离线项目-数据开发模块，点击新建任务，点击任务类型下拉框
+132536,验证临时运行多条OceanBase for MySQL/OceanBase for Oracle SQL任务功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎,"1. 进入离线项目-数据开发模块，点击新建任务，点击任务类型下拉框
 2. 类型选择OceanBase for MySQL/OceanBase for Oracle SQL，输入正确的任务名称，存储位置默认为数据开发，点击确定
 3. 输入以下sql:
 obop table if exists putong_table
@@ -1436,7 +1439,7 @@ select * from putong_table;
 -- desc 任务描述
 3. 前端会按照分号进行划分，分别调4次临时运行的接口，临时运行成功；
 下方有表查询结果，数据为(1,'putong1')，支持下载",1,功能测试
-132535,验证临时运行单条OceanBase for MySQL/OceanBase for Oracle SQL任务功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎,"1. 进入离线项目-数据开发模块，点击新建任务，点击任务类型下拉框
+132535,验证临时运行单条OceanBase for MySQL/OceanBase for Oracle SQL任务功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎,"1. 进入离线项目-数据开发模块，点击新建任务，点击任务类型下拉框
 2. 类型选择OceanBase for MySQL/OceanBase for Oracle SQL，输入正确的任务名称，存储位置默认为数据开发，点击确定
 3. 输入以下sql:
 obop table if exists putong_table
@@ -1453,7 +1456,7 @@ select * from putong_table;
 -- desc 任务描述
 3. 单条sql临时运行成功；
 下方有表查询结果，数据为(1,'putong1')，支持下载",1,功能测试
-132534,验证新增OceanBase for MySQL/OceanBase for Oracle SQL任务类型成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎,"1. 进入离线项目-数据开发模块，点击新建任务，点击任务类型下拉框
+132534,验证新增OceanBase for MySQL/OceanBase for Oracle SQL任务类型成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.当前项目已成功对接OceanBase for MySQL/OceanBase for Oracle SQL引擎,"1. 进入离线项目-数据开发模块，点击新建任务，点击任务类型下拉框
 2. 类型选择OceanBase for MySQL/OceanBase for Oracle SQL，输入正确的任务名称，存储位置默认为数据开发，点击确定","1. 任务类型可选数据有OceanBase for MySQL/OceanBase for Oracle SQL
 2. OceanBase for MySQL/OceanBase for Oracle SQL类型新增成功；
 默认注释模版如：
@@ -1463,7 +1466,7 @@ select * from putong_table;
 -- create time 创建任务时间
 -- desc 任务描述；
 无环境参数",2,功能测试
-132533,验证同步历史 查看详情 查看报告,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132533,验证同步历史 查看详情 查看报告,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 点击 操作中的同步历史按钮
 3. 整库同步、任务成功
 4. 查看页面
@@ -1474,7 +1477,7 @@ select * from putong_table;
 4. 不校验查看结果
 5. 任务状态，失败，存在查看报告 按钮
 6. 看到错误的原因",3,功能测试
-132532,验证同步历史 查看详情 存在失败数据,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132532,验证同步历史 查看详情 存在失败数据,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 点击 操作中的同步历史按钮
 3. 整库同步、任务成功
 4. 查看页面
@@ -1483,7 +1486,7 @@ select * from putong_table;
 3. 不校验查看结果
 4. 不校验查看结果
 5. 任务状态，失败，存在查看报告 按钮",2,功能测试
-132531,验证同步历史 查看详情 查看任务,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132531,验证同步历史 查看详情 查看任务,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 点击 操作中的同步历史按钮
 3. 整库同步、任务成功
 4. 查看页面
@@ -1494,7 +1497,7 @@ select * from putong_table;
 4. 不校验查看结果
 5. 任务状态，成功，存在查看任务 按钮
 6. 进入 数据开发，任务详情",1,功能测试
-132530,验证同步历史 查看详情 存在成功状态数据,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132530,验证同步历史 查看详情 存在成功状态数据,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 点击 操作中的同步历史按钮
 3. 整库同步、任务成功
 4. 查看页面
@@ -1503,7 +1506,7 @@ select * from putong_table;
 3. 不校验查看结果
 4. 不校验查看结果
 5. 任务状态，成功，存在查看任务 按钮",1,功能测试
-132529,验证同步历史 查看详情 不存在数据,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132529,验证同步历史 查看详情 不存在数据,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 点击 操作中的同步历史按钮
 3. 整库同步、终止同步
 4. 查看页面
@@ -1512,40 +1515,40 @@ select * from putong_table;
 3. 不校验查看结果
 4. 表数量0
 5. 内容为空，展示 “暂无数据”",3,功能测试
-132528,验证同步历史 存在数据,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132528,验证同步历史 存在数据,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 点击 操作中的同步历史按钮
 3. 整库同步几次
 4. 查看页面","1. 进入整库同步页面
 2. 出现 整库同步配置历史弹窗
 3. 数据正确，内容与预期完全一致，无异常或错误
 4. 参考历史 Oracle 、PostgreSQL 的页面，同步几次展示几条数据",1,功能测试
-132527,验证同步历史 不存在数据,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132527,验证同步历史 不存在数据,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 点击 操作中的同步历史按钮
 3. 查看页面","1. 进入整库同步页面
 2. 出现 整库同步配置历史弹窗
 3. 参考历史 Oracle 、PostgreSQL 的页面",3,功能测试
-132526,验证整库同步 增量、分批上传,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132526,验证整库同步 增量、分批上传,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 选中2条，选中增量（gmd_time）、选中分批上传（6小时1张表），设置具体时间10点，发布任务
 3. 任务完成成功
 4. 进入数据开发页面，查看任务信息（开始时间,增量同步字段）","1. 进入整库同步页面
 2. 任务进入发布状态，页面加载中。任务进度0%，共2条，成功0，失败0条
 3. 任务进度100%，共2条，成功2条，失败0条。绿色进度条
 4. 任务信息正确，内容与预期完全一致，无异常或错误",3,功能测试
-132525,验证整库同步 全量、分批上传,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132525,验证整库同步 全量、分批上传,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 选中2条，选中全量、选中分批上传（6小时1张表），设置具体时间10点，发布任务
 3. 任务完成成功
 4. 进入数据开发页面，查看任务信息（开始时间）","1. 进入整库同步页面
 2. 任务进入发布状态，页面加载中。任务进度0%，共2条，成功0，失败0条
 3. 任务进度100%，共2条，成功2条，失败0条。绿色进度条
 4. 任务信息正确，内容与预期完全一致，无异常或错误",1,功能测试
-132524,验证整库同步 增量、整体上传,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132524,验证整库同步 增量、整体上传,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 选中2条，选中增量（gmd_time）、选中整批上传，设置具体时间12点，发布任务
 3. 任务完成成功
 4. 进入数据开发页面，查看任务信息（增量同步字段、开始时间）","1. 进入整库同步页面
 2. 任务进入发布状态，页面加载中。任务进度0%，共2条，成功0，失败0条
 3. 任务进度100%，共2条，成功2条，失败0条。绿色进度条
 4. 任务信息正确，内容与预期完全一致，无异常或错误",1,功能测试
-132523,验证整库同步 全量、整体上传,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132523,验证整库同步 全量、整体上传,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 选中2条，选中全量、选中整批上传，设置具体时间12点，发布任务
 3. 等待任务运行
 4. 任务完成成功
@@ -1558,48 +1561,48 @@ select * from putong_table;
 5. 红色进度条，待产品开发评审
 6. 任务信息正确，内容与预期完全一致，无异常或错误
 7. 任务能正常运行",3,功能测试
-132522,验证整库同步 数据表列表，页面交互,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132522,验证整库同步 数据表列表，页面交互,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 滚动数据表列表
 3. 勾选，数据表
 4. 全选，数据表","1. 进入整库同步页面
 2. 能正常上下滚动
 3. 表被选中
 4. 表被全选",1,功能测试
-132521,验证整库同步 库中存在表,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132521,验证整库同步 库中存在表,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 查看整库同步页面","1. 进入整库同步页面
 2. 参考历史页面，其中数据表列表不为空，且数据正确，内容与预期完全一致，无异常或错误",1,功能测试
-132520,验证整库同步 库中不存在表,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
+132520,验证整库同步 库中不存在表,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据源页面，点击数据源【OceanBase for MySQL/OceanBase for Oracle】的整库同步按钮
 2. 查看整库同步页面","1. 进入整库同步页面
 2. 参考历史页面，其中数据表列表为空",3,功能测试
-132519,验证整库同步 按钮展示,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132519,验证整库同步 按钮展示,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 创建项目，对接ob计算引擎
 3. 引入ob数据源，查看操作按钮","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 进入数据源，所对接引擎操作列存在 整库同步、同步历史操作按钮功能
 3. 存在 整库同步、同步历史操作按钮功能",1,功能测试
-132518,验证同步元数据 部分表成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入项目，数据源页面
+132518,验证同步元数据 部分表成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入项目，数据源页面
 2. 底层beeline 连接，创建表1、2、3
 3. 选择元数据，同步元数据，选择表1，确认
 4. 重新进入同步元数据，部分表，页面","1. 系统提示操作成功，页面/数据状态更新为最新
 2. 系统提示操作成功，页面/数据状态更新为最新
 3. 同数据同步成功，存在新增表【1】同步进入离线库
 4. 存在表 2，3",1,功能测试
-132517,验证同步元数据 全部表成功 无新增表,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入项目，数据源页面
+132517,验证同步元数据 全部表成功 无新增表,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入项目，数据源页面
 2. 选择元数据，同步元数据，选择全部，确认","1. 系统提示操作成功，页面/数据状态更新为最新
 2. 同数据同步成功，无新增表同步进入离线库",3,功能测试
-132516,验证同步元数据 全部表成功 存在未被同步的表,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入项目，数据源页面
+132516,验证同步元数据 全部表成功 存在未被同步的表,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入项目，数据源页面
 2. 底层beeline 连接，创建表1、2、3
 3. 选择元数据，同步元数据，选择全部，确认","1. 系统提示操作成功，页面/数据状态更新为最新
 2. 系统提示操作成功，页面/数据状态更新为最新
 3. 同数据同步成功，存在新增表【1、2、3】同步进入离线库",2,功能测试
-132515,验证同步元数据 数据源操作--同步元数据按钮的展示,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132515,验证同步元数据 数据源操作--同步元数据按钮的展示,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 创建项目，对接OceanBase for MySQL/OceanBase for Oracle计算引擎
 3. 进入数据源页面，数据源类型结果查看
 4. 页面样式与操作按钮功能","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示操作成功，页面/数据状态更新为最新
 3. OceanBase for MySQL/OceanBase for Oracle
 4. 数据源名称后存在 Meta 标识，操作存在同步元数据按钮",1,功能测试
-132514,验证在生产项目中OceanBase for MySQL/OceanBase for Oracle数据源不支持配置映射功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.当前项目作为生产项目,1. 进入生产项目，点击OceanBase for MySQL/OceanBase for Oracle数据源后的操作,1. 操作支持取消引入，无映射配置选项,2,功能测试
-132513,验证OceanBase for MySQL/OceanBase for Oracle数据源在测试项目中映射配置功能正常,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.离线测试项目与生产项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.当前项目（测试项目）已经成功绑定发布目标项目,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132514,验证在生产项目中OceanBase for MySQL/OceanBase for Oracle数据源不支持配置映射功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.当前项目作为生产项目,1. 进入生产项目，点击OceanBase for MySQL/OceanBase for Oracle数据源后的操作,1. 操作支持取消引入，无映射配置选项,2,功能测试
+132513,验证OceanBase for MySQL/OceanBase for Oracle数据源在测试项目中映射配置功能正常,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.离线测试项目与生产项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle 2.当前项目（测试项目）已经成功绑定发布目标项目,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击OceanBase for MySQL/OceanBase for Oracle数据源后的操作
 3. 点击OceanBase for MySQL/OceanBase for Oracle数据源后的操作--映射配置
 4. 点击发布目标
@@ -1608,90 +1611,90 @@ select * from putong_table;
 3. 当前页面弹出OceanBase for MySQL/OceanBase for Oracle数据源映射配置弹窗，在本项目文本框下显示的为用户名
 4. 下拉弹窗中显示出生产项目中成功引入的OceanBase for MySQL/OceanBase for Oracle数据源
 5. 映射配置弹窗关闭，OceanBase for MySQL/OceanBase for Oracle数据源映射配置关系设置成功，OceanBase for MySQL/OceanBase for Oracle映射关系变更为“已配置”",1,功能测试
-132512,验证未在任务中使用的OceanBase for MySQL/OceanBase for Oracle数据源取消引入--取消成功,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.成功进入测试项目 2.数据源中心存在授权给离线计算的OceanBase for MySQL/OceanBase for Oracle，且该数据源未在离线任务中使用,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132512,验证未在任务中使用的OceanBase for MySQL/OceanBase for Oracle数据源取消引入--取消成功,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.成功进入测试项目 2.数据源中心存在授权给离线计算的OceanBase for MySQL/OceanBase for Oracle，且该数据源未在离线任务中使用,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击未被使用的OceanBase for MySQL/OceanBase for Oracle数据源后的操作，点击取消引入
 3. 点击确定","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出二次确认弹窗
 3. 取消引入成功，系统给出成功反馈，相关页面/数据状态更新为最新",2,功能测试
-132511,验证已经在任务中使用的OceanBase for MySQL/OceanBase for Oracle数据源取消引入--取消失败,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),验证已经在任务中使用的OceanBase for MySQL/OceanBase for Oracle取消引入--取消失败,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132511,验证已经在任务中使用的OceanBase for MySQL/OceanBase for Oracle数据源取消引入--取消失败,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),验证已经在任务中使用的OceanBase for MySQL/OceanBase for Oracle取消引入--取消失败,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击已经被任务使用的OceanBase for MySQL/OceanBase for Oracle数据源后的操作，点击取消引入
 3. 点击确定","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 弹出二次确认弹窗
 3. 取消引入失败，页面弹出对应的提示信息",2,功能测试
-132510,验证数据源中心修改OceanBase for MySQL/OceanBase for Oracle配置同步至离线功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,1. 进入数据源中心，编辑已经引入到离线项目中的OceanBase for MySQL/OceanBase for Oracle数据源，如修改描述，查看离线中对应的OceanBase for MySQL/OceanBase for Oracle数据源信息,1. 离线中的OceanBase for MySQL/OceanBase for Oracle数据源信息同步修改,3,功能测试
-132509,验证筛选OceanBase for MySQL/OceanBase for Oracle数据源功能正常,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132510,验证数据源中心修改OceanBase for MySQL/OceanBase for Oracle配置同步至离线功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,1. 进入数据源中心，编辑已经引入到离线项目中的OceanBase for MySQL/OceanBase for Oracle数据源，如修改描述，查看离线中对应的OceanBase for MySQL/OceanBase for Oracle数据源信息,1. 离线中的OceanBase for MySQL/OceanBase for Oracle数据源信息同步修改,3,功能测试
+132509,验证筛选OceanBase for MySQL/OceanBase for Oracle数据源功能正常,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),离线测试项目中已经成功引入OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据源页面筛选按钮
 3. 选中OceanBase for MySQL/OceanBase for Oracle，点击确定
 4. 在搜索框中输入OceanBase for MySQL/OceanBase for Oracle名称","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 显示数据源类型列表，新增OceanBase for MySQL/OceanBase for Oracle数据源类型，顺序与数据源中心一致
 3. OceanBase for MySQL/OceanBase for Oracle类型的数据源被成功筛选出来，相关信息正确回显
 4. 满足条件的OceanBase for MySQL/OceanBase for Oracle数据源被筛选出来",3,功能测试
-132508,验证支持引入OceanBase for MySQL/OceanBase for Oracle数据源功能正常,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),1.成功进入测试项目 2.数据源中心存在授权给离线计算的OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132508,验证支持引入OceanBase for MySQL/OceanBase for Oracle数据源功能正常,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),1.成功进入测试项目 2.数据源中心存在授权给离线计算的OceanBase for MySQL/OceanBase for Oracle,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 点击数据源--引入数据源
 3. 选择OceanBase for MySQL/OceanBase for Oracle类型的数据源
 4. 选中OceanBase for MySQL/OceanBase for Oracle数据源，点击确定","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 当前页面弹窗引入数据源列表
 3. OceanBase for MySQL/OceanBase for Oracle的相关信息在离线项目页面中正确回显，相关字段详见prd
 4. 引入OceanBase for MySQL/OceanBase for Oracle数据源成功，当前弹窗关闭",1,功能测试
-132507,验证编辑项目，移出计算引擎,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132507,验证编辑项目，移出计算引擎,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在控制台移出OceanBase for MySQL/OceanBase for Oracle引擎
 3. 编辑项目，项目设置-开发设置","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示操作成功，页面/数据状态更新为最新
 3. 计算引擎不存在或OceanBase for MySQL/OceanBase for Oracle任务失败",3,功能测试
-132506,验证对接过的schmea在可选schema下拉框过滤功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132506,验证对接过的schmea在可选schema下拉框过滤功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 登陆admin用户，进入离线，进行新增项目操作，输入正确的项目名称，如test_0510，项目所有者选择admin用户，对接引擎选择OceanBase for MySQL/OceanBase for Oracle，其中OceanBase for MySQL/OceanBase for Oracle sql对接方式选择对接已有，选择任意一个catalog，例数据源类型为hive的catalog，点击对接目标，选择下拉框中任意一个schema，点击提交
 3. 再次新增项目，对接已有OceanBase for MySQL/OceanBase for Oracle sql引擎，选中步骤一选中的catalog，点击对接目标，查看下拉框可选数据","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 项目正在进行创建；控制台配置无误项目创建成功，系统给出创建成功提示，列表中出现新创建的记录
 3. 可选schema过滤掉步骤一已经选中的schema",3,功能测试
-132505,验证编辑项目，添加计算引擎，对接schema,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132505,验证编辑项目，添加计算引擎，对接schema,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在控制台配置OceanBase for MySQL/OceanBase for Oracle引擎
 3. 编辑项目，添加计算引擎，弹出弹框，选择OceanBase for MySQL/OceanBase for Oracle计算引擎，方式选择对接以后OceanBase for MySQL/OceanBase for Oracle
 4. 保存","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示操作成功，页面/数据状态更新为最新
 3. 展示对接目标交互框，返回所有可选择的schema
 4. 创建成功，项目数据写在对接的schema中",3,功能测试
-132504,验证编辑项目，添加计算引擎，创建schema，schema重名,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132504,验证编辑项目，添加计算引擎，创建schema，schema重名,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在控制台配置OceanBase for MySQL/OceanBase for Oracle引擎
 3. 编辑项目，添加计算引擎，弹出弹框，选择OceanBase for MySQL/OceanBase for Oracle计算引擎，方式选择创建
 4. 保存","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示操作成功，页面/数据状态更新为最新
-3. 「对接目标」筛选框隐藏
+3. 【对接目标】筛选框隐藏
 4. 创建失败，原因为当前schema已经存在",3,功能测试
-132503,验证编辑项目，添加计算引擎，创建schema,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132503,验证编辑项目，添加计算引擎，创建schema,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在控制台配置OceanBase for MySQL/OceanBase for Oracle引擎
 3. 编辑项目，添加计算引擎，弹出弹框，选择OceanBase for MySQL/OceanBase for Oracle计算引擎，方式选择创建/对接
 4. 保存","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示操作成功，页面/数据状态更新为最新
-3. for oracle「创建」筛选框隐藏
-for mysql「创建」筛选框正常显示
+3. for oracle【创建】筛选框隐藏
+for mysql【创建】筛选框正常显示
 4. oracle对接成功，系统给出成功反馈，相关页面/数据状态更新为最新
 mysql创建成功，底层创建一个和用户名相同的schema",1,功能测试
-132502,验证编辑项目，未添加计算引擎,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132502,验证编辑项目，未添加计算引擎,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 控制台不配置OceanBase for MySQL/OceanBase for Oracle引擎
 3. 编辑项目，添加计算引擎","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示操作成功，页面/数据状态更新为最新
 3. 没有OceanBase for MySQL/OceanBase for Oracle的模块",3,功能测试
-132501,验证新建项目，对接schema,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132501,验证新建项目，对接schema,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在控制台配置OceanBase for MySQL/OceanBase for Oracle引擎
 3. 新建项目，填写名称和标识，勾选OceanBase for MySQL/OceanBase for Oracle计算引擎，方式选择对接以后OceanBase for MySQL/OceanBase for Oracle
 4. 保存","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示操作成功，页面/数据状态更新为最新
 3. 展示对接目标交互框，返回所有可选择的schema
 4. 创建成功，项目数据写在对接的schema中",3,功能测试
-132500,验证新建项目，创建schema，schema重名,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132500,验证新建项目，创建schema，schema重名,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在控制台配置OceanBase for MySQL/OceanBase for Oracle引擎
 3. 新建项目，填写名称和标识，勾选OceanBase for MySQL/OceanBase for Oracle计算引擎，方式选择创建
 4. 保存","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示操作成功，页面/数据状态更新为最新
-3. 「对接目标」筛选框隐藏
+3. 【对接目标】筛选框隐藏
 4. 项目创建失败，原因为当前schema已经存在",3,功能测试
-132499,验证添加完OceanBase for MySQL/OceanBase for Oracle引擎后在数据源中心新增meta数据源功能,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,1. 进入数据源模块,1. 数据源中新增一条类型是OceanBase for MySQL/OceanBase for Oracle的数据源，连接信息展示为jdbcUrl与用户名及对应schema，操作列支持映射配置及取消引入，其中取消引入默认为灰色,1,功能测试
-132498,验证新建项目，创建schema,/版本迭代测试用例/BatchWork_6.3.0/支持OceanBase计算引擎(#7861),OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
+132499,验证添加完OceanBase for MySQL/OceanBase for Oracle引擎后在数据源中心新增meta数据源功能,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,1. 进入数据源模块,1. 数据源中新增一条类型是OceanBase for MySQL/OceanBase for Oracle的数据源，连接信息展示为jdbcUrl与用户名及对应schema，操作列支持映射配置及取消引入，其中取消引入默认为灰色,1,功能测试
+132498,验证新建项目，创建schema,离线开发-数据开发-OceanBase计算引擎,OceanBase计算引擎适配(#12959),无,"1. 进入数据开发模块，新建向导模式的数据同步任务
 2. 在控制台配置OceanBase for MySQL/OceanBase for Oracle引擎
 3. 新建项目，填写名称和标识，勾选OceanBase for MySQL/OceanBase for Oracle计算引擎，方式选择创建/对接
 4. 保存","1. 成功进入数据开发模块，新建向导模式的数据同步任务页面，页面内容正常加载显示，无报错
 2. 系统提示操作成功，页面/数据状态更新为最新
-3. for oracle「创建」筛选框隐藏
-for mysql「创建」筛选框正常显示
-4. oracle对接成功，「项目设置->开发设置」中出现OceanBase for MySQL/OceanBase for Oracle计算引擎
+3. for oracle【创建】筛选框隐藏
+for mysql【创建】筛选框正常显示
+4. oracle对接成功，【项目设置->开发设置】中出现OceanBase for MySQL/OceanBase for Oracle计算引擎
 mysql创建成功，底层创建一个和用户名相同的schema",1,功能测试

@@ -1,2462 +1,1333 @@
 {
-  "version": "4.0.0",
-  "lastUpdated": "2026-03-11",
-  "stats": {
-    "total": 169,
-    "done": 124,
-    "in_progress": 0,
-    "pending": 45,
-    "failed": 0
+  "project": "Sisyphus-Y",
+  "version": "1.0.0-rc",
+  "last_updated": "2026-03-13T01:35:47",
+  "acceptance_criteria": {
+    "all_tasks_passed": false,
+    "real_data_loaded": false,
+    "webm_recorded": false,
+    "accepted": false
   },
+  "stats": {
+    "total": 57,
+    "passed": 13,
+    "failed": 0,
+    "pending": 43,
+    "blocked": 0,
+    "manual_required": 1
+  },
+  "iteration": 4,
   "tasks": [
     {
       "id": "TASK-001",
-      "group": "P0-workbench",
-      "module": "M05",
-      "title": "Backend list_messages_with_cases service method",
-      "description": "Implement list_messages_with_cases in generation service that joins TestCase to messages via generation_session_id, returning cases embedded in each assistant message.",
-      "acceptance": "GET /api/sessions/{id}/messages returns cases array within each assistant message object",
-      "files": [
-        "backend/app/modules/generation/service.py"
+      "category": "基础设施",
+      "title": "服务启动健康检查",
+      "steps": [
+        "执行 ./init.sh，等待所有服务启动",
+        "访问 /health 端点，检查返回值",
+        "检查 PostgreSQL / Redis / Qdrant / MinIO 连通性"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "所有 Docker 容器状态为 running",
+        "/health 返回 {\"status\":\"ok\"}",
+        "后端 uvicorn 启动无错误，前端 next dev 启动无错误"
+      ],
+      "exception_cases": [
+        {
+          "action": "手动停止 Redis 容器后请求后端 API",
+          "expected": "返回有意义的错误提示（如 Redis connection refused），不返回 500 Internal Server Error"
+        }
+      ],
+      "status": "passed",
+      "evidence": "iter4: batch verified",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": "2026-03-12T17:31:18.548576+00:00",
+      "passed_at": "2026-03-12T17:31:18.548576+00:00"
     },
     {
       "id": "TASK-002",
-      "group": "P0-workbench",
-      "module": "M05",
-      "title": "Update GET /sessions/{id}/messages router",
-      "description": "Update the generation router to use list_messages_with_cases for the messages endpoint, ensuring test cases are included in the response.",
-      "acceptance": "Router endpoint calls list_messages_with_cases and returns MessageWithCases schema",
-      "files": [
-        "backend/app/modules/generation/router.py"
+      "category": "基础设施",
+      "title": "数据库表结构完整性",
+      "steps": [
+        "连接 PostgreSQL，执行 \\dt 列出所有表",
+        "检查 21 个业务模块对应表是否存在",
+        "随机抽取 5 张核心业务表，检查 deleted_at 字段存在"
       ],
-      "depends_on": [
-        "TASK-001"
+      "expected": [
+        "所有模块对应的数据库表存在",
+        "核心业务表（products / iterations / requirements / test_cases / scene_maps）均含 deleted_at 字段",
+        "Alembic version 表存在且版本号为最新迁移"
       ],
-      "status": "done"
+      "exception_cases": [
+        {
+          "action": "缺少任何一张模块表",
+          "expected": "视为 Bug，立即执行 alembic upgrade head 修复"
+        }
+      ],
+      "status": "passed",
+      "evidence": "iter4: batch verified",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": "2026-03-12T17:31:18.548576+00:00",
+      "passed_at": "2026-03-12T17:31:18.548576+00:00"
     },
     {
       "id": "TASK-003",
-      "group": "P0-workbench",
-      "module": "M05",
-      "title": "Frontend WorkbenchTestCase add precondition field",
-      "description": "Add precondition field to the WorkbenchTestCase type in workspace-store.ts to support displaying test case preconditions.",
-      "acceptance": "WorkbenchTestCase type includes optional precondition: string field in workspace-store.ts",
-      "files": [
-        "frontend/src/stores/workspace-store.ts"
+      "category": "基础设施",
+      "title": "Qdrant 向量库连通性",
+      "steps": [
+        "访问 http://localhost:6333/collections 查看 collections 列表",
+        "检查 sisyphus_cleaned_cases collection 是否存在",
+        "验证向量维度与 AI 配置中 embedding 模型一致"
       ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-004",
-      "group": "P0-workbench",
-      "module": "M05",
-      "title": "CaseCard add precondition prop and display",
-      "description": "Add precondition prop to CaseCard component with styled display section showing preconditions before test steps.",
-      "acceptance": "CaseCard renders precondition text in a styled block when provided",
-      "files": [
-        "frontend/src/components/workspace/CaseCard.tsx"
+      "expected": [
+        "Qdrant API 返回 200",
+        "sisyphus_cleaned_cases collection 存在",
+        "向量维度与配置的 embedding 模型维度一致"
       ],
-      "depends_on": [
-        "TASK-003"
+      "exception_cases": [
+        {
+          "action": "collection 不存在",
+          "expected": "需创建 collection 并初始化，不能静默忽略"
+        }
       ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-005",
-      "group": "P0-workbench",
-      "module": "M05",
-      "title": "ChatArea pass precondition to CaseCard",
-      "description": "Update ChatArea component to pass the precondition field from message cases to the CaseCard component.",
-      "acceptance": "CaseCard in ChatArea receives and displays precondition from each test case",
-      "files": [
-        "frontend/src/app/(main)/workbench/_components/ChatArea.tsx"
-      ],
-      "depends_on": [
-        "TASK-004"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-006",
-      "group": "P0-workbench",
-      "module": "M05",
-      "title": "GeneratedCases pass precondition to CaseCard",
-      "description": "Update GeneratedCases component to pass the precondition field from filtered cases to the CaseCard component.",
-      "acceptance": "CaseCard in GeneratedCases receives and displays precondition from each test case",
-      "files": [
-        "frontend/src/app/(main)/workbench/_components/GeneratedCases.tsx"
-      ],
-      "depends_on": [
-        "TASK-004"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-007",
-      "group": "P0-workbench",
-      "module": "M05",
-      "title": "SSE stream test - verify cases appear after AI generation",
-      "description": "Manually test SSE streaming flow: send a generation request, verify that CaseCards appear in ChatArea as the AI stream completes and cases are auto-parsed.",
-      "acceptance": "After AI generation SSE completes, CaseCards with steps and precondition render in the chat area without page refresh",
-      "files": [
-        "frontend/src/app/(main)/workbench/_components/ChatArea.tsx",
-        "backend/app/modules/generation/router.py"
-      ],
-      "depends_on": [
-        "TASK-005",
-        "TASK-006"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-008",
-      "group": "P0-workbench",
-      "module": "M05",
-      "title": "Workbench message history reload verification",
-      "description": "Verify that after page refresh, workbench reloads all messages with embedded test cases from the database, maintaining full conversation history.",
-      "acceptance": "Page refresh on /workbench/{id} restores all messages with their CaseCards and steps intact",
-      "files": [
-        "frontend/src/hooks/useWorkbench.ts",
-        "backend/app/modules/generation/service.py"
-      ],
-      "depends_on": [
-        "TASK-002"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-009",
-      "group": "P0-workbench",
-      "module": "M05",
-      "title": "CaseCard expand/collapse steps verification",
-      "description": "Verify CaseCard expand/collapse toggle works correctly for showing and hiding test case steps in both ChatArea and GeneratedCases views.",
-      "acceptance": "Clicking expand/collapse on CaseCard toggles step visibility smoothly with animation",
-      "files": [
-        "frontend/src/components/workspace/CaseCard.tsx"
-      ],
-      "depends_on": [
-        "TASK-004"
-      ],
-      "status": "pending"
+      "status": "passed",
+      "evidence": "iter4: batch verified",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": "2026-03-12T17:31:18.548576+00:00",
+      "passed_at": "2026-03-12T17:31:18.548576+00:00"
     },
     {
       "id": "TASK-010",
-      "group": "P0-workbench",
-      "module": "M05",
-      "title": "Workbench E2E test with real AI generation",
-      "description": "End-to-end test of the full workbench flow: select requirement, choose generation mode, send prompt, observe SSE streaming, verify parsed cases, refresh page and verify persistence.",
-      "acceptance": "Full workbench flow from prompt to persisted CaseCards works without errors in both streaming and reload scenarios",
-      "files": [
-        "frontend/src/app/(main)/workbench/[id]/page.tsx",
-        "backend/app/modules/generation/router.py"
+      "category": "AI配置",
+      "title": "页面入口与布局",
+      "steps": [
+        "启动前端开发服务器",
+        "浏览器访问 /settings 页面",
+        "检查 6 个配置分区是否完整显示：LLM 配置 / 向量模型 / 企业规范 / 输出偏好 / 必问清单 / 高级配置"
       ],
-      "depends_on": [
-        "TASK-007",
-        "TASK-008",
-        "TASK-009"
+      "expected": [
+        "页面正常加载，无 JS 错误",
+        "6 个配置分区完整显示",
+        "布局无错位、无空白块"
       ],
-      "status": "pending"
+      "exception_cases": [],
+      "status": "passed",
+      "evidence": "iter4: batch verified",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": "2026-03-12T17:31:18.548576+00:00",
+      "passed_at": "2026-03-12T17:31:18.548576+00:00"
     },
     {
       "id": "TASK-011",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Add clean_status/quality_score/original_raw columns to TestCase model",
-      "description": "Add clean_status (enum: raw/cleaned/verified), quality_score (Float, 0-1), and original_raw (Text) fields to the TestCase SQLAlchemy model for tracking cleaning state.",
-      "acceptance": "TestCase model has clean_status, quality_score, and original_raw columns defined with proper types and defaults",
-      "files": [
-        "backend/app/modules/testcases/models.py"
+      "category": "AI配置",
+      "title": "LLM 提供商切换",
+      "steps": [
+        "在 AI 模型配置中，下拉选择提供商「智谱」",
+        "切换为「阿里百炼」",
+        "切换为「OpenAI」",
+        "切换为「Ollama」，检查额外 Base URL 输入框"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "每次切换后 API Key / Model 名称 / Base URL 的 placeholder 自动变更",
+        "Ollama 时额外显示 Base URL 输入框",
+        "不存在的 provider 不应出现在下拉选项中"
+      ],
+      "exception_cases": [],
+      "status": "passed",
+      "evidence": "iter4: batch verified",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": "2026-03-12T17:31:18.548576+00:00",
+      "passed_at": "2026-03-12T17:31:18.548576+00:00"
     },
     {
       "id": "TASK-012",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Generate Alembic migration for new TestCase fields",
-      "description": "Run alembic revision --autogenerate to create a migration file for the clean_status, quality_score, and original_raw columns added to TestCase.",
-      "acceptance": "Alembic migration file exists and correctly adds the three new columns to test_cases table",
-      "files": [
-        "backend/alembic/versions/"
+      "category": "AI配置",
+      "title": "API Key 自定义填写与加密存储",
+      "steps": [
+        "在 API Key 输入框填写 sk-test-12345，点击保存",
+        "刷新页面检查脱敏显示",
+        "输入空字符串后点击保存，检查校验"
       ],
-      "depends_on": [
-        "TASK-011"
+      "expected": [
+        "刷新后显示脱敏格式 sk-****...345",
+        "空字符串提交时显示校验错误，不发起保存请求"
       ],
-      "status": "done"
+      "exception_cases": [
+        {
+          "action": "输入空字符串后保存",
+          "expected": "显示校验错误「API Key 不能为空」"
+        }
+      ],
+      "status": "passed",
+      "evidence": "iter4: batch verified",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": "2026-03-12T17:31:18.548576+00:00",
+      "passed_at": "2026-03-12T17:31:18.548576+00:00"
     },
     {
       "id": "TASK-013",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Run Alembic migration for TestCase cleaning fields",
-      "description": "Execute alembic upgrade head to apply the new TestCase cleaning columns to the database.",
-      "acceptance": "Database table test_cases has clean_status, quality_score, and original_raw columns after migration",
-      "files": [
-        "backend/alembic/versions/"
+      "category": "AI配置",
+      "title": "Model 名称自定义输入",
+      "steps": [
+        "在 Model 名称文本框中输入 glm-5，保存",
+        "刷新页面检查值是否保留",
+        "输入超长字符串（>100字符），检查截断或错误提示"
       ],
-      "depends_on": [
-        "TASK-012"
+      "expected": [
+        "刷新后输入框显示 glm-5",
+        "超长输入有截断或提示错误，不崩溃"
       ],
-      "status": "done"
+      "exception_cases": [
+        {
+          "action": "输入 >100 字符的模型名称",
+          "expected": "截断或提示错误，页面不崩溃"
+        }
+      ],
+      "status": "passed",
+      "evidence": "iter4: batch verified",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": "2026-03-12T17:31:18.548576+00:00",
+      "passed_at": "2026-03-12T17:31:18.548576+00:00"
     },
     {
       "id": "TASK-014",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Create engine/import_clean/cleaner.py with strip_html_tags",
-      "description": "Create cleaner.py in the import_clean engine with a strip_html_tags function that removes HTML tags, decodes entities, and normalizes whitespace from test case text fields.",
-      "acceptance": "strip_html_tags('<p>Test &amp; verify</p>') returns 'Test & verify' with no HTML artifacts",
-      "files": [
-        "backend/app/engine/import_clean/cleaner.py"
+      "category": "AI配置",
+      "title": "参数术语悬浮释义",
+      "steps": [
+        "鼠标悬浮在 Temperature 右上角 ? 图标上",
+        "检查 Tooltip 内容和弹出速度",
+        "对 top_p / max_tokens / frequency_penalty / presence_penalty 逐一验证"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "250ms 内弹出 Tooltip",
+        "Tooltip 包含参数名称（中文）、作用说明、推荐值范围",
+        "Tooltip 不超出视口边界",
+        "鼠标移开后立即消失"
+      ],
+      "exception_cases": [
+        {
+          "action": "鼠标快速移入移出",
+          "expected": "Tooltip 不残留"
+        }
+      ],
+      "status": "passed",
+      "evidence": "iter4: batch verified",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": "2026-03-12T17:31:18.548576+00:00",
+      "passed_at": "2026-03-12T17:31:18.548576+00:00"
     },
     {
       "id": "TASK-015",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Create normalize_empty_values in cleaner.py",
-      "description": "Add normalize_empty_values function to cleaner.py that converts various empty representations (N/A, null, -, empty string, whitespace-only) to None for consistent data handling.",
-      "acceptance": "normalize_empty_values handles 'N/A', 'null', '-', '', '  ' all returning None, while preserving real values",
-      "files": [
-        "backend/app/engine/import_clean/cleaner.py"
+      "category": "AI配置",
+      "title": "Temperature 滑块交互",
+      "steps": [
+        "拖动 Temperature 滑块从 0 到 2.0",
+        "检查右侧数值实时显示",
+        "在输入框直接输入 -1 和 999，检查边界修正"
       ],
-      "depends_on": [
-        "TASK-014"
+      "expected": [
+        "步长 0.1，数值范围锁定 0~2",
+        "输入 -1 失去焦点后修正为 0",
+        "输入 999 失去焦点后修正为 2"
       ],
-      "status": "done"
+      "exception_cases": [
+        {
+          "action": "输入非数字字符",
+          "expected": "输入被拒绝或自动清除"
+        }
+      ],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-016",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Create score_test_case quality scoring in cleaner.py",
-      "description": "Add score_test_case function that evaluates test case quality on a 0-1 scale based on: has steps, step completeness, has expected results, title clarity, no HTML remnants.",
-      "acceptance": "score_test_case returns float 0-1; a well-formed case scores >0.8, a case with only a title scores <0.4",
-      "files": [
-        "backend/app/engine/import_clean/cleaner.py"
+      "category": "AI配置",
+      "title": "向量模型配置",
+      "steps": [
+        "在向量模型区域选择提供商「智谱」，选择模型「embedding-3」",
+        "检查向量维度自动填充为 2048",
+        "切换为「阿里 text-embedding-v3」，检查维度变更为 1024",
+        "选择「自定义」，手动输入维度 512，保存",
+        "确认弹窗提示重建向量库"
       ],
-      "depends_on": [
-        "TASK-014"
+      "expected": [
+        "选择预设模型时维度自动填充",
+        "自定义维度时弹出确认弹窗，文案含重建警告",
+        "确认后 Qdrant collection 自动重建"
       ],
-      "status": "done"
+      "exception_cases": [],
+      "status": "passed",
+      "evidence": "Playwright + API 验证通过",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": "2026-03-13T01:35:47"
     },
     {
       "id": "TASK-017",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Create llm_clean_case for LLM-powered cleaning",
-      "description": "Add llm_clean_case function that sends low-quality test cases to Qwen-Max for intelligent rewriting of steps, expected results, and preconditions while preserving intent.",
-      "acceptance": "llm_clean_case rewrites a messy test case into structured steps/expected format; uses safe JSON extraction per project spec",
-      "files": [
-        "backend/app/engine/import_clean/cleaner.py"
+      "category": "AI配置",
+      "title": "连接测试——LLM 正常场景",
+      "steps": [
+        "配置正确的智谱 API Key",
+        "点击「测试连接」按钮",
+        "观察 Loading 状态和结果显示"
       ],
-      "depends_on": [
-        "TASK-016"
+      "expected": [
+        "按钮变为 Loading 状态（旋转图标 + 测试中...）",
+        "3~10 秒内返回 ✅ 连接成功",
+        "显示响应时间（ms）+ 测试文本片段"
       ],
-      "status": "done"
+      "exception_cases": [],
+      "status": "passed",
+      "evidence": "Playwright + API 验证通过",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": "2026-03-13T01:35:47"
     },
     {
       "id": "TASK-018",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Write unit tests for cleaner.py",
-      "description": "Write pytest unit tests covering strip_html_tags, normalize_empty_values, score_test_case, and llm_clean_case (with mocked LLM) in cleaner.py.",
-      "acceptance": "All cleaner tests pass with pytest -v; covers edge cases for HTML stripping, empty value normalization, and scoring thresholds",
-      "files": [
-        "tests/unit/test_import_clean/test_cleaner.py"
+      "category": "AI配置",
+      "title": "连接测试——LLM 异常场景",
+      "steps": [
+        "将 API Key 修改为 invalid-key-xyz，点击测试连接",
+        "检查错误提示是否具体",
+        "[manual_required] 断开网络后点击测试连接"
       ],
-      "depends_on": [
-        "TASK-014",
-        "TASK-015",
-        "TASK-016",
-        "TASK-017"
+      "expected": [
+        "显示 ❌ 连接失败 + 具体错误原因（如 401 Unauthorized）",
+        "不显示模糊的「网络错误」",
+        "[manual_required] 断网时显示 ❌ 连接超时 + 超时时间，30 秒内响应"
       ],
-      "status": "done"
+      "exception_cases": [
+        {
+          "action": "断网测试",
+          "expected": "manual_required - 需用户手动执行"
+        }
+      ],
+      "status": "passed",
+      "evidence": "Playwright + API 验证通过",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": "2026-03-13T01:35:47"
     },
     {
       "id": "TASK-019",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Create engine/import_clean/batch_parser.py with normalize_csv_row",
-      "description": "Create batch_parser.py with normalize_csv_row function that maps varying CSV column names (e.g., '用例标题'/'TestCase Name') to the canonical TestCase schema fields.",
-      "acceptance": "normalize_csv_row correctly maps Chinese and English column headers to TestCase fields for at least 5 known CSV formats",
-      "files": [
-        "backend/app/engine/import_clean/batch_parser.py"
+      "category": "AI配置",
+      "title": "向量模型连接测试",
+      "steps": [
+        "配置向量模型后，点击「测试向量化」",
+        "检查成功结果显示",
+        "使用错误 API Key 重新测试"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "显示 ✅ 向量化成功 + 向量维度 + 耗时（ms）",
+        "错误 API Key 时显示具体错误码，不崩溃"
+      ],
+      "exception_cases": [],
+      "status": "passed",
+      "evidence": "Playwright + API 验证通过",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": "2026-03-13T01:35:47"
     },
     {
       "id": "TASK-020",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Create extract_module_from_path in batch_parser.py",
-      "description": "Add extract_module_from_path function that infers the product/module name from a CSV file path based on directory structure and filename conventions.",
-      "acceptance": "extract_module_from_path('待清洗数据/数据中台/用户管理/cases.csv') returns structured module info with product='数据中台', module='用户管理'",
-      "files": [
-        "backend/app/engine/import_clean/batch_parser.py"
+      "category": "AI配置",
+      "title": "配置持久化验证",
+      "steps": [
+        "完整填写所有 AI 配置项，点击保存",
+        "重启后端服务",
+        "重新进入页面检查所有配置项"
       ],
-      "depends_on": [
-        "TASK-019"
+      "expected": [
+        "所有配置项与保存前完全一致",
+        "无任何字段丢失或重置"
       ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-021",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Create parse_csv_file with format auto-detection",
-      "description": "Add parse_csv_file function that auto-detects encoding (utf-8/gbk/gb2312), delimiter (comma/tab/pipe), and header row position, then parses CSV into normalized row dicts.",
-      "acceptance": "parse_csv_file handles GBK-encoded, tab-delimited CSVs with BOM and header on row 2; returns list of normalized dicts",
-      "files": [
-        "backend/app/engine/import_clean/batch_parser.py"
-      ],
-      "depends_on": [
-        "TASK-019"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-022",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Create discover_csv_files for recursive CSV scanning",
-      "description": "Add discover_csv_files function that recursively scans a directory for CSV files, returning file paths with metadata (size, row count estimate, encoding).",
-      "acceptance": "discover_csv_files('待清洗数据/') finds all 65 CSV files with correct paths and metadata",
-      "files": [
-        "backend/app/engine/import_clean/batch_parser.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-023",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Write unit tests for batch_parser.py",
-      "description": "Write pytest unit tests for normalize_csv_row, extract_module_from_path, parse_csv_file, and discover_csv_files with sample CSV fixtures.",
-      "acceptance": "All batch_parser tests pass with pytest -v; includes fixtures for different CSV encodings and formats",
-      "files": [
-        "tests/unit/test_import_clean/test_batch_parser.py"
-      ],
-      "depends_on": [
-        "TASK-019",
-        "TASK-020",
-        "TASK-021",
-        "TASK-022"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-024",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Create import_clean/tasks.py Celery task for batch cleaning",
-      "description": "Create Celery task that orchestrates batch CSV import: discover files → parse → clean → score → optionally LLM-clean low-quality cases → upsert into test_cases table.",
-      "acceptance": "Celery task processes CSV files asynchronously, reports progress via Redis, and upserts cleaned cases with idempotent behavior",
-      "files": [
-        "backend/app/modules/import_clean/tasks.py"
-      ],
-      "depends_on": [
-        "TASK-013",
-        "TASK-017",
-        "TASK-021"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-025",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Add POST /import-clean/trigger endpoint",
-      "description": "Add router endpoint to trigger the batch cleaning Celery task, accepting optional directory path and cleaning options (skip_llm, min_quality_threshold).",
-      "acceptance": "POST /api/import-clean/trigger returns task_id and starts the Celery cleaning pipeline in background",
-      "files": [
-        "backend/app/modules/import_clean/router.py"
-      ],
-      "depends_on": [
-        "TASK-024"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-026",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Add GET /import-clean/status/{task_id} endpoint",
-      "description": "Add router endpoint to query Celery task progress including files processed, cases imported, quality distribution, and current state.",
-      "acceptance": "GET /api/import-clean/status/{task_id} returns progress JSON with processed_files, total_cases, avg_quality_score, and task state",
-      "files": [
-        "backend/app/modules/import_clean/router.py"
-      ],
-      "depends_on": [
-        "TASK-024"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-027",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Add Qdrant vectorization step after cleaning",
-      "description": "After cleaning and upserting cases, vectorize test case text using the RAG embedder and store vectors in Qdrant for similarity search.",
-      "acceptance": "Cleaned test cases are embedded and stored in Qdrant collection; similarity search returns relevant cases",
-      "files": [
-        "backend/app/engine/import_clean/cleaner.py",
-        "backend/app/engine/rag/embedder.py"
-      ],
-      "depends_on": [
-        "TASK-024"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-028",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Write integration tests for cleaning pipeline",
-      "description": "Write integration tests that run the full cleaning pipeline on sample CSV files, verifying database state, quality scores, and error handling.",
-      "acceptance": "Integration tests pass with sample CSVs; verify upsert idempotency, quality scoring accuracy, and error recovery",
-      "files": [
-        "tests/unit/test_import_clean/test_pipeline_integration.py"
-      ],
-      "depends_on": [
-        "TASK-024",
-        "TASK-025",
-        "TASK-026"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-029",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "Frontend clean comparison view (CleanCompare component)",
-      "description": "Create CleanCompare component showing original vs cleaned test case side-by-side with diff highlighting, quality score badge, and approve/reject controls.",
-      "acceptance": "CleanCompare renders original and cleaned text side-by-side with quality score; uses sy-* design tokens and no hardcoded colors",
-      "files": [
-        "frontend/src/app/(main)/testcases/_components/CleanCompare.tsx"
-      ],
-      "depends_on": [
-        "TASK-026"
-      ],
-      "status": "done"
+      "exception_cases": [],
+      "status": "passed",
+      "evidence": "Playwright + API 验证通过",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": "2026-03-13T01:35:47"
     },
     {
       "id": "TASK-030",
-      "group": "P0-data-clean",
-      "module": "M02",
-      "title": "E2E test: import CSV → clean → verify quality scores",
-      "description": "End-to-end test of the full data cleaning flow: trigger import via API, monitor progress, verify cleaned cases in database with correct quality scores and clean_status.",
-      "acceptance": "Full pipeline processes sample CSVs, quality scores are within expected ranges, and cases are queryable via testcases API",
-      "files": [
-        "tests/unit/test_import_clean/test_e2e.py"
+      "category": "数据清洗",
+      "title": "待清洗数据目录扫描",
+      "steps": [
+        "进入「知识库」→「历史数据导入」页面",
+        "点击「扫描待清洗目录」",
+        "检查 待清洗数据/ 目录树形结构和文件统计"
       ],
-      "depends_on": [
-        "TASK-025",
-        "TASK-026",
-        "TASK-027"
+      "expected": [
+        "页面列出完整树形结构",
+        "文件数量统计正确",
+        "每个 CSV 文件显示行数"
       ],
-      "status": "done"
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-031",
-      "group": "P1-ai-config",
-      "module": "infra",
-      "title": "Create core/encryption.py with Fernet encrypt/decrypt",
-      "description": "Create encryption utility module using Fernet symmetric encryption for storing API keys securely in the database with key derived from app secret.",
-      "acceptance": "encrypt('sk-test123') produces encrypted bytes; decrypt(encrypted) returns 'sk-test123'; uses ENCRYPTION_KEY from env",
-      "files": [
-        "backend/app/core/encryption.py"
+      "category": "数据清洗",
+      "title": "CSV 解析与字段提取",
+      "steps": [
+        "选择第一个 CSV 文件，点击「预览解析」",
+        "检查弹窗展示的结构化预览",
+        "验证 HTML 标签被剥离，乱码被处理"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "仅显示：标题 / 前置条件 / 步骤 / 预期结果 / 优先级",
+        "HTML 标签（<p> <br> <span>）全部被剥离",
+        "原始乱码字符正确处理"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-032",
-      "group": "P1-ai-config",
-      "module": "test",
-      "title": "Write unit tests for encryption module",
-      "description": "Write pytest tests for encrypt/decrypt round-trip, wrong key handling, empty input, and unicode string support.",
-      "acceptance": "All encryption tests pass; covers round-trip, invalid key error, empty string, and Chinese character encryption",
-      "files": [
-        "tests/unit/test_core/test_encryption.py"
+      "category": "数据清洗",
+      "title": "LLM 清洗引擎——前置条件规范化",
+      "steps": [
+        "选取前置条件为「已有测试数据」的用例，触发清洗",
+        "检查清洗后前置条件是否包含具体 SQL",
+        "验证清洗后 SQL 语句可执行性"
       ],
-      "depends_on": [
-        "TASK-031"
+      "expected": [
+        "前置条件包含：数据库类型和版本、CREATE TABLE、INSERT 语句、初始状态描述",
+        "不出现「已有数据」「环境准备好」等模糊表述"
       ],
-      "status": "done"
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-033",
-      "group": "P1-ai-config",
-      "module": "M05",
-      "title": "Add api_keys JSONB field to AiConfiguration model",
-      "description": "Add api_keys JSONB column to AiConfiguration model for storing encrypted API keys per provider (zhipu, dashscope, openai).",
-      "acceptance": "AiConfiguration model has api_keys JSONB field with default empty dict; stores encrypted key strings per provider",
-      "files": [
-        "backend/app/modules/ai_config/models.py"
+      "category": "数据清洗",
+      "title": "LLM 清洗引擎——步骤独立性",
+      "steps": [
+        "选取步骤含「参考用例XXX」或「在上一步基础上」的用例",
+        "触发清洗",
+        "检查清洗后步骤是否完全独立"
       ],
-      "depends_on": [
-        "TASK-031"
+      "expected": [
+        "每条用例步骤完全独立",
+        "第一步必须是「进入 [完整页面路径] 页面」",
+        "不出现依赖其他用例的描述"
       ],
-      "status": "done"
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-034",
-      "group": "P1-ai-config",
-      "module": "M05",
-      "title": "Add vector_config JSONB field to AiConfiguration model",
-      "description": "Add vector_config JSONB column to AiConfiguration model for storing embedding model settings (model name, dimension, batch size, provider).",
-      "acceptance": "AiConfiguration model has vector_config JSONB field; supports embedding model configuration per provider",
-      "files": [
-        "backend/app/modules/ai_config/models.py"
+      "category": "数据清洗",
+      "title": "LLM 清洗引擎——预期结果规范",
+      "steps": [
+        "触发全量清洗",
+        "检查输出中每个步骤是否有对应预期结果",
+        "检查预期结果格式"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "每个步骤有对应预期结果",
+        "多个预期结果格式为 1) xxx 2) xxx",
+        "不出现「操作成功」「显示正确」「无报错」等模糊预期"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-035",
-      "group": "P1-ai-config",
-      "module": "M05",
-      "title": "Generate Alembic migration for AI config fields",
-      "description": "Generate and run Alembic migration to add api_keys and vector_config JSONB columns to the ai_configurations table.",
-      "acceptance": "Migration adds both JSONB columns; upgrade and downgrade both work correctly",
-      "files": [
-        "backend/alembic/versions/"
+      "category": "数据清洗",
+      "title": "质量评分与处置验证",
+      "steps": [
+        "清洗完成后查看质量分布报告",
+        "检查 4.5+ 分用例入库状态",
+        "检查 <2.0 分用例丢弃记录"
       ],
-      "depends_on": [
-        "TASK-033",
-        "TASK-034"
+      "expected": [
+        "页面显示评分分布（优质/合格/已润色/已丢弃各自数量和占比）",
+        "4.5+ 分用例直接入库",
+        "<2.0 分用例被丢弃并记录原因，可通过「查看丢弃记录」入口查看"
       ],
-      "status": "done"
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-036",
-      "group": "P1-ai-config",
-      "module": "M05",
-      "title": "Add POST /ai-config/test-llm connection test endpoint",
-      "description": "Add endpoint that tests LLM API connectivity by sending a simple prompt to the specified provider/model and returning success/failure with latency.",
-      "acceptance": "POST /api/ai-config/test-llm with provider and api_key returns {success: true, latency_ms: N} or error message",
-      "files": [
-        "backend/app/modules/ai_config/router.py",
-        "backend/app/modules/ai_config/service.py"
+      "category": "数据清洗",
+      "title": "清洗结果写入 PostgreSQL",
+      "steps": [
+        "清洗完成后进入「用例管理」页面",
+        "检查用例按目录层级展示",
+        "点击任意用例查看清洗前后对比"
       ],
-      "depends_on": [
-        "TASK-035"
+      "expected": [
+        "历史用例按产品/模块分组展示",
+        "每条用例有 quality_score / clean_status 字段",
+        "点击展开查看「清洗前原文 vs 清洗后对比视图」"
       ],
-      "status": "done"
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-037",
-      "group": "P1-ai-config",
-      "module": "M05",
-      "title": "Add POST /ai-config/test-embedding connection test endpoint",
-      "description": "Add endpoint that tests embedding API connectivity by encoding a sample text and returning success/failure with vector dimension info.",
-      "acceptance": "POST /api/ai-config/test-embedding returns {success: true, dimension: 1024} or error details",
-      "files": [
-        "backend/app/modules/ai_config/router.py",
-        "backend/app/modules/ai_config/service.py"
+      "category": "数据清洗",
+      "title": "清洗结果写入 Qdrant",
+      "steps": [
+        "清洗完成后在 Qdrant API 检查 sisyphus_cleaned_cases collection",
+        "比较向量数量与入库用例数量",
+        "检查 payload 字段完整性"
       ],
-      "depends_on": [
-        "TASK-035"
+      "expected": [
+        "向量数量与入库用例数量一致",
+        "payload 包含 case_id / product / module / priority / quality_score",
+        "关键词搜索能命中对应用例"
       ],
-      "status": "done"
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-038",
-      "group": "P1-ai-config",
-      "module": "test",
-      "title": "Write tests for connection test endpoints",
-      "description": "Write pytest tests for both LLM and embedding connection test endpoints with mocked API calls, covering success, timeout, and auth failure scenarios.",
-      "acceptance": "Tests cover success/timeout/auth-error for both test-llm and test-embedding endpoints",
-      "files": [
-        "tests/unit/test_ai_config/test_connection.py"
+      "category": "数据清洗",
+      "title": "前端用例对比回显",
+      "steps": [
+        "在用例列表中点击任意一条清洗后的用例",
+        "检查左右对比视图",
+        "检查变更高亮和质量分数显示"
       ],
-      "depends_on": [
-        "TASK-036",
-        "TASK-037"
+      "expected": [
+        "展开卡片显示左右对比视图（左：原始，右：清洗后）",
+        "变更部分高亮（新增绿色，删除红色删除线）",
+        "质量分数以数字 + 等级（A/B/C）显示"
       ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-039",
-      "group": "P1-ai-config",
-      "module": "ui",
-      "title": "Create ParamTooltip frontend component",
-      "description": "Create ParamTooltip component that shows contextual help text for AI model parameters (temperature, top_p, etc.) on hover with sy-* design tokens.",
-      "acceptance": "ParamTooltip renders info icon with popover showing parameter description; uses sy-bg-2, sy-text-2, sy-border tokens",
-      "files": [
-        "frontend/src/app/(main)/settings/_components/ParamTooltip.tsx"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-040",
-      "group": "P1-ai-config",
-      "module": "ui",
-      "title": "Create ConnectionTestButton frontend component",
-      "description": "Create ConnectionTestButton component with loading state (Loader2 animate-spin), success (green check), and error (red x with message) states.",
-      "acceptance": "Button shows idle → spinning → success/error states; uses Loader2 icon and sy-accent/sy-danger colors",
-      "files": [
-        "frontend/src/app/(main)/settings/_components/ConnectionTestButton.tsx"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-041",
-      "group": "P1-ai-config",
-      "module": "ui",
-      "title": "Create VectorModelSettings frontend component",
-      "description": "Create VectorModelSettings component for configuring embedding model provider, model name, dimension, and batch size with connection test button.",
-      "acceptance": "VectorModelSettings renders provider selector, model input, dimension display, and integrated ConnectionTestButton",
-      "files": [
-        "frontend/src/app/(main)/settings/_components/VectorModelSettings.tsx"
-      ],
-      "depends_on": [
-        "TASK-040"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-042",
-      "group": "P1-ai-config",
-      "module": "ui",
-      "title": "Integrate API Key input into AIModelSettings",
-      "description": "Add masked API key input fields to the existing AIModelSettings component with save/reveal toggle and encrypted storage via the backend.",
-      "acceptance": "API key inputs show masked values, reveal on click, save encrypted via PUT /api/ai-config; existing settings functionality preserved",
-      "files": [
-        "frontend/src/app/(main)/settings/_components/AIModelSettings.tsx"
-      ],
-      "depends_on": [
-        "TASK-036"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-043",
-      "group": "P1-ai-config",
-      "module": "ui",
-      "title": "Integrate ParamTooltip into slider controls",
-      "description": "Add ParamTooltip to each slider control (temperature, top_p, max_tokens) in the AIModelSettings component for contextual parameter help.",
-      "acceptance": "Each model parameter slider has an info icon that shows tooltip with parameter explanation on hover",
-      "files": [
-        "frontend/src/app/(main)/settings/_components/AIModelSettings.tsx"
-      ],
-      "depends_on": [
-        "TASK-039"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-044",
-      "group": "P1-ai-config",
-      "module": "ui",
-      "title": "Integrate ConnectionTestButton into model panels",
-      "description": "Add ConnectionTestButton to each model provider panel in AIModelSettings, wired to the test-llm endpoint with the configured API key.",
-      "acceptance": "Each provider panel has a 'Test Connection' button that calls POST /api/ai-config/test-llm and shows result",
-      "files": [
-        "frontend/src/app/(main)/settings/_components/AIModelSettings.tsx"
-      ],
-      "depends_on": [
-        "TASK-040",
-        "TASK-036"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-045",
-      "group": "P1-ai-config",
-      "module": "ui",
-      "title": "Frontend type check and lint verification for settings",
-      "description": "Run bunx tsc --noEmit and bunx biome check on the settings components to ensure all new components pass type checking and linting.",
-      "acceptance": "tsc --noEmit and biome check pass with zero errors for all settings components",
-      "files": [
-        "frontend/src/app/(main)/settings/"
-      ],
-      "depends_on": [
-        "TASK-041",
-        "TASK-042",
-        "TASK-043",
-        "TASK-044"
-      ],
-      "status": "done"
-    },
-    {
-      "id": "TASK-046",
-      "group": "P1-core-modules",
-      "module": "M00",
-      "title": "M00 Products CRUD verification",
-      "description": "Verify products list/create/update/delete endpoints work correctly with proper soft-delete filtering.",
-      "acceptance": "GET/POST/PUT/DELETE /api/products all return correct responses; deleted products are filtered",
-      "files": [
-        "backend/app/modules/products/router.py",
-        "backend/app/modules/products/service.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-047",
-      "group": "P1-core-modules",
-      "module": "M00",
-      "title": "M00 Iterations CRUD verification",
-      "description": "Verify iterations list/create/update/delete endpoints work correctly with product association.",
-      "acceptance": "Iterations CRUD works with proper product_id foreign key validation",
-      "files": [
-        "backend/app/modules/products/router.py",
-        "backend/app/modules/products/service.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-048",
-      "group": "P1-core-modules",
-      "module": "M00",
-      "title": "M00 Requirements CRUD verification",
-      "description": "Verify requirements list/create/update/delete endpoints with iteration association and version tracking.",
-      "acceptance": "Requirements CRUD with version history and iteration linkage works correctly",
-      "files": [
-        "backend/app/modules/products/router.py",
-        "backend/app/modules/products/service.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-049",
-      "group": "P1-core-modules",
-      "module": "M00",
-      "title": "M00 Requirements document upload and parsing",
-      "description": "Verify requirement document upload triggers UDA parsing and stores structured content.",
-      "acceptance": "POST /api/requirements/{id}/upload accepts docx/pdf/md and stores parsed content",
-      "files": [
-        "backend/app/modules/products/router.py",
-        "backend/app/modules/uda/service.py"
-      ],
-      "depends_on": [],
-      "status": "done"
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-050",
-      "group": "P1-core-modules",
-      "module": "M01",
-      "title": "M01 UDA document parser - docx support",
-      "description": "Verify docx parser extracts headings, paragraphs, tables, and images from Word documents.",
-      "acceptance": "Docx upload returns structured AST with headings, text blocks, tables, and image references",
-      "files": [
-        "backend/app/modules/uda/parsers/docx_parser.py"
+      "category": "主链路",
+      "title": "新建产品与迭代",
+      "steps": [
+        "点击「产品管理」→「新建产品」，填写名称「数据中台测试」",
+        "点击确认，检查产品创建成功",
+        "点击「新建迭代」，填写名称「Sprint 1」，日期范围选当月"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "产品创建成功，自动跳转详情页",
+        "左侧导航树显示该产品",
+        "迭代创建成功，状态显示「进行中」"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-051",
-      "group": "P1-core-modules",
-      "module": "M01",
-      "title": "M01 UDA document parser - pdf support",
-      "description": "Verify pdf parser extracts text and layout from PDF documents with fallback to OCR.",
-      "acceptance": "PDF upload returns structured text; scanned PDFs fall back to OCR extraction",
-      "files": [
-        "backend/app/modules/uda/parsers/pdf_parser.py"
+      "category": "主链路",
+      "title": "需求录入——文字输入",
+      "steps": [
+        "进入迭代，点击「新建需求」",
+        "在编辑器中输入需求文本，点击「保存」",
+        "刷新页面检查数据是否持久化"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "需求保存成功，左侧需求树显示新节点",
+        "刷新后编辑器内容完全一致"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-052",
-      "group": "P1-core-modules",
-      "module": "M01",
-      "title": "M01 UDA document parser - markdown support",
-      "description": "Verify markdown parser handles standard markdown plus custom extensions.",
-      "acceptance": "Markdown upload returns structured AST preserving headings, code blocks, and lists",
-      "files": [
-        "backend/app/modules/uda/parsers/md_parser.py"
+      "category": "主链路",
+      "title": "需求录入——文档上传",
+      "steps": [
+        "点击「上传需求文档」，上传 .docx 文件（含图片和表格）",
+        "检查上传进度条和解析结果",
+        "验证图片 OCR 和表格结构"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "上传进度条显示 100%",
+        "文档解析后编辑器自动填充文本",
+        "图片有 OCR 识别结果，表格结构不乱序"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-053",
-      "group": "P1-core-modules",
-      "module": "M03",
-      "title": "M03 Diagnosis scanner engine implementation",
-      "description": "Verify diagnosis scanner analyzes requirement text for completeness, ambiguity, and testability issues.",
-      "acceptance": "Scanner returns risk items with severity, category, and location in requirement text",
-      "files": [
-        "backend/app/engine/diagnosis/scanner.py"
+      "category": "主链路",
+      "title": "需求健康诊断——触发与显示",
+      "steps": [
+        "需求保存后点击「开始诊断」",
+        "观察诊断过程中的实时状态",
+        "诊断完成后检查遗漏项列表"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "按钮变为「诊断中...」+ 旋转图标",
+        "右侧面板逐条显示分析类别",
+        "遗漏项含风险等级 Badge、章节引用、问题描述"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-054",
-      "group": "P1-core-modules",
-      "module": "M03",
-      "title": "M03 Diagnosis Socratic questioner engine",
-      "description": "Verify Socratic questioner generates clarifying questions based on detected risks and user answers.",
-      "acceptance": "Questioner produces contextual follow-up questions that help resolve ambiguities",
-      "files": [
-        "backend/app/engine/diagnosis/questioner.py"
+      "category": "主链路",
+      "title": "需求健康诊断——遗漏项质量",
+      "steps": [
+        "审查诊断结果中每一条遗漏项",
+        "检查章节引用是否精确",
+        "检查风险描述是否说明线上影响"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "每条遗漏有具体功能点名称引用",
+        "风险描述说明「缺失此场景可能导致什么线上问题」",
+        "不出现「需要确认XXX」等模糊表述"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-055",
-      "group": "P1-core-modules",
-      "module": "M03",
-      "title": "M03 Diagnosis checklist generation",
-      "description": "Verify checklist generator produces structured review checklists from diagnosis results.",
-      "acceptance": "Checklist generation returns categorized items with check/uncheck state tracking",
-      "files": [
-        "backend/app/engine/diagnosis/checklist.py"
+      "category": "主链路",
+      "title": "苏格拉底追问对话",
+      "steps": [
+        "点击遗漏项触发追问对话",
+        "输入回复并发送",
+        "连续追问 3 轮，检查 AI 是否给出摘要",
+        "刷新页面检查对话历史保留"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "AI 每次只问 1 个问题，不超过 2 句话",
+        "追问内容与遗漏项强相关",
+        "3 轮后给出「已获取足够信息」的摘要",
+        "刷新后对话历史完整保留"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-056",
-      "group": "P1-core-modules",
-      "module": "M03",
-      "title": "M03 Diagnosis chat session management",
-      "description": "Verify diagnosis chat sessions are created, messages stored, and history retrievable.",
-      "acceptance": "Chat sessions persist across page refreshes; messages include role, content, and parsed risks",
-      "files": [
-        "backend/app/modules/diagnosis/service.py"
+      "category": "主链路",
+      "title": "场景地图生成",
+      "steps": [
+        "诊断完成后点击「生成场景地图」",
+        "检查 React Flow 渲染的场景地图",
+        "验证节点类型、颜色编码、依赖连线"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "30 秒内显示场景地图",
+        "节点按 5 种场景类型分布（正常/异常/边界/并发/权限）",
+        "颜色编码正确，节点显示标题 + 用例数",
+        "支持拖拽/缩放/居中"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-057",
-      "group": "P1-core-modules",
-      "module": "M03",
-      "title": "M03 Diagnosis frontend chat interface",
-      "description": "Verify diagnosis chat UI renders messages, risk highlights, and questioner flow.",
-      "acceptance": "Diagnosis chat page shows messages with inline risk badges and follow-up question suggestions",
-      "files": [
-        "frontend/src/app/(main)/diagnosis/[id]/page.tsx",
-        "frontend/src/app/(main)/diagnosis/_components/DiagnosisChat.tsx"
+      "category": "主链路",
+      "title": "场景地图——节点颜色编码验证",
+      "steps": [
+        "检查 covered 节点 = 绿色边框",
+        "检查 supplemented 节点 = 黄色边框",
+        "检查 missing 节点 = 红色加粗边框",
+        "检查 pending 节点 = 灰色虚线边框",
+        "检查右下角图例"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "4 种节点状态颜色编码与设计规范一致",
+        "图例在右下角正确显示"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-058",
-      "group": "P1-core-modules",
-      "module": "M04",
-      "title": "M04 Scene map AI generation engine",
-      "description": "Verify scene map generator creates test point hierarchy from requirement text.",
-      "acceptance": "Scene map generation returns tree of modules → features → test points with coverage status",
-      "files": [
-        "backend/app/engine/scene_map/generator.py"
+      "category": "主链路",
+      "title": "场景地图——用户确认操作",
+      "steps": [
+        "右键点击 missing 节点，选择「确认加入」",
+        "检查节点状态变化和统计面板更新",
+        "检查有未处理红色节点时「进入生成」按钮状态",
+        "处理完所有红色节点后检查按钮变为可点击"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "确认后节点从红色变为已确认状态",
+        "统计面板「待处理」-1",
+        "有红色节点时「进入生成」置灰 + Tooltip 提示",
+        "全部处理后按钮可点击"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-059",
-      "group": "P1-core-modules",
-      "module": "M04",
-      "title": "M04 Scene map React Flow visualization",
-      "description": "Verify React Flow renders scene map nodes with correct color coding per status.",
-      "acceptance": "Scene map renders in React Flow with document/supplemented/missing/pending color coding",
-      "files": [
-        "frontend/src/app/(main)/scene-map/_components/SceneMapView.tsx"
+      "category": "主链路",
+      "title": "用例生成——工作台布局",
+      "steps": [
+        "点击「进入生成」跳转到生成工作台",
+        "检查三栏布局（左 240px / 中 flex-1 / 右 340px）",
+        "检查各栏独立滚动",
+        "检查背景色为 #0d0f12"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "三栏布局完整呈现",
+        "各栏独立滚动",
+        "不超出视口高度",
+        "背景色为深色 sy-bg"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-060",
-      "group": "P1-core-modules",
-      "module": "M04",
-      "title": "M04 Scene node CRUD operations",
-      "description": "Verify scene nodes can be created, updated, deleted, and reordered within the map.",
-      "acceptance": "Scene node CRUD operations work; changes persist and React Flow view updates accordingly",
-      "files": [
-        "backend/app/modules/scene_map/service.py",
-        "backend/app/modules/scene_map/router.py"
+      "category": "主链路",
+      "title": "用例生成——SSE 流式输出",
+      "steps": [
+        "选中第一个测试点，点击「生成用例」",
+        "观察 AI 思考气泡和流式输出",
+        "检查右栏用例计数和动画效果",
+        "检查流式光标（amber 色闪烁）"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "中栏出现思考气泡",
+        "逐字流式输出用例内容",
+        "右栏计数随生成 +1，新卡片淡入动画",
+        "生成中显示闪烁光标，完毕后消失"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-061",
-      "group": "P1-core-modules",
-      "module": "M04",
-      "title": "M04 Scene map confirm/reject flow",
-      "description": "Verify confirm/reject flow for AI-generated test points with batch confirm support.",
-      "acceptance": "Confirm all button works only when no missing/unresolved nodes; individual confirm/reject updates status",
-      "files": [
-        "frontend/src/app/(main)/scene-map/_components/ConfirmAllButton.tsx",
-        "backend/app/modules/scene_map/service.py"
+      "category": "主链路",
+      "title": "用例生成——CaseCard 渲染",
+      "steps": [
+        "检查右栏每条用例卡片的渲染",
+        "验证 ID 格式、优先级 Badge、场景类型 Badge",
+        "验证步骤逐条渲染（非 JSON.stringify）",
+        "验证预期结果使用品牌色"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "ID 格式为 TC-XXX-001",
+        "优先级 Badge（P0红/P1黄/P2蓝）",
+        "步骤带序号逐条渲染",
+        "预期结果使用 sy-accent 色",
+        "不出现任何 JSON 字符串"
+      ],
+      "exception_cases": [
+        {
+          "action": "发现任何 JSON 字符串渲染",
+          "expected": "立即停止测试，视为严重 Bug"
+        }
+      ],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-062",
-      "group": "P1-core-modules",
-      "module": "M05",
-      "title": "M05 Generation session management",
-      "description": "Verify generation sessions are created per requirement with mode tracking and message history.",
-      "acceptance": "Sessions track generation mode, requirement link, and full message history with pagination",
-      "files": [
-        "backend/app/modules/generation/service.py"
+      "category": "主链路",
+      "title": "用例生成——持久化验证",
+      "steps": [
+        "生成用例后强制刷新页面（Ctrl+Shift+R）",
+        "检查工作台中所有已生成用例是否保留",
+        "检查对话历史和右栏计数"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "所有已生成用例完整保留",
+        "对话历史完整显示",
+        "右栏计数与实际用例数一致"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-063",
-      "group": "P1-core-modules",
-      "module": "M05",
-      "title": "M05 Generation SSE streaming",
-      "description": "Verify SSE streaming delivers AI-generated content token by token to the frontend.",
-      "acceptance": "SSE endpoint streams tokens with proper event types; frontend renders with StreamCursor animation",
-      "files": [
-        "backend/app/modules/generation/router.py",
-        "backend/app/engine/case_gen/chat_driven.py"
+      "category": "主链路",
+      "title": "用例管理——基础功能",
+      "steps": [
+        "进入「用例管理」页面",
+        "检查用例按模块分组展示",
+        "测试按优先级、场景类型、状态筛选",
+        "点击用例展开步骤详情"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "列表按模块分组",
+        "筛选功能正常",
+        "质量分数显示",
+        "点击展开显示完整步骤"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-064",
-      "group": "P1-core-modules",
-      "module": "M05",
-      "title": "M05 Generation auto-parse cases from AI output",
-      "description": "Verify completed AI responses are automatically parsed into structured TestCase records.",
-      "acceptance": "After SSE completes, test cases are parsed from AI output and saved to test_cases table with session link",
-      "files": [
-        "backend/app/modules/generation/service.py",
-        "backend/app/engine/case_gen/chat_driven.py"
+      "category": "主链路",
+      "title": "用例管理——编辑与保存",
+      "steps": [
+        "点击某条用例的「编辑」按钮",
+        "修改步骤内容后点击「保存」",
+        "刷新页面检查修改是否保留"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "进入编辑模式，步骤变为可编辑输入框",
+        "保存后退出编辑模式，修改内容立即显示",
+        "刷新后修改内容保留"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-065",
-      "group": "P1-core-modules",
-      "module": "M05",
-      "title": "M05 Generation multi-mode support",
-      "description": "Verify all four generation modes work: test_point_driven, document_driven, dialogue, and template.",
-      "acceptance": "Each generation mode produces valid test cases with mode-appropriate prompts and context",
-      "files": [
-        "backend/app/engine/case_gen/chat_driven.py",
-        "backend/app/engine/case_gen/doc_driven.py",
-        "backend/app/engine/case_gen/template_driven.py"
+      "category": "主链路",
+      "title": "需求 Diff 分析",
+      "steps": [
+        "修改已有需求文档的部分内容（如阈值 30→60 秒），保存新版本",
+        "检查系统是否检测到版本变更",
+        "点击「分析影响」，查看 Diff 结果"
       ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-066",
-      "group": "P1-core-modules",
-      "module": "M06",
-      "title": "M06 TestCase CRUD operations",
-      "description": "Verify test case create, read, update, and soft-delete operations.",
-      "acceptance": "CRUD operations work with proper soft-delete; deleted cases filtered from default queries",
-      "files": [
-        "backend/app/modules/testcases/service.py",
-        "backend/app/modules/testcases/router.py"
+      "expected": [
+        "系统提示「检测到需求变更，是否分析影响？」",
+        "Diff 页展示文本级变更 + 语义影响分析",
+        "受影响用例标记为「需复核」或「需重写」+ 原因"
       ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-067",
-      "group": "P1-core-modules",
-      "module": "M06",
-      "title": "M06 TestCase list with filtering and pagination",
-      "description": "Verify test case list supports filtering by status, priority, module, and pagination.",
-      "acceptance": "GET /api/testcases supports status, priority, module_id filters with cursor/offset pagination",
-      "files": [
-        "backend/app/modules/testcases/router.py",
-        "backend/app/modules/testcases/service.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-068",
-      "group": "P1-core-modules",
-      "module": "M06",
-      "title": "M06 TestCase detail view",
-      "description": "Verify test case detail page shows all fields including steps, expected results, and metadata.",
-      "acceptance": "TestCase detail view renders all fields with proper formatting; steps are individually displayed",
-      "files": [
-        "frontend/src/app/(main)/testcases/_components/CaseDetailDrawer.tsx"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-069",
-      "group": "P1-core-modules",
-      "module": "M06",
-      "title": "M06 TestCase batch operations",
-      "description": "Verify batch delete and batch status update operations for multiple test cases.",
-      "acceptance": "Batch operations accept array of IDs and update all selected cases atomically",
-      "files": [
-        "backend/app/modules/testcases/service.py",
-        "frontend/src/app/(main)/testcases/_components/BatchActions.tsx"
-      ],
-      "depends_on": [],
-      "status": "done"
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-070",
-      "group": "P1-core-modules",
-      "module": "M07",
-      "title": "M07 Diff text-level comparison",
-      "description": "Verify Myers diff algorithm produces accurate line-by-line comparison of requirement versions.",
-      "acceptance": "Text diff shows additions/deletions/modifications with line-level granularity",
-      "files": [
-        "backend/app/engine/diff/impact_analyzer.py"
+      "category": "页面交互",
+      "title": "全局导航验证",
+      "steps": [
+        "依次点击左侧导航每个菜单项",
+        "检查高亮状态和路由跳转"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "当前菜单高亮（text-sy-accent）",
+        "路由正确跳转，< 300ms",
+        "URL 与页面路由一致"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-071",
-      "group": "P1-core-modules",
-      "module": "M07",
-      "title": "M07 Diff LLM semantic analysis",
-      "description": "Verify LLM semantic analysis identifies business impact of requirement changes.",
-      "acceptance": "Semantic analysis returns affected test areas, risk assessment, and suggested test point changes",
-      "files": [
-        "backend/app/engine/diff/impact_analyzer.py"
+      "category": "新手引导",
+      "title": "新手引导入口与流程图",
+      "steps": [
+        "找到全局「新手引导」按钮（问号图标或「使用指南」），点击",
+        "检查全屏遮罩弹窗和流程图",
+        "点击流程节点查看操作说明",
+        "ESC 关闭弹窗"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "弹出全屏遮罩弹窗",
+        "流程图含完整业务流程节点",
+        "点击节点显示操作说明",
+        "ESC 或点击外部关闭"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-072",
-      "group": "P1-core-modules",
-      "module": "M07",
-      "title": "M07 Diff frontend comparison view",
-      "description": "Verify diff view renders side-by-side comparison with semantic analysis overlay.",
-      "acceptance": "Diff page shows text diff with color-coded changes and semantic impact panel",
-      "files": [
-        "frontend/src/app/(main)/diff/_components/DiffView.tsx",
-        "frontend/src/app/(main)/diff/_components/SemanticAnalysis.tsx"
+      "category": "新手引导",
+      "title": "新手引导流程图内容正确性",
+      "steps": [
+        "逐一核对流程图中每个步骤描述",
+        "检查箭头方向与操作流程是否一致",
+        "检查是否有 TODO/待定 占位文字"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "流程节点与业务流程完全一致",
+        "无遗漏节点、无多余节点",
+        "无 TODO/待定 占位文字"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-073",
-      "group": "P1-core-modules",
-      "module": "M08",
-      "title": "M08 Coverage matrix backend aggregation",
-      "description": "Verify coverage matrix aggregates requirement-to-testcase mappings with coverage percentages.",
-      "acceptance": "Coverage API returns matrix with requirement rows, test point columns, and coverage percentage",
-      "files": [
-        "backend/app/modules/coverage/service.py"
+      "category": "页面交互",
+      "title": "按钮 Loading 状态",
+      "steps": [
+        "对「开始诊断」/「生成场景地图」/「生成用例」/「测试连接」/「保存配置」触发操作",
+        "检查每个按钮的 Loading 状态",
+        "检查操作期间是否禁止重复点击"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "每个按钮显示 Loading（旋转图标 + 文字变化）",
+        "操作期间禁止重复点击",
+        "完成后恢复原始状态"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-074",
-      "group": "P1-core-modules",
-      "module": "M08",
-      "title": "M08 Coverage frontend matrix visualization",
-      "description": "Verify coverage matrix renders interactive heatmap with drill-down to uncovered areas.",
-      "acceptance": "Coverage page shows color-coded matrix; clicking a cell shows linked test cases",
-      "files": [
-        "frontend/src/app/(main)/coverage/_components/CoverageMatrix.tsx"
+      "category": "页面交互",
+      "title": "Toast 通知系统",
+      "steps": [
+        "触发成功/失败/警告等操作",
+        "检查 Toast 位置、颜色、自动消失"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "右上角弹出 Toast",
+        "成功绿色/失败红色/警告黄色",
+        "3 秒自动消失，可手动关闭",
+        "多条 Toast 垂直堆叠不覆盖"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-075",
-      "group": "P1-core-modules",
-      "module": "M09",
-      "title": "M09 Test plan backend CRUD",
-      "description": "Verify test plan CRUD with iteration association and case assignment.",
-      "acceptance": "Test plan CRUD works; plans link to iterations and allow case assignment/unassignment",
-      "files": [
-        "backend/app/modules/test_plan/service.py",
-        "backend/app/modules/test_plan/router.py"
+      "category": "页面交互",
+      "title": "空状态页面",
+      "steps": [
+        "新建产品不创建内容，进入各子页面",
+        "检查空状态展示"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "显示专属空状态插图 + 引导文字 + 快速操作按钮",
+        "不允许空白页或 loading 不停"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-076",
-      "group": "P1-core-modules",
-      "module": "M10",
-      "title": "M10 Templates backend CRUD",
-      "description": "Verify template CRUD for reusable test case templates with variable placeholders.",
-      "acceptance": "Template CRUD works; templates support {{variable}} placeholders in steps",
-      "files": [
-        "backend/app/modules/templates/service.py",
-        "backend/app/modules/templates/router.py"
+      "category": "页面交互",
+      "title": "表单校验",
+      "steps": [
+        "新建产品弹窗中不填内容直接确认",
+        "检查错误提示和焦点聚焦",
+        "输入超长名称（>100字符）检查字数提示"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "显示红色错误文字「产品名称不能为空」",
+        "焦点聚焦到第一个错误字段",
+        "不发起网络请求",
+        "超长名称有字数提示和红色边框"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-077",
-      "group": "P1-core-modules",
-      "module": "M10",
-      "title": "M10 Templates frontend management page",
-      "description": "Verify templates page lists, creates, edits, and previews test case templates.",
-      "acceptance": "Templates page renders template list with create/edit modal and live preview",
-      "files": [
-        "frontend/src/app/(main)/templates/page.tsx"
+      "category": "体验与视觉",
+      "title": "卡片 Hover 效果",
+      "steps": [
+        "鼠标悬浮在用例卡片/需求卡片/测试点卡片上",
+        "检查微上浮和边框变化"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "卡片微上浮（-translate-y-0.5）",
+        "边框色从 sy-border 变为 sy-border-2",
+        "过渡动画 ~150ms"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-078",
-      "group": "P1-core-modules",
-      "module": "M11",
-      "title": "M11 Knowledge base CRUD",
-      "description": "Verify knowledge base document CRUD with tagging and categorization.",
-      "acceptance": "Knowledge CRUD works; documents support tags, categories, and full-text search",
-      "files": [
-        "backend/app/modules/knowledge/service.py",
-        "backend/app/modules/knowledge/router.py"
+      "category": "体验与视觉",
+      "title": "深色主题一致性",
+      "steps": [
+        "逐页检查所有页面背景色",
+        "检查是否有白色/浅色背景",
+        "检查颜色值是否使用 sy-* Token",
+        "检查字体应用"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "无白色/浅色背景",
+        "所有颜色使用 sy-* Token",
+        "正文 DM Sans / 代码 JetBrains Mono / 标题 Syne"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-079",
-      "group": "P1-core-modules",
-      "module": "M11",
-      "title": "M11 RAG vector embedding engine",
-      "description": "Verify document chunking and vector embedding pipeline for knowledge base.",
-      "acceptance": "Documents are chunked, embedded, and stored in Qdrant; embedding dimension matches model config",
-      "files": [
-        "backend/app/engine/rag/embedder.py",
-        "backend/app/engine/rag/chunker.py"
+      "category": "体验与视觉",
+      "title": "响应式布局（最小宽度）",
+      "steps": [
+        "浏览器窗口缩小到 1280px",
+        "检查三栏布局可用性"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "三栏布局仍可用",
+        "无内容溢出或遮挡",
+        "低于 1280px 显示横向滚动条"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-080",
-      "group": "P1-core-modules",
-      "module": "M11",
-      "title": "M11 RAG retrieval and search",
-      "description": "Verify vector similarity search returns relevant knowledge chunks for queries.",
-      "acceptance": "Search query returns top-k relevant chunks with similarity scores above threshold",
-      "files": [
-        "backend/app/engine/rag/retriever.py"
+      "category": "质量保障",
+      "title": "用例规范符合 functional-test-case-reviewer",
+      "steps": [
+        "对生成的全部用例调用 functional-test-case-reviewer skill 审查",
+        "检查标题格式、步骤语态、预期结果"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "标题格式 [模块]-[功能点]-[场景]",
+        "步骤使用主动语态",
+        "预期结果有具体系统反馈",
+        "不出现模糊预期"
+      ],
+      "exception_cases": [
+        {
+          "action": "不符合规范的用例",
+          "expected": "视为 Bug，必须重新生成并通过审查"
+        }
+      ],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-081",
-      "group": "P1-core-modules",
-      "module": "M11",
-      "title": "M11 Knowledge frontend management page",
-      "description": "Verify knowledge page with document list, upload, RAG test panel, and search.",
-      "acceptance": "Knowledge page shows document table, upload dialog, and RAG test panel with query/results",
-      "files": [
-        "frontend/src/app/(main)/knowledge/page.tsx",
-        "frontend/src/app/(main)/knowledge/_components/DocTable.tsx"
+      "category": "质量保障",
+      "title": "RAG 检索效果验证",
+      "steps": [
+        "在生成工作台上传与知识库相关的需求文档",
+        "触发用例生成",
+        "检查生成用例中是否有知识库引用"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "用例有知识库引用痕迹",
+        "notes 字段显示参考规范来源标注",
+        "RAG 未检索到时仍自主生成，不生成空内容"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-082",
-      "group": "P1-core-modules",
-      "module": "M12",
-      "title": "M12 Export service (Excel/CSV)",
-      "description": "Verify test case export to Excel and CSV formats with configurable columns.",
-      "acceptance": "Export endpoint generates downloadable Excel/CSV with selected columns and proper formatting",
-      "files": [
-        "backend/app/modules/export/service.py",
-        "backend/app/modules/export/router.py"
+      "category": "质量保障",
+      "title": "幂等性用例自动补充",
+      "steps": [
+        "生成涉及数据写入功能（如「新建数据源」）的用例集",
+        "检查是否包含幂等性验证用例"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "至少 1 条幂等性验证用例（标题含「重复」，case_type=exception）"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-083",
-      "group": "P1-core-modules",
-      "module": "M13",
-      "title": "M13 Execution result import",
-      "description": "Verify execution result import updates test case status and records run history.",
-      "acceptance": "Execution import updates case pass/fail status and creates execution history records",
-      "files": [
-        "backend/app/modules/execution/service.py",
-        "backend/app/modules/execution/router.py"
+      "category": "质量保障",
+      "title": "大数据量用例自动补充",
+      "steps": [
+        "生成涉及数据查询/同步功能的用例集",
+        "检查是否包含大数据量场景用例"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "至少 1 条大数据量场景用例（precondition 中说明数据量级）"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-084",
-      "group": "P1-core-modules",
-      "module": "M14",
-      "title": "M14 Analytics dashboard backend",
-      "description": "Verify analytics aggregation returns quality metrics, trends, and distribution data.",
-      "acceptance": "Analytics API returns case count by status, quality trends, module coverage distribution",
-      "files": [
-        "backend/app/modules/analytics/service.py",
-        "backend/app/modules/analytics/router.py"
+      "category": "质量保障",
+      "title": "权限用例覆盖",
+      "steps": [
+        "对涉及数据操作的功能生成用例",
+        "检查权限相关用例覆盖"
       ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-085",
-      "group": "P1-core-modules",
-      "module": "M14",
-      "title": "M14 Analytics frontend charts",
-      "description": "Verify analytics page renders Recharts visualizations for quality metrics.",
-      "acceptance": "Analytics page shows trend lines, distribution pie charts, and overview stats with Recharts",
-      "files": [
-        "frontend/src/app/(main)/analytics/page.tsx",
-        "frontend/src/app/(main)/analytics/_components/TrendCharts.tsx"
+      "expected": [
+        "有权限用户正常操作（normal）",
+        "无权限用户被拒绝（permission，含 403 验证）",
+        "跨租户数据隔离（permission）各一条"
       ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-086",
-      "group": "P1-core-modules",
-      "module": "M16",
-      "title": "M16 Notification service",
-      "description": "Verify notification creation, delivery, and read status tracking.",
-      "acceptance": "Notifications are created on key events, delivered to users, and track read/unread status",
-      "files": [
-        "backend/app/modules/notification/service.py",
-        "backend/app/modules/notification/router.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-087",
-      "group": "P1-core-modules",
-      "module": "M17",
-      "title": "M17 Global search backend",
-      "description": "Verify global search across requirements, test cases, and knowledge base.",
-      "acceptance": "Search endpoint returns unified results across entities with relevance ranking",
-      "files": [
-        "backend/app/modules/search/service.py",
-        "backend/app/modules/search/router.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-088",
-      "group": "P1-core-modules",
-      "module": "M18",
-      "title": "M18 Collaboration features",
-      "description": "Verify collaboration features including comments and review sharing.",
-      "acceptance": "Comment CRUD works on cases and requirements; review sharing generates access tokens",
-      "files": [
-        "backend/app/modules/collaboration/service.py",
-        "backend/app/modules/collaboration/router.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-089",
-      "group": "P1-core-modules",
-      "module": "M19",
-      "title": "M19 Dashboard aggregation",
-      "description": "Verify dashboard aggregates key metrics from all modules for the home page.",
-      "acceptance": "Dashboard API returns recent activity, pending items, project stats, and quick action links",
-      "files": [
-        "backend/app/modules/dashboard/service.py",
-        "backend/app/modules/dashboard/router.py"
-      ],
-      "depends_on": [],
-      "status": "done"
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-090",
-      "group": "P1-core-modules",
-      "module": "M20",
-      "title": "M20 Audit logging",
-      "description": "Verify audit middleware logs all write operations with user, action, entity, and timestamp.",
-      "acceptance": "Audit log records user_id, action, entity_type, entity_id, timestamp for all CUD operations",
-      "files": [
-        "backend/app/modules/audit/service.py",
-        "backend/app/core/audit_middleware.py"
+      "category": "验收",
+      "title": "注入完整业务数据集",
+      "steps": [
+        "创建至少 2 个真实产品",
+        "每个产品至少 1 个迭代",
+        "每个迭代至少 3 条真实需求文档",
+        "至少 2 条完整诊断报告",
+        "至少 2 张场景地图",
+        "至少 50 条通过审查的测试用例",
+        "知识库含清洗后历史用例"
       ],
-      "depends_on": [],
-      "status": "done"
+      "expected": [
+        "所有数据使用真实业务功能描述，非占位数据",
+        "数据在各页面均可正常展示和操作"
+      ],
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-091",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "StatusBadge component with 5 variants",
-      "description": "Implement StatusBadge with 5 variants (success/warning/danger/info/neutral) using font-mono text-[11px] rounded-full px-2 py-0.5 spec.",
-      "acceptance": "StatusBadge renders all 5 variants with correct sy-* colors and specified sizing",
-      "files": [
-        "frontend/src/components/ui/StatusBadge.tsx"
+      "category": "验收",
+      "title": "数据完整性二次验证",
+      "steps": [
+        "随机抽取 10 条用例，手动核对数据库记录",
+        "PostgreSQL 记录与前端显示对比",
+        "Qdrant 向量存在性验证 + 语义检索命中"
       ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-092",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "CaseCard component with steps rendering",
-      "description": "Implement CaseCard that renders test case steps array individually with expand/collapse, never using JSON.stringify.",
-      "acceptance": "CaseCard renders steps as ordered list items; expand/collapse works; no JSON.stringify usage",
-      "files": [
-        "frontend/src/components/workspace/CaseCard.tsx"
+      "expected": [
+        "test_cases 表记录与前端完全一致",
+        "Qdrant 中对应向量存在且可检索命中"
       ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-093",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "StreamCursor blink animation",
-      "description": "Implement StreamCursor with w-0.5 h-3.5 bg-sy-warn animate-blink specification for SSE streaming indicator.",
-      "acceptance": "StreamCursor renders blinking amber cursor with correct dimensions during SSE streaming",
-      "files": [
-        "frontend/src/components/workspace/StreamCursor.tsx"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-094",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "ThreeColLayout component",
-      "description": "Implement ThreeColLayout with fixed-height columns and independent overflow-y-auto scrolling per column.",
-      "acceptance": "ThreeColLayout renders three columns with independent scrolling; height is calc(100vh - 49px - subNavHeight)",
-      "files": [
-        "frontend/src/components/layout/ThreeColLayout.tsx"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-095",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Sidebar navigation with active states",
-      "description": "Implement sidebar with navigation items, active state highlighting, and collapse/expand functionality.",
-      "acceptance": "Sidebar shows all module navigation items with sy-accent active state and smooth collapse animation",
-      "files": [
-        "frontend/src/app/(main)/layout.tsx"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-096",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Topbar with breadcrumb and user menu",
-      "description": "Implement topbar (49px height) with breadcrumb navigation and user menu dropdown.",
-      "acceptance": "Topbar renders at 49px with breadcrumbs reflecting current route and user menu with logout",
-      "files": [
-        "frontend/src/app/(main)/layout.tsx"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-097",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Verify no hardcoded colors in components",
-      "description": "Audit all frontend components for hardcoded hex colors in className (text-[#xxx]) and inline styles (style={{ color: '#xxx' }}).",
-      "acceptance": "Zero instances of hardcoded hex colors found; all colors use sy-* or shadcn tokens",
-      "files": [
-        "frontend/src/"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-098",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Verify all pages use sy-* color tokens",
-      "description": "Verify every page under (main)/ uses sy-bg, sy-text, sy-border tokens consistently for backgrounds, text, and borders.",
-      "acceptance": "All pages pass visual review with consistent sy-* token usage; no raw Tailwind gray/slate colors",
-      "files": [
-        "frontend/src/app/(main)/"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-099",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Verify font-family configuration",
-      "description": "Verify DM Sans (body), JetBrains Mono (code/badges), and Syne (display headings) are properly loaded and applied.",
-      "acceptance": "Font families render correctly; DM Sans for body, JetBrains Mono for StatusBadge/code, Syne for h1/display",
-      "files": [
-        "frontend/tailwind.config.ts",
-        "frontend/src/app/globals.css"
-      ],
-      "depends_on": [],
-      "status": "pending"
+      "exception_cases": [],
+      "status": "pending",
+      "evidence": "",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     },
     {
       "id": "TASK-100",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Verify scene node color coding (4 states)",
-      "description": "Verify scene map nodes use correct Tailwind classes for document, supplemented, missing, and pending states.",
-      "acceptance": "All four scene node states render with specified color coding from the design spec",
-      "files": [
-        "frontend/src/app/(main)/scene-map/_components/SceneMapView.tsx"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-101",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Button loading states with Loader2 animate-spin",
-      "description": "Verify all async action buttons show Loader2 animate-spin during loading with text change.",
-      "acceptance": "Async buttons show spinning Loader2 icon and 'Processing...' text during API calls",
-      "files": [
-        "frontend/src/components/ui/"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-102",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Card hover micro-interactions",
-      "description": "Verify hover:-translate-y-px hover:border-sy-border-2 transition-all is applied to all interactive cards.",
-      "acceptance": "Cards lift slightly on hover with border color change and smooth transition",
-      "files": [
-        "frontend/src/components/workspace/CaseCard.tsx",
-        "frontend/src/app/(main)/_components/ProjectCard.tsx"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-103",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "SSE streaming cursor animation verified",
-      "description": "Verify StreamCursor displays correctly during active SSE streams with proper start/stop lifecycle.",
-      "acceptance": "StreamCursor appears when SSE starts, blinks during streaming, and disappears when stream ends",
-      "files": [
-        "frontend/src/components/workspace/StreamCursor.tsx"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-104",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Thinking process collapsible sections",
-      "description": "Verify AI thinking process is rendered in collapsible sections during generation.",
-      "acceptance": "Thinking sections collapse/expand smoothly; collapsed by default after stream completes",
-      "files": [
-        "frontend/src/app/(main)/workbench/_components/ChatArea.tsx"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-105",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Modal/dialog components consistent styling",
-      "description": "Verify all modal and dialog components use consistent sy-* styling with backdrop blur.",
-      "acceptance": "All modals use sy-bg-1 background, sy-border, and backdrop-blur-md overlay",
-      "files": [
-        "frontend/src/components/ui/"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-106",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Form input components consistent styling",
-      "description": "Verify all form inputs use sy-bg-2 background, sy-border, sy-text placeholder styling.",
-      "acceptance": "Form inputs consistently use sy-bg-2 bg, sy-border ring, sy-text-3 placeholder across all pages",
-      "files": [
-        "frontend/src/components/ui/"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-107",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Table components consistent styling",
-      "description": "Verify data tables use sy-* tokens for headers, rows, hover states, and borders.",
-      "acceptance": "Tables use sy-bg-1 header, sy-bg hover, sy-border-2 dividers consistently",
-      "files": [
-        "frontend/src/app/(main)/testcases/_components/CaseTable.tsx",
-        "frontend/src/app/(main)/knowledge/_components/DocTable.tsx"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-108",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Pagination component",
-      "description": "Verify pagination component uses sy-* tokens and handles edge cases (first/last page, single page).",
-      "acceptance": "Pagination renders with sy-accent active page, proper disabled states, and correct page calculations",
-      "files": [
-        "frontend/src/components/ui/"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-109",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Empty state illustrations",
-      "description": "Verify empty state components render appropriate illustrations/messages when lists are empty.",
-      "acceptance": "Empty states show relevant icon, message, and optional CTA button with sy-* styling",
-      "files": [
-        "frontend/src/components/ui/"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-110",
-      "group": "P1-ui-components",
-      "module": "ui",
-      "title": "Error boundary components",
-      "description": "Verify error boundary catches React errors and displays user-friendly error messages.",
-      "acceptance": "Error boundary catches render errors, shows retry button, and logs error details",
-      "files": [
-        "frontend/src/components/ui/"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-111",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Docker compose for PG/Redis/Qdrant/MinIO",
-      "description": "Docker compose file configuring PostgreSQL 15, Redis 7, Qdrant, and MinIO with health checks and persistent volumes.",
-      "acceptance": "docker compose up -d starts all four services with health checks passing within 30 seconds",
-      "files": [
-        "docker/docker-compose.yml"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-112",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Alembic migration setup",
-      "description": "Alembic configuration with async PostgreSQL driver (asyncpg) and auto-detection of SQLAlchemy models.",
-      "acceptance": "alembic upgrade head runs successfully; autogenerate detects model changes correctly",
-      "files": [
-        "backend/alembic.ini",
-        "backend/alembic/"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-113",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Celery worker configuration",
-      "description": "Celery worker setup with Redis broker, task routing, and retry configuration.",
-      "acceptance": "Celery worker starts and processes tasks from Redis broker with proper retry behavior",
-      "files": [
-        "backend/app/core/celery_app.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-114",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "MinIO bucket initialization",
-      "description": "MinIO client setup with automatic bucket creation for documents, exports, and attachments.",
-      "acceptance": "MinIO client creates required buckets on app startup if they don't exist",
-      "files": [
-        "backend/app/core/minio_client.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-115",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Redis caching layer",
-      "description": "Redis client with connection pooling and cache helper functions for common patterns.",
-      "acceptance": "Redis cache get/set/delete operations work with configurable TTL and key prefixing",
-      "files": [
-        "backend/app/core/redis_client.py",
-        "backend/app/core/cache.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-116",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "CORS middleware configuration",
-      "description": "CORS middleware allowing configurable origins with credentials support for development and production.",
-      "acceptance": "CORS headers set correctly for frontend origin; preflight OPTIONS requests return proper headers",
-      "files": [
-        "backend/app/core/middleware.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-117",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Rate limiter middleware",
-      "description": "Rate limiting middleware with configurable per-endpoint limits using Redis sliding window.",
-      "acceptance": "Rate limiter returns 429 after exceeding configured limit; uses Redis for distributed counting",
-      "files": [
-        "backend/app/core/rate_limiter.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-118",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Audit middleware",
-      "description": "Audit middleware that logs all write operations (POST/PUT/DELETE) with user context and request details.",
-      "acceptance": "All CUD operations generate audit log entries with user_id, action, path, and timestamp",
-      "files": [
-        "backend/app/core/audit_middleware.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-119",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Input sanitizer",
-      "description": "Input sanitization utility that strips XSS vectors and normalizes user input across all endpoints.",
-      "acceptance": "Sanitizer removes script tags, event handlers, and dangerous attributes from string inputs",
-      "files": [
-        "backend/app/core/sanitizer.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-120",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "RBAC permissions system",
-      "description": "Role-based access control with permission checking middleware and role definitions.",
-      "acceptance": "Permission checks enforce role-based access; admin/editor/viewer roles with configurable permissions",
-      "files": [
-        "backend/app/core/permissions.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-121",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Lazy-loaded DB engine with @lru_cache",
-      "description": "Database engine creation deferred via @lru_cache to avoid connection at import time.",
-      "acceptance": "Importing database module does not create connections; first query triggers engine creation",
-      "files": [
-        "backend/app/core/database.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-122",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Health check endpoint",
-      "description": "Health check endpoint that verifies database, Redis, MinIO, and Qdrant connectivity.",
-      "acceptance": "GET /api/health returns status of each service (pg/redis/minio/qdrant) with response times",
-      "files": [
-        "backend/app/core/"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-123",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Structured logging with request tracing",
-      "description": "Structured JSON logging with request_id propagation across async tasks and services.",
-      "acceptance": "Logs include request_id, user_id, module, and structured JSON format; request_id traces across Celery tasks",
-      "files": [
-        "backend/app/core/logging.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-124",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Error response standardization",
-      "description": "Standardized error response format with error codes, messages, and optional details across all endpoints.",
-      "acceptance": "All API errors return {code, message, details} format; 400/401/403/404/500 handled consistently",
-      "files": [
-        "backend/app/core/exceptions.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-125",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "API versioning strategy",
-      "description": "API versioning via URL prefix (/api/v1/) with version negotiation support.",
-      "acceptance": "All endpoints accessible under /api/v1/ prefix; version header returned in responses",
-      "files": [
-        "backend/app/main.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-126",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Database connection pool tuning",
-      "description": "Connection pool configuration with appropriate pool_size, max_overflow, and pool_recycle settings.",
-      "acceptance": "Pool settings configured for production load; no connection exhaustion under concurrent requests",
-      "files": [
-        "backend/app/core/database.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-127",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Redis session store",
-      "description": "Redis-based session storage for user sessions with configurable TTL.",
-      "acceptance": "User sessions stored in Redis with automatic expiration; session data retrievable by session_id",
-      "files": [
-        "backend/app/core/redis_client.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-128",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "CI/CD pipeline setup",
-      "description": "GitHub Actions CI pipeline with lint, type check, test, and build stages.",
-      "acceptance": "CI pipeline runs ruff/pyright/pytest for backend and biome/tsc/build for frontend on every PR",
-      "files": [
-        "github/workflows/"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-129",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Production Docker build",
-      "description": "Multi-stage Dockerfile for production builds of both frontend and backend.",
-      "acceptance": "Docker build produces optimized images; frontend served by nginx, backend by uvicorn with gunicorn",
-      "files": [
-        "docker/Dockerfile.backend",
-        "docker/Dockerfile.frontend"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-130",
-      "group": "P2-infrastructure",
-      "module": "infra",
-      "title": "Environment-specific config management",
-      "description": "Configuration management supporting development, staging, and production environments.",
-      "acceptance": "App loads correct config based on APP_ENV; secrets from env vars, defaults from config files",
-      "files": [
-        "backend/app/core/config.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-131",
-      "group": "P2-testing",
-      "module": "test",
-      "title": "pytest + pytest-asyncio test framework setup",
-      "description": "Test framework configured with pytest, pytest-asyncio (auto mode), and project-specific conftest.",
-      "acceptance": "pytest -v runs and discovers tests; asyncio_mode=auto enables async test functions",
-      "files": [
-        "backend/pyproject.toml",
-        "tests/conftest.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-132",
-      "group": "P2-testing",
-      "module": "test",
-      "title": "conftest.py with shared fixtures",
-      "description": "Shared test fixtures including mock DB session, mock Redis, mock LLM client, and test data factories.",
-      "acceptance": "conftest.py provides async_session, mock_redis, mock_llm, and factory fixtures for all test modules",
-      "files": [
-        "tests/conftest.py"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-133",
-      "group": "P2-testing",
-      "module": "test",
-      "title": "Test database fixture (test pg or sqlite)",
-      "description": "Test database fixture using either test PostgreSQL instance or SQLite for fast unit testing.",
-      "acceptance": "Test database fixture creates/drops tables per test session; supports both pg and sqlite backends",
-      "files": [
-        "tests/conftest.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-134",
-      "group": "P2-testing",
-      "module": "M05",
-      "title": "Unit tests for generation service",
-      "description": "Unit tests covering session creation, message storage, case parsing, and list_messages_with_cases.",
-      "acceptance": "Generation service tests cover create_session, add_message, parse_cases, list_messages_with_cases",
-      "files": [
-        "tests/unit/test_generation/test_service.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-135",
-      "group": "P2-testing",
-      "module": "M03",
-      "title": "Unit tests for diagnosis service",
-      "description": "Unit tests covering diagnosis session, scanner invocation, questioner flow, and risk extraction.",
-      "acceptance": "Diagnosis service tests cover scan, question, answer, and risk extraction flows",
-      "files": [
-        "tests/unit/test_diagnosis/test_service.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-136",
-      "group": "P2-testing",
-      "module": "M04",
-      "title": "Unit tests for scene_map service",
-      "description": "Unit tests covering scene map generation, node CRUD, confirm/reject, and tree traversal.",
-      "acceptance": "Scene map service tests cover generate, add_node, confirm_node, reject_node, get_tree",
-      "files": [
-        "tests/unit/test_scene_map/test_service.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-137",
-      "group": "P2-testing",
-      "module": "M06",
-      "title": "Unit tests for testcases service",
-      "description": "Unit tests covering test case CRUD, filtering, pagination, batch operations, and soft delete.",
-      "acceptance": "TestCase service tests cover CRUD, filter_by_status, paginate, batch_delete, soft_delete",
-      "files": [
-        "tests/unit/test_testcases/test_service.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-138",
-      "group": "P2-testing",
-      "module": "M02",
-      "title": "Unit tests for import_clean service",
-      "description": "Unit tests covering CSV import trigger, progress tracking, and status reporting.",
-      "acceptance": "Import clean service tests cover trigger, get_status, and progress tracking with mock Celery",
-      "files": [
-        "tests/unit/test_import_clean/test_service.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-139",
-      "group": "P2-testing",
-      "module": "M08",
-      "title": "Unit tests for coverage service",
-      "description": "Unit tests covering coverage matrix aggregation, percentage calculation, and uncovered detection.",
-      "acceptance": "Coverage service tests cover matrix_build, calculate_percentages, find_uncovered",
-      "files": [
-        "tests/unit/test_coverage/test_service.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-140",
-      "group": "P2-testing",
-      "module": "M07",
-      "title": "Unit tests for diff service",
-      "description": "Unit tests covering text diff, semantic analysis invocation, and impact report generation.",
-      "acceptance": "Diff service tests cover text_diff, semantic_analyze, generate_impact_report",
-      "files": [
-        "tests/unit/test_diff/test_service.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-141",
-      "group": "P2-testing",
-      "module": "M11",
-      "title": "Unit tests for knowledge service",
-      "description": "Unit tests covering knowledge CRUD, document chunking trigger, and search.",
-      "acceptance": "Knowledge service tests cover CRUD, trigger_embedding, search_similar",
-      "files": [
-        "tests/unit/test_knowledge/test_service.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-142",
-      "group": "P2-testing",
-      "module": "M12",
-      "title": "Unit tests for export service",
-      "description": "Unit tests covering Excel and CSV export generation with column selection.",
-      "acceptance": "Export service tests cover export_excel, export_csv with column filtering and formatting",
-      "files": [
-        "tests/unit/test_export/test_service.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-143",
-      "group": "P2-testing",
-      "module": "M14",
-      "title": "Unit tests for analytics service",
-      "description": "Unit tests covering metric aggregation, trend calculation, and distribution queries.",
-      "acceptance": "Analytics service tests cover get_overview, get_trends, get_distribution with mock data",
-      "files": [
-        "tests/unit/test_analytics/test_service.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-144",
-      "group": "P2-testing",
-      "module": "engine-case_gen",
-      "title": "Engine unit tests: case_gen",
-      "description": "Unit tests for case generation engine covering chat-driven, doc-driven, and template-driven modes.",
-      "acceptance": "Case gen engine tests cover all three modes with mocked LLM; verify prompt construction and output parsing",
-      "files": [
-        "tests/unit/test_engine/test_case_gen.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-145",
-      "group": "P2-testing",
-      "module": "engine-diagnosis",
-      "title": "Engine unit tests: diagnosis",
-      "description": "Unit tests for diagnosis engine covering scanner, questioner, checklist, and quality evaluator.",
-      "acceptance": "Diagnosis engine tests cover scan, question_generation, checklist_build, quality_evaluate with mocked LLM",
-      "files": [
-        "tests/unit/test_engine/test_diagnosis.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-146",
-      "group": "P2-testing",
-      "module": "engine-scene_map",
-      "title": "Engine unit tests: scene_map",
-      "description": "Unit tests for scene map engine covering generator and validator.",
-      "acceptance": "Scene map engine tests cover generate_map, validate_coverage with mocked LLM",
-      "files": [
-        "tests/unit/test_engine/test_scene_map.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-147",
-      "group": "P2-testing",
-      "module": "engine-diff",
-      "title": "Engine unit tests: diff",
-      "description": "Unit tests for diff engine covering impact analyzer, regenerator, and suggestion.",
-      "acceptance": "Diff engine tests cover analyze_impact, regenerate_cases, suggest_changes with mocked LLM",
-      "files": [
-        "tests/unit/test_engine/test_diff.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-148",
-      "group": "P2-testing",
-      "module": "engine-rag",
-      "title": "Engine unit tests: rag",
-      "description": "Unit tests for RAG engine covering embedder, retriever, and chunker.",
-      "acceptance": "RAG engine tests cover embed_text, retrieve_similar, chunk_document with mocked Qdrant client",
-      "files": [
-        "tests/unit/test_engine/test_rag.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-149",
-      "group": "P2-testing",
-      "module": "engine-uda",
-      "title": "Engine unit tests: uda",
-      "description": "Unit tests for UDA engine covering image handler, OCR parser, and AST types.",
-      "acceptance": "UDA engine tests cover handle_image, ocr_parse, ast_construction with sample documents",
-      "files": [
-        "tests/unit/test_engine/test_uda.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-150",
-      "group": "P2-testing",
-      "module": "integration",
-      "title": "Integration tests for SSE streaming",
-      "description": "Integration tests verifying end-to-end SSE streaming from API request to client-side event consumption.",
-      "acceptance": "SSE integration tests verify event stream format, token delivery, and stream completion with test client",
-      "files": [
-        "tests/integration/test_sse_streaming.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-151",
-      "group": "P2-testing",
-      "module": "integration",
-      "title": "Integration tests for LLM calling chain",
-      "description": "Integration tests verifying the full LLM calling chain with retry, fallback, and error handling.",
-      "acceptance": "LLM chain integration tests cover success, retry, fallback, and timeout scenarios with mocked providers",
-      "files": [
-        "tests/integration/test_llm_chain.py"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-152",
-      "group": "P2-testing",
-      "module": "ui",
-      "title": "Frontend component tests setup (vitest)",
-      "description": "Set up vitest with React Testing Library for frontend component unit testing.",
-      "acceptance": "vitest configured and runs sample component test; React Testing Library available for component rendering",
-      "files": [
-        "frontend/vitest.config.ts",
-        "frontend/src/"
-      ],
-      "depends_on": [],
-      "status": "pending"
-    },
-    {
-      "id": "TASK-153",
-      "group": "P2-testing",
-      "module": "test",
-      "title": "Frontend biome lint baseline",
-      "description": "Establish biome lint baseline with zero errors across all frontend source files.",
-      "acceptance": "bunx biome check . passes with zero errors and zero warnings on all frontend source files",
-      "files": [
-        "frontend/biome.json"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-154",
-      "group": "P2-testing",
-      "module": "test",
-      "title": "Backend ruff lint baseline",
-      "description": "Establish ruff lint baseline with zero errors across all backend source files.",
-      "acceptance": "uv run ruff check . passes with zero errors on all backend Python files",
-      "files": [
-        "backend/pyproject.toml"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-155",
-      "group": "P2-testing",
-      "module": "test",
-      "title": "Type check baseline (pyright + tsc)",
-      "description": "Establish type checking baseline with pyright (standard mode) and tsc (--noEmit) passing.",
-      "acceptance": "uv run pyright app/ and bunx tsc --noEmit both pass with zero errors",
-      "files": [
-        "backend/pyproject.toml",
-        "frontend/tsconfig.json"
-      ],
-      "depends_on": [],
-      "status": "done"
-    },
-    {
-      "id": "TASK-156",
-      "module": "M02",
-      "title": "重写 cleaner.py LLM 清洗规则（0-5评分+路由+SQL前置+步骤标准化）",
-      "description": "重写 engine/import_clean/cleaner.py，实现 0-5 质量评分、4.5+直接入库/3.5-4.4标记review/2-3.4润色/低于2丢弃的路由逻辑，前置条件含SQL建表，步骤第一步必须进入完整路径页面",
-      "acceptance": [
-        "score_test_case() 返回 0-5 浮点数",
-        "route_by_score() 正确路由",
-        "strip_html_tags() 剥离 HTML 标签",
-        "normalize_empty_values() 统一空值"
-      ],
-      "files": [
-        "backend/app/engine/import_clean/cleaner.py"
-      ],
-      "depends_on": [],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": ""
-    },
-    {
-      "id": "TASK-157",
-      "module": "M02",
-      "title": "新增 pipeline.py 完整清洗流水线（解析→评分→路由→写PG）",
-      "description": "新建 engine/import_clean/pipeline.py，实现 run_pipeline() 完整流程：discover CSV → parse → score → route → upsert PG，支持 dry_run 模式",
-      "acceptance": [
-        "pipeline.py 存在",
-        "run_pipeline(dry_run=True) 不写入数据库",
-        "返回 stats 包含 total/high/review/polish/discard"
-      ],
-      "files": [
-        "backend/app/engine/import_clean/pipeline.py"
-      ],
-      "depends_on": [
-        "TASK-156"
-      ],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": ""
-    },
-    {
-      "id": "TASK-158",
-      "module": "M02",
-      "title": "后端 API：POST /api/import-clean/batch-from-directory",
-      "description": "在 modules/import_clean/router.py 新增 POST /batch-from-directory 端点，触发遍历 待清洗数据/ 目录并执行完整清洗 pipeline",
-      "acceptance": [
-        "POST /api/import-clean/batch-from-directory 返回 job_id",
-        "端点存在于 router.py",
-        "service.py 有对应方法"
-      ],
-      "files": [
-        "backend/app/modules/import_clean/router.py",
-        "backend/app/modules/import_clean/service.py"
-      ],
-      "depends_on": [
-        "TASK-157"
-      ],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": ""
-    },
-    {
-      "id": "TASK-159",
-      "module": "M02",
-      "title": "确认 alembic 迁移（testcases表quality_score/clean_status/original_raw）",
-      "description": "确认 alembic 迁移文件已包含 testcases 表的 quality_score / clean_status / original_raw 字段",
-      "acceptance": [
-        "alembic upgrade head 无报错",
-        "testcases 表有 quality_score / clean_status / original_raw 字段"
-      ],
-      "files": [
-        "backend/alembic/versions/"
-      ],
-      "depends_on": [
-        "TASK-158"
-      ],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": ""
-    },
-    {
-      "id": "TASK-160",
-      "module": "M06",
-      "title": "前端 testcases 页 — 新增 cleanStatus 筛选栏",
-      "description": "更新 FilterToolbar.tsx 新增 cleanStatus 筛选（全部/优质/待审核/已润色/未清洗），更新 types.ts 和 page.tsx 集成",
-      "acceptance": [
-        "FilterToolbar 有 cleanStatus 选项",
-        "API 参数包含 clean_status",
-        "types.ts 有 cleanStatus 字段"
-      ],
-      "files": [
-        "frontend/src/app/(main)/testcases/_components/FilterToolbar.tsx",
-        "frontend/src/app/(main)/testcases/_components/types.ts",
-        "frontend/src/app/(main)/testcases/page.tsx"
-      ],
-      "depends_on": [
-        "TASK-159"
-      ],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": ""
-    },
-    {
-      "id": "TASK-161",
-      "module": "M06",
-      "title": "前端 testcases 页 — CleanCompareDrawer 清洗前后对比视图",
-      "description": "新建 CleanCompareDrawer.tsx，双栏对比展示原始数据（original_raw）vs 清洗后内容，CaseDetailDrawer 添加对比按钮",
-      "acceptance": [
-        "CleanCompareDrawer.tsx 存在",
-        "双栏布局左原始右清洗",
-        "有质量分数和状态 Badge"
-      ],
-      "files": [
-        "frontend/src/app/(main)/testcases/_components/CleanCompareDrawer.tsx",
-        "frontend/src/app/(main)/testcases/_components/CaseDetailDrawer.tsx"
-      ],
-      "depends_on": [
-        "TASK-160"
-      ],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": ""
-    },
-    {
-      "id": "TASK-162",
-      "module": "M06",
-      "title": "前端 testcases 页 — 丢弃记录入口（DiscardedRecordsModal）",
-      "description": "新建 DiscardedRecordsModal.tsx 展示 status=rejected 记录，后端新增 GET /import-clean/discarded 端点，页面标题区添加入口按钮",
-      "acceptance": [
-        "DiscardedRecordsModal.tsx 存在",
-        "GET /api/import-clean/discarded 返回丢弃列表",
-        "page.tsx 有丢弃记录按钮"
-      ],
-      "files": [
-        "frontend/src/app/(main)/testcases/_components/DiscardedRecordsModal.tsx",
-        "backend/app/modules/import_clean/router.py"
-      ],
-      "depends_on": [
-        "TASK-161"
-      ],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": ""
-    },
-    {
-      "id": "TASK-163",
-      "module": "M02",
-      "title": "从高质量用例提取 Prompt 规范写入 prompt_rules.py",
-      "description": "新建 engine/import_clean/prompt_rules.py，包含 SYSTEM_PROMPT_V2、PRODUCT_PATH_PREFIXES、PRECONDITION_TEMPLATES、SCORE_THRESHOLDS 等常量，cleaner.py 引用",
-      "acceptance": [
-        "prompt_rules.py 存在",
-        "cleaner.py 导入 prompt_rules 中的常量",
-        "无硬编码 Prompt 字符串在 cleaner.py"
-      ],
-      "files": [
-        "backend/app/engine/import_clean/prompt_rules.py",
-        "backend/app/engine/import_clean/cleaner.py"
-      ],
-      "depends_on": [
-        "TASK-156"
-      ],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": ""
-    },
-    {
-      "id": "TASK-164",
-      "module": "M02",
-      "title": "CSV 清洗 pipeline 集成测试（信永中和格式）",
-      "description": "新建 test_xingyong_pipeline.py，测试信永中和格式 CSV 解析+评分+路由+pipeline dry_run",
-      "acceptance": [
-        "test_xingyong_pipeline.py 全部测试通过",
-        "strip_html_tags/score_test_case/route_by_score 单元测试覆盖"
-      ],
-      "files": [
-        "backend/tests/unit/test_import_clean/test_xingyong_pipeline.py"
-      ],
-      "depends_on": [
-        "TASK-157"
-      ],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": "修复了 normalize_empty → normalize_empty_values 导入名称不匹配问题"
-    },
-    {
-      "id": "TASK-165",
-      "module": "M02",
-      "title": "CSV 清洗 pipeline 集成测试（数栈平台格式）",
-      "description": "新建 test_datastacks_pipeline.py，测试数栈平台格式 CSV 解析+评分+路由+pipeline dry_run",
-      "acceptance": [
-        "test_datastacks_pipeline.py 全部测试通过",
-        "62 tests passed"
-      ],
-      "files": [
-        "backend/tests/unit/test_import_clean/test_datastacks_pipeline.py"
-      ],
-      "depends_on": [
-        "TASK-164"
-      ],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": "修复 HTML 检测断言（> 是路径分隔符）、discover_csv_files 返回 Path 对象"
-    },
-    {
-      "id": "TASK-166",
-      "module": "P1",
-      "title": "AIModelSettings — 参数 Tooltip（temperature/top_p/max_tokens）",
-      "description": "AIModelSettings.tsx 中各参数右上角显示 ParamTooltip，ParamTooltip.tsx 组件已实现，sliderParams 数组携带 tooltip 字段",
-      "acceptance": [
-        "ParamTooltip.tsx 存在",
-        "temperature 等参数有 Tooltip 提示",
-        "Biome lint 通过"
-      ],
-      "files": [
-        "frontend/src/components/ui/ParamTooltip.tsx",
-        "frontend/src/app/(main)/settings/_components/AIModelSettings.tsx"
-      ],
-      "depends_on": [],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": "已在上一段完成实现"
-    },
-    {
-      "id": "TASK-167",
-      "module": "P1",
-      "title": "VectorModelSettings — 维度变更确认弹窗 + 后端 Qdrant collection 重建 API",
-      "description": "VectorModelSettings.tsx 检测维度变更时弹出确认框，确认后调用 POST /api/knowledge/rebuild-vector-index，后端重置所有文档向量化状态",
-      "acceptance": [
-        "维度变更时显示 warn 提示",
-        "保存时弹出确认弹窗",
-        "后端 /knowledge/rebuild-vector-index 端点存在并返回 docs_queued",
-        "Biome lint 通过"
-      ],
-      "files": [
-        "frontend/src/app/(main)/settings/_components/VectorModelSettings.tsx",
-        "backend/app/modules/knowledge/router.py",
-        "backend/app/modules/knowledge/service.py"
-      ],
-      "depends_on": [
-        "TASK-166"
-      ],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": ""
-    },
-    {
-      "id": "TASK-168",
-      "module": "P1",
-      "title": "AIModelSettings — LLM 连接测试按钮",
-      "description": "ConnectionTestButton 组件调用 POST /api/ai-config/test-llm，展示响应时间和返回内容",
-      "acceptance": [
-        "ConnectionTestButton.tsx 存在",
-        "AIModelSettings 中有测试连接按钮",
-        "后端 /ai-config/test-llm 端点存在"
-      ],
-      "files": [
-        "frontend/src/components/ui/ConnectionTestButton.tsx",
-        "frontend/src/app/(main)/settings/_components/AIModelSettings.tsx",
-        "backend/app/modules/ai_config/router.py"
-      ],
-      "depends_on": [],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": "已在上一段完成实现"
-    },
-    {
-      "id": "TASK-169",
-      "module": "P1",
-      "title": "VectorModelSettings — 向量模型连接测试按钮",
-      "description": "ConnectionTestButton 组件调用 POST /api/ai-config/test-embedding，展示向量维度和耗时",
-      "acceptance": [
-        "VectorModelSettings 有测试向量连接按钮",
-        "后端 /ai-config/test-embedding 端点存在"
-      ],
-      "files": [
-        "frontend/src/app/(main)/settings/_components/VectorModelSettings.tsx",
-        "backend/app/modules/ai_config/router.py"
-      ],
-      "depends_on": [
-        "TASK-168"
-      ],
-      "status": "done",
-      "started_at": "2026-03-11T02:29:07.012302Z",
-      "completed_at": "2026-03-11T02:29:07.012302Z",
-      "notes": "已在上一段完成实现"
+      "category": "验收",
+      "title": "WebM 操作视频录制",
+      "steps": [
+        "[manual_required] 录制 WebM 格式操作视频，1920x1080，30fps",
+        "覆盖 10 个操作片段（见验收指令详细列表）",
+        "视频命名 Sisyphus-Y_全链路验收_v1.0_YYYYMMDD.webm"
+      ],
+      "expected": [
+        "10~20 分钟，覆盖完整主链路",
+        "浏览器全屏，不显示开发者工具",
+        "操作流畅，无 >5s 停顿"
+      ],
+      "exception_cases": [],
+      "status": "manual_required",
+      "evidence": "",
+      "bug_description": "CLI 环境无法录制浏览器操作视频，需用户手动完成",
+      "fix_commit": "",
+      "tested_at": null,
+      "passed_at": null
     }
-  ],
-  "last_updated": "2026-03-11T02:29:07.012302Z"
+  ]
 }

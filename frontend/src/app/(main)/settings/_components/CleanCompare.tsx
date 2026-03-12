@@ -53,6 +53,7 @@ const STATUS_META: Record<string, { label: string; color: string }> = {
   raw: { label: '原始', color: 'text-sy-text-3 border-sy-border bg-sy-bg-3' },
   scored: { label: '已评分', color: 'text-sy-warn border-sy-warn/35 bg-sy-warn/10' },
   llm_cleaned: { label: 'AI 清洗', color: 'text-sy-accent border-sy-accent/35 bg-sy-accent/10' },
+  cleaned: { label: '已清洗', color: 'text-sy-info border-sy-info/35 bg-sy-info/10' },
 };
 
 function ScoreBadge({ score }: { score: number | null }) {
@@ -208,7 +209,8 @@ export function CleanCompare() {
   const totalImported = stats?.total ?? 0;
   const scored = stats?.by_status.find((s) => s.status === 'scored');
   const llmCleaned = stats?.by_status.find((s) => s.status === 'llm_cleaned');
-  const avgScore = scored?.avg_score ?? llmCleaned?.avg_score ?? 0;
+  const cleaned = stats?.by_status.find((s) => s.status === 'cleaned');
+  const avgScore = scored?.avg_score ?? llmCleaned?.avg_score ?? cleaned?.avg_score ?? 0;
 
   return (
     <div className="space-y-5">
@@ -262,7 +264,7 @@ export function CleanCompare() {
             <span className="text-[11.5px] text-sy-text-3">AI 已清洗</span>
           </div>
           <p className="text-2xl font-semibold font-mono text-sy-accent">
-            {llmCleaned?.count ?? 0}
+            {(llmCleaned?.count ?? 0) + (cleaned?.count ?? 0)}
           </p>
         </div>
       </div>

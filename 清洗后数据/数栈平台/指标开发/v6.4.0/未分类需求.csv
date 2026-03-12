@@ -1,5 +1,5 @@
-﻿用例编号,用例标题,所属模块,相关需求,前置条件,步骤,预期结果,优先级,用例类型
-160752,验证新建模型共享功能,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,无,"1. 进入指标共享-模型共享页面，点击新增模型共享按钮
+﻿"用例编号","用例标题","所属模块","相关需求","前置条件","步骤","预期结果","优先级","用例类型"
+"160752","验证新建模型共享功能","指标开发-数据模型","模型支持sql定义","无","1. 进入指标共享-模型共享页面，点击新增模型共享按钮
 2. 共享来源选择
 3. 共享模型选择
 4. 共享目标选择
@@ -13,8 +13,8 @@
 5. 新增模型共享成功，跳转到模型共享列表页面
 6. 模型共享成功，系统给出成功反馈，相关页面/数据状态更新为最新
 7. 共享模型信息展示正确，内容与预期完全一致，无异常或错误
-8. 模型复制成功，系统给出成功反馈，相关页面/数据状态更新为最新",2,功能测试
-160751,验证历史数据展示,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,"1、已存在历史初始化数据：
+8. 模型复制成功，系统给出成功反馈，相关页面/数据状态更新为最新","2","功能测试"
+"160751","验证历史数据展示","指标开发-数据模型","模型支持sql定义","1、已存在历史初始化数据：
 逻辑关系模型model_lj_1；物理表模型model_wl_1；","1. 进入指标共享-模型共享页面，点击新增模型共享按钮
 2. 编辑逻辑关系模型model_lj_1
 3. 编辑物理表模型model_wl_1
@@ -31,8 +31,8 @@
 关联视图表名称展示：物理表展示：别名(表名)、逻辑表展示：别名；
 数据信息展示：主表、关联表表格；主表展示：表别名、catalog、schema、表名、更新方式；关联表展示：表别名、catalog、schema、表名、关联类型、更新方式、关联条件；
 维度展示：维度对象、维度属性、表（物理表展示：别名(表名)、逻辑表展示：别名）、字段名称、字段描述、字段类型；
-度量展示：表（物理表展示：别名(表名)、逻辑表展示：别名）、字段名称、字段描述、字段类型",1,功能测试
-160750,验证编辑模型修改主表来源,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,无,"1. 进入指标共享-模型共享页面，点击新增模型共享按钮
+度量展示：表（物理表展示：别名(表名)、逻辑表展示：别名）、字段名称、字段描述、字段类型","1","功能测试"
+"160750","验证编辑模型修改主表来源","指标开发-数据模型","模型支持sql定义","无","1. 进入指标共享-模型共享页面，点击新增模型共享按钮
 2. 修改模型来源表，物理表改为逻辑表，存储为逻辑关系模型
 3. 修改模型来源表，物理表改为逻辑表，存储为物理表模型
 4. 修改模型来源表，逻辑表改为物理表，存储为逻辑关系模型
@@ -40,18 +40,18 @@
 2. 模型编辑并发布成功，查看模型详情，模型详情信息展示正确
 3. 模型编辑并发布成功，查看模型详情，模型详情信息展示正确
 4. 模型编辑并发布成功，查看模型详情，模型详情信息展示正确
-5. 模型编辑并发布成功，查看模型详情，模型详情信息展示正确",2,功能测试
-160749,验证编辑模型修改逻辑表-存储为物理表模型,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,"1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
+5. 模型编辑并发布成功，查看模型详情，模型详情信息展示正确","2","功能测试"
+"160749","验证编辑模型修改逻辑表-存储为物理表模型","指标开发-数据模型","模型支持sql定义","1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
 INSERT INTO index_catalog.index_schema.“order“ (user_id, amount, order_id, order_date) VALUES
-(1001, 299.99, 5001, &#039;2025-03-15&#039;),
-(1002, 150.50, 5002, &#039;2025-04-21&#039;),
-(1003, 88.00, 5003, &#039;2025-05-26&#039;);
+(1001, 299.99, 5001, '2025-03-15'),
+(1002, 150.50, 5002, '2025-04-21'),
+(1003, 88.00, 5003, '2025-05-26');
 
 index_catalog.index_schema.user(user_id BIGINT 、name VARCHAR(50)、create_time DATETIME）；
 INSERT INTO index_catalog.index_schema.user (user_id, name, create_time) VALUES
-(&#039;1001&#039;, &#039;Alice&#039;, &#039;2025-03-15 10:20:00&#039;),
-(&#039;1002&#039;, &#039;Bob&#039;, &#039;2025-04-20 14:35:00&#039;),
-(&#039;1003&#039;, &#039;Charlie&#039;, &#039;2025-05-25 09:10:00&#039;);
+('1001', 'Alice', '2025-03-15 10:20:00'),
+('1002', 'Bob', '2025-04-20 14:35:00'),
+('1003', 'Charlie', '2025-05-25 09:10:00');
 
 
 2、存在模型model_01配置主表为逻辑表：
@@ -67,7 +67,7 @@ index_catalog.index_schema.user
 ON
 order.user_id = user.user_id
 WHERE
-order.user_id = &#039;1001&#039;;
+order.user_id = '1001';
 辅表为index_catalog.index_schema.user，表别名t_user；
 选择维度：order.user_id、user.order_id、order.order_date；
 度量列：order.amout；
@@ -81,7 +81,7 @@ order.user_id = &#039;1001&#039;;
 8. 选择模型存储-存储为物理表，设置表属性（表名称）、调度属性、点击查看SQL
 9. 点击保存并发布
 10. 查看模型详情","1. 成功进入指标共享-模型共享页面，点击新增模型共享按钮页面，页面内容正常加载显示，无报错
-2. 系统提示下线成功，状态更新为「已下线」
+2. 系统提示下线成功，状态更新为【已下线】
 3. 进入模型编辑页面
 4. 系统提示修改成功，页面显示修改后的最新内容
 5. 展示字段：
@@ -107,18 +107,18 @@ order_date、
 7. 跳转到设置页面
 8. SQL展示正确，更新SQL逻辑
 9. 编辑模型成功，原物理表删除，更新物理表
-10. 模型详情展示修改后信息",1,功能测试
-160748,验证编辑模型修改逻辑表-存储为逻辑关系模型,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,"1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
+10. 模型详情展示修改后信息","1","功能测试"
+"160748","验证编辑模型修改逻辑表-存储为逻辑关系模型","指标开发-数据模型","模型支持sql定义","1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
 INSERT INTO index_catalog.index_schema.“order“ (user_id, amount, order_id, order_date) VALUES
-(1001, 299.99, 5001, &#039;2025-03-15&#039;),
-(1002, 150.50, 5002, &#039;2025-04-21&#039;),
-(1003, 88.00, 5003, &#039;2025-05-26&#039;);
+(1001, 299.99, 5001, '2025-03-15'),
+(1002, 150.50, 5002, '2025-04-21'),
+(1003, 88.00, 5003, '2025-05-26');
 
 index_catalog.index_schema.user(user_id BIGINT 、name VARCHAR(50)、create_time DATETIME）；
 INSERT INTO index_catalog.index_schema.user (user_id, name, create_time) VALUES
-(&#039;1001&#039;, &#039;Alice&#039;, &#039;2025-03-15 10:20:00&#039;),
-(&#039;1002&#039;, &#039;Bob&#039;, &#039;2025-04-20 14:35:00&#039;),
-(&#039;1003&#039;, &#039;Charlie&#039;, &#039;2025-05-25 09:10:00&#039;);
+('1001', 'Alice', '2025-03-15 10:20:00'),
+('1002', 'Bob', '2025-04-20 14:35:00'),
+('1003', 'Charlie', '2025-05-25 09:10:00');
 
 
 2、存在模型model_01配置主表为逻辑表：
@@ -134,7 +134,7 @@ index_catalog.index_schema.user
 ON
 order.user_id = user.user_id
 WHERE
-order.user_id = &#039;1001&#039;;
+order.user_id = '1001';
 辅表为index_catalog.index_schema.user，表别名t_user；
 选择维度：order.user_id、user.order_id、order.order_date；
 度量列：order.amout；
@@ -147,7 +147,7 @@ order.user_id = &#039;1001&#039;;
 7. 选择度量，点击下一步
 8. 选择模型存储-存储为逻辑关系，点击保存并发布
 9. 查看模型详情","1. 成功进入指标共享-模型共享页面，点击新增模型共享按钮页面，页面内容正常加载显示，无报错
-2. 系统提示下线成功，状态更新为「已下线」
+2. 系统提示下线成功，状态更新为【已下线】
 3. 进入模型编辑页面
 4. 系统提示修改成功，页面显示修改后的最新内容
 5. 展示字段：
@@ -172,25 +172,25 @@ order_date、
 描述、字段类型、表、schema、表别名展示正确，内容与预期完全一致，无异常或错误
 7. 跳转到设置页面
 8. 编辑模型成功，系统给出成功反馈，相关页面/数据状态更新为最新
-9. 模型详情展示修改后信息",2,功能测试
-160747,验证模型主表逻辑表-业务限定逻辑,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,无,"1. 进入指标共享-模型共享页面，点击新增模型共享按钮
+9. 模型详情展示修改后信息","2","功能测试"
+"160747","验证模型主表逻辑表-业务限定逻辑","指标开发-数据模型","模型支持sql定义","无","1. 进入指标共享-模型共享页面，点击新增模型共享按钮
 2. 指标中心-维度管理-业务限定，点击新增业务限定
 3. 输入业务限定名称、业务限定标识、业务限定描述，选择模型，添加过滤条件，选择字段
 4. 配置过滤条件，配置指标，进行自助取数","1. 成功进入指标共享-模型共享页面，点击新增模型共享按钮页面，页面内容正常加载显示，无报错
 2. 进入新增业务限定页面
 3. 字段展示：
 主表为物理表展示：别名(表名)、主表为逻辑表展示：别名
-4. 自助取数SQL拼接业务限定配置条件",2,功能测试
-160746,验证模型主表逻辑表-自助取数逻辑-存储为物理表模型,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,"1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
+4. 自助取数SQL拼接业务限定配置条件","2","功能测试"
+"160746","验证模型主表逻辑表-自助取数逻辑-存储为物理表模型","指标开发-数据模型","模型支持sql定义","1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
 INSERT INTO index_catalog.index_schema.“order“ (user_id, amount, order_id, order_date) VALUES
-(1001, 299.99, 5001, &#039;2025-03-15&#039;),
-(1002, 150.50, 5002, &#039;2025-04-21&#039;),
-(1003, 88.00, 5003, &#039;2025-05-26&#039;);
+(1001, 299.99, 5001, '2025-03-15'),
+(1002, 150.50, 5002, '2025-04-21'),
+(1003, 88.00, 5003, '2025-05-26');
 index_catalog.index_schema.user(user_id BIGINT 、name VARCHAR(50)、create_time DATETIME）；
 INSERT INTO index_catalog.index_schema.user (user_id, name, create_time) VALUES
-(&#039;1001&#039;, &#039;Alice&#039;, &#039;2025-03-15 10:20:00&#039;),
-(&#039;1002&#039;, &#039;Bob&#039;, &#039;2025-04-20 14:35:00&#039;),
-(&#039;1003&#039;, &#039;Charlie&#039;, &#039;2025-05-25 09:10:00&#039;);
+('1001', 'Alice', '2025-03-15 10:20:00'),
+('1002', 'Bob', '2025-04-20 14:35:00'),
+('1003', 'Charlie', '2025-05-25 09:10:00');
 2、存在模型model_01配置主表为逻辑表：
 SELECT
 order.user_id,
@@ -204,7 +204,7 @@ index_catalog.index_schema.user
 ON
 order.user_id = user.user_id
 WHERE
-order.user_id = &#039;1001&#039;;
+order.user_id = '1001';
 辅表为index_catalog.index_schema.user，表别名t_user；
 选择维度：order.user_id、user.order_id、order.order_date；
 度量列：order.amout；
@@ -221,18 +221,18 @@ order.user_id = &#039;1001&#039;;
 4. 出现查询sql弹窗；
 sql拼接模型逻辑表中条件
 WHERE order.user_id = '1001';
-5. 下载数据成功，系统给出成功反馈，相关页面/数据状态更新为最新",2,功能测试
-160745,验证模型主表逻辑表-自助取数逻辑-存储为逻辑关系模型,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,"1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
+5. 下载数据成功，系统给出成功反馈，相关页面/数据状态更新为最新","2","功能测试"
+"160745","验证模型主表逻辑表-自助取数逻辑-存储为逻辑关系模型","指标开发-数据模型","模型支持sql定义","1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
 INSERT INTO index_catalog.index_schema.“order“ (user_id, amount, order_id, order_date) VALUES
-(1001, 299.99, 5001, &#039;2025-03-15&#039;),
-(1002, 150.50, 5002, &#039;2025-04-21&#039;),
-(1003, 88.00, 5003, &#039;2025-05-26&#039;);
+(1001, 299.99, 5001, '2025-03-15'),
+(1002, 150.50, 5002, '2025-04-21'),
+(1003, 88.00, 5003, '2025-05-26');
 
 index_catalog.index_schema.user(user_id BIGINT 、name VARCHAR(50)、create_time DATETIME）；
 INSERT INTO index_catalog.index_schema.user (user_id, name, create_time) VALUES
-(&#039;1001&#039;, &#039;Alice&#039;, &#039;2025-03-15 10:20:00&#039;),
-(&#039;1002&#039;, &#039;Bob&#039;, &#039;2025-04-20 14:35:00&#039;),
-(&#039;1003&#039;, &#039;Charlie&#039;, &#039;2025-05-25 09:10:00&#039;);
+('1001', 'Alice', '2025-03-15 10:20:00'),
+('1002', 'Bob', '2025-04-20 14:35:00'),
+('1003', 'Charlie', '2025-05-25 09:10:00');
 
 
 2、存在模型model_01配置主表为逻辑表：
@@ -248,7 +248,7 @@ index_catalog.index_schema.user
 ON
 order.user_id = user.user_id
 WHERE
-order.user_id = &#039;1001&#039;;
+order.user_id = '1001';
 辅表为index_catalog.index_schema.user，表别名t_user；
 选择维度：order.user_id、user.order_id、order.order_date；
 度量列：order.amout；
@@ -268,8 +268,8 @@ order.user_id = &#039;1001&#039;;
 4. 出现查询sql弹窗；
 sql拼接模型逻辑表中条件
 WHERE order.user_id = '1001';
-5. 下载数据成功，系统给出成功反馈，相关页面/数据状态更新为最新",1,功能测试
-160744,验证模型主表逻辑表-自定义SQL校验逻辑,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,无,"1. 进入指标共享-模型共享页面，点击新增模型共享按钮
+5. 下载数据成功，系统给出成功反馈，相关页面/数据状态更新为最新","1","功能测试"
+"160744","验证模型主表逻辑表-自定义SQL校验逻辑","指标开发-数据模型","模型支持sql定义","无","1. 进入指标共享-模型共享页面，点击新增模型共享按钮
 2. 不输入 自定义SQL，直接点击 下一步
 3. 输入 自定义SQL，直接点击 下一步
 4. 输入正确自定义SQL：select id from table；
@@ -277,18 +277,18 @@ WHERE order.user_id = '1001';
 2. 提示异常
 3. 下一步自动校验
 4. 规范性校验通过，状态展示已通过
-5. 规范性校验失败，状态展示未通过，日志展示错误信息：不能包含[pk,pt,yw_date]字段",3,功能测试
-160743,验证模型详情数据-主表为物理表,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,"1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
+5. 规范性校验失败，状态展示未通过，日志展示错误信息：不能包含[pk,pt,yw_date]字段","3","功能测试"
+"160743","验证模型详情数据-主表为物理表","指标开发-数据模型","模型支持sql定义","1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
 INSERT INTO index_catalog.index_schema.“order“ (user_id, amount, order_id, order_date) VALUES
-(1001, 299.99, 5001, &#039;2025-03-15&#039;),
-(1002, 150.50, 5002, &#039;2025-04-21&#039;),
-(1003, 88.00, 5003, &#039;2025-05-26&#039;);
+(1001, 299.99, 5001, '2025-03-15'),
+(1002, 150.50, 5002, '2025-04-21'),
+(1003, 88.00, 5003, '2025-05-26');
 
 index_catalog.index_schema.user(user_id BIGINT 、name VARCHAR(50)、create_time DATETIME）；
 INSERT INTO index_catalog.index_schema.user (user_id, name, create_time) VALUES
-(&#039;1001&#039;, &#039;Alice&#039;, &#039;2025-03-15 10:20:00&#039;),
-(&#039;1002&#039;, &#039;Bob&#039;, &#039;2025-04-20 14:35:00&#039;),
-(&#039;1003&#039;, &#039;Charlie&#039;, &#039;2025-05-25 09:10:00&#039;);
+('1001', 'Alice', '2025-03-15 10:20:00'),
+('1002', 'Bob', '2025-04-20 14:35:00'),
+('1003', 'Charlie', '2025-05-25 09:10:00');
 
 
 2、存在模型配置主表为物理表：
@@ -308,18 +308,18 @@ t0(order) left join t_user(user);
 主表展示：表别名、catalog、schema、表名、更新方式；
 关联表展示：表别名、catalog、schema、表名、关联类型、更新方式、关联条件
 5. 维度展示：维度对象、维度属性、表（物理表展示：别名(表名)、逻辑表展示：别名）、字段名称、字段描述、字段类型；
-6. 度量展示：表（物理表展示：别名(表名)、逻辑表展示：别名）、字段名称、字段描述、字段类型",2,功能测试
-160742,验证模型详情数据-主表为逻辑表,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,"1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
+6. 度量展示：表（物理表展示：别名(表名)、逻辑表展示：别名）、字段名称、字段描述、字段类型","2","功能测试"
+"160742","验证模型详情数据-主表为逻辑表","指标开发-数据模型","模型支持sql定义","1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
 INSERT INTO index_catalog.index_schema.“order“ (user_id, amount, order_id, order_date) VALUES
-(1001, 299.99, 5001, &#039;2025-03-15&#039;),
-(1002, 150.50, 5002, &#039;2025-04-21&#039;),
-(1003, 88.00, 5003, &#039;2025-05-26&#039;);
+(1001, 299.99, 5001, '2025-03-15'),
+(1002, 150.50, 5002, '2025-04-21'),
+(1003, 88.00, 5003, '2025-05-26');
 
 index_catalog.index_schema.user(user_id BIGINT 、name VARCHAR(50)、create_time DATETIME）；
 INSERT INTO index_catalog.index_schema.user (user_id, name, create_time) VALUES
-(&#039;1001&#039;, &#039;Alice&#039;, &#039;2025-03-15 10:20:00&#039;),
-(&#039;1002&#039;, &#039;Bob&#039;, &#039;2025-04-20 14:35:00&#039;),
-(&#039;1003&#039;, &#039;Charlie&#039;, &#039;2025-05-25 09:10:00&#039;);
+('1001', 'Alice', '2025-03-15 10:20:00'),
+('1002', 'Bob', '2025-04-20 14:35:00'),
+('1003', 'Charlie', '2025-05-25 09:10:00');
 
 
 2、存在模型配置主表为逻辑表：
@@ -338,7 +338,7 @@ index_catalog.index_schema.user
 ON
 order.user_id = user.user_id
 WHERE
-order.user_id = &#039;1001&#039;;
+order.user_id = '1001';
 
 辅表为index_catalog.index_schema.user，表别名t_user；
 
@@ -368,18 +368,18 @@ ON
 order.user_id = user.user_id;
 关联表展示：表别名、catalog、schema、表名、关联类型、更新方式、关联条件
 5. 维度展示：维度对象、维度属性、表（物理表展示：别名(表名)、逻辑表展示：别名）、字段名称、字段描述	、字段类型；
-6. 度量展示：表（物理表展示：别名(表名)、逻辑表展示：别名）、字段名称、字段描述、字段类型",2,功能测试
-160741,验证新增模型-主表为逻辑表-存储为物理表模型,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,"1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
+6. 度量展示：表（物理表展示：别名(表名)、逻辑表展示：别名）、字段名称、字段描述、字段类型","2","功能测试"
+"160741","验证新增模型-主表为逻辑表-存储为物理表模型","指标开发-数据模型","模型支持sql定义","1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
 INSERT INTO index_catalog.index_schema.“order“ (user_id, amount, order_id, order_date) VALUES
-(1001, 299.99, 5001, &#039;2025-03-15&#039;),
-(1002, 150.50, 5002, &#039;2025-04-21&#039;),
-(1003, 88.00, 5003, &#039;2025-05-26&#039;);
+(1001, 299.99, 5001, '2025-03-15'),
+(1002, 150.50, 5002, '2025-04-21'),
+(1003, 88.00, 5003, '2025-05-26');
 
 index_catalog.index_schema.user(user_id BIGINT 、name VARCHAR(50)、create_time DATETIME）；
 INSERT INTO index_catalog.index_schema.user (user_id, name, create_time) VALUES
-(&#039;1001&#039;, &#039;Alice&#039;, &#039;2025-03-15 10:20:00&#039;),
-(&#039;1002&#039;, &#039;Bob&#039;, &#039;2025-04-20 14:35:00&#039;),
-(&#039;1003&#039;, &#039;Charlie&#039;, &#039;2025-05-25 09:10:00&#039;);","1. 进入指标共享-模型共享页面，点击新增模型共享按钮
+('1001', 'Alice', '2025-03-15 10:20:00'),
+('1002', 'Bob', '2025-04-20 14:35:00'),
+('1003', 'Charlie', '2025-05-25 09:10:00');","1. 进入指标共享-模型共享页面，点击新增模型共享按钮
 2. 指标中心-数据管理-数据模型，操作 【新建模型】列表
 3. 输入模型名称、模型编码信息，点击下一步
 4. 主表来源选择逻辑表，编写自定义SQL：SELECT order.user_id, order.amout, order.order_id, order.order_date, user.user_id, user.name, user.create_timeFROM index_catalog.index_schema.orderINNER JOIN index_catalog.index_schema.user ON order.user_id = user.user_id;点击规范性校验
@@ -427,18 +427,18 @@ order_date、
 10. SQL展示正确，内容与预期完全一致，无异常或错误
 11. 新建模型成功，跳转到模型列表页面，统计数+1
 12. 跳转运维中心页面
-13. 补数据任务运行成功，状态更新为「成功」，运行/执行结果符合预期，日志无报错",1,功能测试
-160740,验证新增模型-主表为逻辑表-存储为逻辑关系模型,/迭代版本测试用例/V6.4.0/模型支持sql定义(#9315),,"1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
+13. 补数据任务运行成功，状态更新为【成功】，运行/执行结果符合预期，日志无报错","1","功能测试"
+"160740","验证新增模型-主表为逻辑表-存储为逻辑关系模型","指标开发-数据模型","模型支持sql定义","1、存在表index_catalog.index_schema.order(user_id BIGINT、amout DECIMAL(10, 2)、order_id BIGINT、order_date DATE）；
 INSERT INTO index_catalog.index_schema.“order“ (user_id, amount, order_id, order_date) VALUES
-(1001, 299.99, 5001, &#039;2025-03-15&#039;),
-(1002, 150.50, 5002, &#039;2025-04-21&#039;),
-(1003, 88.00, 5003, &#039;2025-05-26&#039;);
+(1001, 299.99, 5001, '2025-03-15'),
+(1002, 150.50, 5002, '2025-04-21'),
+(1003, 88.00, 5003, '2025-05-26');
 
 index_catalog.index_schema.user(user_id BIGINT 、name VARCHAR(50)、create_time DATETIME）；
 INSERT INTO index_catalog.index_schema.user (user_id, name, create_time) VALUES
-(&#039;1001&#039;, &#039;Alice&#039;, &#039;2025-03-15 10:20:00&#039;),
-(&#039;1002&#039;, &#039;Bob&#039;, &#039;2025-04-20 14:35:00&#039;),
-(&#039;1003&#039;, &#039;Charlie&#039;, &#039;2025-05-25 09:10:00&#039;);","1. 进入指标共享-模型共享页面，点击新增模型共享按钮
+('1001', 'Alice', '2025-03-15 10:20:00'),
+('1002', 'Bob', '2025-04-20 14:35:00'),
+('1003', 'Charlie', '2025-05-25 09:10:00');","1. 进入指标共享-模型共享页面，点击新增模型共享按钮
 2. 指标中心-数据管理-数据模型，操作 【新建模型】列表
 3. 输入模型名称：model_01、模型编码：model_01，点击下一步
 4. 主表来源选择逻辑表，编写自定义SQL：SELECT order.user_id, order.amout, order.order_id, order.order_date, user.user_id, user.name, user.create_timeFROM index_catalog.index_schema.orderINNER JOIN index_catalog.index_schema.user ON order.user_id = user.user_id;点击规范性校验
@@ -480,4 +480,4 @@ order_id,
 order_date、
 描述、字段类型、表、schema、表别名展示正确，内容与预期完全一致，无异常或错误
 9. 跳转到设置页面
-10. 新建模型成功，跳转到模型列表页面，统计数+1",1,功能测试
+10. 新建模型成功，跳转到模型列表页面，统计数+1","1","功能测试"
