@@ -1,5 +1,5 @@
 ﻿用例编号,用例标题,所属模块,相关需求,前置条件,步骤,预期结果,优先级,用例类型
-160495,验证oracle2dmmysql，dmmysql一键建表功能,/版本迭代测试用例/BatchWork_6.4.1/dm for mysql一键建表(#9298),【黑建投交付】dm for mysql一键建表(#14809),"CREATE TABLE oracle_demo_data_types_source (
+160495,验证oracle2dmmysql，dmmysql一键建表功能,dm for mysql一键建表,【黑建投交付】dm for mysql一键建表(#14809),"CREATE TABLE oracle_demo_data_types_source (
 -- 数值类型
 id NUMBER PRIMARY KEY,                    -- 主键，数字类型
 small_num NUMBER(5),                      -- 小数字
@@ -32,16 +32,16 @@ INSERT INTO oracle_demo_data_types_source VALUES (
 123,
 9999.99,
 123.456,
-&#039;STATIC&#039;,
-&#039;这是一个变长字符串示例&#039;,
-&#039;这是一个很长的文本内容，可以存储大量的文字信息。CLOB类型非常适合存储文章、描述等长文本数据。&#039;,
+'STATIC',
+'这是一个变长字符串示例',
+'这是一个很长的文本内容，可以存储大量的文字信息。CLOB类型非常适合存储文章、描述等长文本数据。',
 SYSDATE,
 SYSTIMESTAMP,
 SYSTIMESTAMP,
 EMPTY_BLOB(),
-HEXTORAW(&#039;1A2B3C&#039;),
+HEXTORAW('1A2B3C'),
 1,
-&#039;{“name“: “张三“, “age“: 30, “department“: “技术部“, “skills“: [“Java“, “Oracle“, “Python“]}&#039;
+'{“name“: “张三“, “age“: 30, “department“: “技术部“, “skills“: [“Java“, “Oracle“, “Python“]}'
 );
 
 
@@ -56,45 +56,45 @@ COMMIT;","1. 进入离线开发-项目A-数据开发-周期任务，新建数据
 3. 字段和字段类型与hive一致
 4. 表名回填一键建表sql中的表名，如：oracle_demo_data_types_source
 5. sink端字段和字段类型展示正确，内容与预期完全一致，无异常或错误
-6. 任务运行成功，状态显示为「运行成功/成功」，无报错信息
+6. 任务运行成功，状态显示为【运行成功/成功】，无报错信息
 7. 表存在，且数据写入正确，内容与预期完全一致，无异常或错误",2,功能测试
-160494,验证mysql2dmmysql，dmmysql一键建表功能,/版本迭代测试用例/BatchWork_6.4.1/dm for mysql一键建表(#9298),【黑建投交付】dm for mysql一键建表(#14809),"CREATE TABLE IF NOT EXISTS mysql_demo_data_types_source (
+160494,验证mysql2dmmysql，dmmysql一键建表功能,dm for mysql一键建表,【黑建投交付】dm for mysql一键建表(#14809),"CREATE TABLE IF NOT EXISTS mysql_demo_data_types_source (
 -- 整数类型
-id INT PRIMARY KEY AUTO_INCREMENT COMMENT &#039;主键ID&#039;,
-tiny_int_col TINYINT COMMENT &#039;小整数(-128~127)&#039;,
-small_int_col SMALLINT COMMENT &#039;小整数(-32768~32767)&#039;,
-medium_int_col MEDIUMINT COMMENT &#039;中等整数&#039;,
-big_int_col BIGINT COMMENT &#039;大整数&#039;,
+id INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+tiny_int_col TINYINT COMMENT '小整数(-128~127)',
+small_int_col SMALLINT COMMENT '小整数(-32768~32767)',
+medium_int_col MEDIUMINT COMMENT '中等整数',
+big_int_col BIGINT COMMENT '大整数',
 -- 浮点数类型
-float_col FLOAT(8,2) COMMENT &#039;单精度浮点数&#039;,
-double_col DOUBLE(16,4) COMMENT &#039;双精度浮点数&#039;,
-decimal_col DECIMAL(10,2) COMMENT &#039;精确小数&#039;,
+float_col FLOAT(8,2) COMMENT '单精度浮点数',
+double_col DOUBLE(16,4) COMMENT '双精度浮点数',
+decimal_col DECIMAL(10,2) COMMENT '精确小数',
 -- 字符串类型
-char_col CHAR(10) COMMENT &#039;定长字符串&#039;,
-varchar_col VARCHAR(255) COMMENT &#039;变长字符串&#039;,
-text_col TEXT COMMENT &#039;长文本&#039;,
+char_col CHAR(10) COMMENT '定长字符串',
+varchar_col VARCHAR(255) COMMENT '变长字符串',
+text_col TEXT COMMENT '长文本',
 -- 二进制类型
-blob_col BLOB COMMENT &#039;二进制数据&#039;,
+blob_col BLOB COMMENT '二进制数据',
 -- 日期时间类型
-date_col DATE COMMENT &#039;日期&#039;,
-time_col TIME COMMENT &#039;时间&#039;,
-datetime_col DATETIME COMMENT &#039;日期时间&#039;,
-timestamp_col TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT &#039;时间戳&#039;,
-year_col YEAR COMMENT &#039;年份&#039;,
+date_col DATE COMMENT '日期',
+time_col TIME COMMENT '时间',
+datetime_col DATETIME COMMENT '日期时间',
+timestamp_col TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '时间戳',
+year_col YEAR COMMENT '年份',
 -- 枚举和集合类型
-enum_col ENUM(&#039;男&#039;, &#039;女&#039;, &#039;其他&#039;) COMMENT &#039;枚举类型&#039;,
-set_col SET(&#039;阅读&#039;, &#039;音乐&#039;, &#039;运动&#039;, &#039;旅游&#039;) COMMENT &#039;集合类型&#039;,
+enum_col ENUM('男', '女', '其他') COMMENT '枚举类型',
+set_col SET('阅读', '音乐', '运动', '旅游') COMMENT '集合类型',
 -- 布尔类型
-bool_col BOOLEAN COMMENT &#039;布尔值&#039;,
+bool_col BOOLEAN COMMENT '布尔值',
 -- JSON类型 (MySQL 5.7+)
-json_col JSON COMMENT &#039;JSON数据&#039;,
+json_col JSON COMMENT 'JSON数据',
 -- 空间数据类型 (可选)
--- point_col POINT COMMENT &#039;点坐标&#039;,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT &#039;创建时间&#039;,
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT &#039;更新时间&#039;,
+-- point_col POINT COMMENT '点坐标',
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
 INDEX idx_varchar (varchar_col),
 INDEX idx_date (date_col)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT=&#039;常用数据类型示例表&#039;;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='常用数据类型示例表';
 
 
 INSERT INTO mysql_demo_data_types_source (
@@ -107,23 +107,23 @@ enum_col, set_col, bool_col, json_col
 (
 100, 32700, 8388600, 9223372036854775807,
 1234.56, 12345678.9012, 999999.99,
-&#039;固定&#039;, &#039;可变长度字符串&#039;, &#039;这是一个很长的文本内容，用于测试TEXT字段的存储能力。&#039;,
-&#039;2024-01-15&#039;, &#039;14:30:00&#039;, &#039;2024-01-15 14:30:00&#039;, 2024,
-&#039;男&#039;, &#039;阅读,音乐&#039;, TRUE, &#039;{“name“: “张三“, “age“: 25, “hobbies“: [“篮球“, “阅读“]}&#039;
+'固定', '可变长度字符串', '这是一个很长的文本内容，用于测试TEXT字段的存储能力。',
+'2024-01-15', '14:30:00', '2024-01-15 14:30:00', 2024,
+'男', '阅读,音乐', TRUE, '{“name“: “张三“, “age“: 25, “hobbies“: [“篮球“, “阅读“]}'
 ),
 (
 -50, -16000, -4000000, -9223372036854775808,
 -567.89, -9876543.2109, -12345.67,
-&#039;测试&#039;, &#039;另一个字符串&#039;, &#039;第二个文本内容，包含更多详细信息。&#039;,
-&#039;2023-12-20&#039;, &#039;09:15:30&#039;, &#039;2023-12-20 09:15:30&#039;, 2023,
-&#039;女&#039;, &#039;音乐,旅游&#039;, FALSE, &#039;{“name“: “李四“, “age“: 30, “email“: “lisi@example.com“}&#039;
+'测试', '另一个字符串', '第二个文本内容，包含更多详细信息。',
+'2023-12-20', '09:15:30', '2023-12-20 09:15:30', 2023,
+'女', '音乐,旅游', FALSE, '{“name“: “李四“, “age“: 30, “email“: “lisi@example.com“}'
 ),
 (
 0, 1000, 500000, 123456789012345,
 0.99, 0.0001, 100.50,
-&#039;hello&#039;, &#039;示例文本&#039;, &#039;第三个示例记录。&#039;,
+'hello', '示例文本', '第三个示例记录。',
 CURDATE(), CURTIME(), NOW(), YEAR(CURDATE()),
-&#039;其他&#039;, &#039;阅读,运动,旅游&#039;, TRUE, &#039;{“product“: “电脑“, “price“: 5999, “inStock“: true}&#039;
+'其他', '阅读,运动,旅游', TRUE, '{“product“: “电脑“, “price“: 5999, “inStock“: true}'
 );","1. 进入离线开发-项目A-数据开发-周期任务，新建数据同步任务，source选择前置中的表mysql_demo_data_types_source
 2. 进入sink端，数据源选择dm for mysql数据源，查看表名后是否有【一键生成目标表】按钮
 3. 点击【一键生成目标表】，查看建表sql
@@ -135,9 +135,9 @@ CURDATE(), CURTIME(), NOW(), YEAR(CURDATE()),
 3. 字段和字段类型与hive一致
 4. 表名回填一键建表sql中的表名，如：mysql_demo_data_types_source
 5. sink端字段和字段类型展示正确，内容与预期完全一致，无异常或错误
-6. 任务运行成功，状态显示为「运行成功/成功」，无报错信息
+6. 任务运行成功，状态显示为【运行成功/成功】，无报错信息
 7. 表存在，且数据写入正确，内容与预期完全一致，无异常或错误",2,功能测试
-160493,验证hive2dmmysql，dmmysql一键建表功能,/版本迭代测试用例/BatchWork_6.4.1/dm for mysql一键建表(#9298),【黑建投交付】dm for mysql一键建表(#14809),"<br />CREATE TABLE IF NOT EXISTS hive_orc_demo_data_types_sink (<br />&nbsp; &nbsp; -- 数值类型<br />&nbsp; &nbsp; id INT COMMENT &#039;整型ID&#039;,<br />&nbsp; &nbsp; tiny_col TINYINT COMMENT &#039;微小整型&#039;,<br />&nbsp; &nbsp; small_col SMALLINT COMMENT &#039;小整型&#039;,<br />&nbsp; &nbsp; big_col BIGINT COMMENT &#039;大整型&#039;,<br />&nbsp; &nbsp; float_col FLOAT COMMENT &#039;单精度浮点&#039;,<br />&nbsp; &nbsp; double_col DOUBLE COMMENT &#039;双精度浮点&#039;,<br />&nbsp; &nbsp; decimal_col DECIMAL(10,2) COMMENT &#039;精确小数&#039;,<br /><br />&nbsp; &nbsp; -- 字符串类型<br />&nbsp; &nbsp; string_col STRING COMMENT &#039;字符串类型&#039;,<br />&nbsp; &nbsp; varchar_col VARCHAR(50) COMMENT &#039;可变长度字符串&#039;,<br />&nbsp; &nbsp; char_col CHAR(10) COMMENT &#039;固定长度字符串&#039;,<br /><br />&nbsp; &nbsp; -- 日期时间类型<br />&nbsp; &nbsp; date_col DATE COMMENT &#039;日期类型&#039;,<br />&nbsp; &nbsp; timestamp_col TIMESTAMP COMMENT &#039;时间戳类型&#039;,<br /><br />&nbsp; &nbsp; -- 布尔类型<br />&nbsp; &nbsp; boolean_col BOOLEAN COMMENT &#039;布尔类型&#039;,<br /><br />&nbsp; &nbsp; -- 复杂类型<br />&nbsp; &nbsp; array_col ARRAY&lt;STRING&gt; COMMENT &#039;数组类型&#039;,<br />&nbsp; &nbsp; map_col MAP&lt;STRING, INT&gt; COMMENT &#039;映射类型&#039;,<br />&nbsp; &nbsp; struct_col STRUCT&lt;name:STRING, age:INT&gt; COMMENT &#039;结构体类型&#039;<br />)stored as orc;<br /><br />INSERT INTO TABLE hive_orc_demo_data_types_sink VALUES<br />(<br />&nbsp; &nbsp; -- 数值类型<br />&nbsp; &nbsp; 1,<br />&nbsp; &nbsp; 127,<br />&nbsp; &nbsp; 32767,<br />&nbsp; &nbsp; 9223372036854775807,<br />&nbsp; &nbsp; 3.14,<br />&nbsp; &nbsp; 3.141592653589793,<br />&nbsp; &nbsp; 1234.56,<br />&nbsp; &nbsp;&nbsp;<br />&nbsp; &nbsp; -- 字符串类型<br />&nbsp; &nbsp; &#039;Hello World&#039;,<br />&nbsp; &nbsp; &#039;Variable length&#039;,<br />&nbsp; &nbsp; &#039;Fixed&nbsp; &nbsp; &nbsp;&#039;,&nbsp; -- CHAR需要填充到指定长度<br />&nbsp; &nbsp;&nbsp;<br />&nbsp; &nbsp; -- 日期时间类型<br />&nbsp; &nbsp; &#039;2023-01-15&#039;,<br />&nbsp; &nbsp; &#039;2023-01-15 14:30:25&#039;,<br />&nbsp; &nbsp;&nbsp;<br />&nbsp; &nbsp; -- 布尔类型<br />&nbsp; &nbsp; TRUE,<br />&nbsp; &nbsp;&nbsp;<br />&nbsp; &nbsp; -- 复杂类型<br />&nbsp; &nbsp; ARRAY(&#039;apple&#039;, &#039;banana&#039;, &#039;cherry&#039;),<br />&nbsp; &nbsp; MAP(&#039;key1&#039;, 100, &#039;key2&#039;, 200),<br />&nbsp; &nbsp; NAMED_STRUCT(&#039;name&#039;, &#039;John&#039;, &#039;age&#039;, 25)<br />)<br /><string, int=““><name:string, age:int=““></name:string,></string,>","1. 进入离线开发-项目A-数据开发-周期任务，新建数据同步任务，source选择前置中的表hive_orc_demo_data_types_sink
+160493,验证hive2dmmysql，dmmysql一键建表功能,dm for mysql一键建表,【黑建投交付】dm for mysql一键建表(#14809),"<br />CREATE TABLE IF NOT EXISTS hive_orc_demo_data_types_sink (<br />    -- 数值类型<br />    id INT COMMENT '整型ID',<br />    tiny_col TINYINT COMMENT '微小整型',<br />    small_col SMALLINT COMMENT '小整型',<br />    big_col BIGINT COMMENT '大整型',<br />    float_col FLOAT COMMENT '单精度浮点',<br />    double_col DOUBLE COMMENT '双精度浮点',<br />    decimal_col DECIMAL(10,2) COMMENT '精确小数',<br /><br />    -- 字符串类型<br />    string_col STRING COMMENT '字符串类型',<br />    varchar_col VARCHAR(50) COMMENT '可变长度字符串',<br />    char_col CHAR(10) COMMENT '固定长度字符串',<br /><br />    -- 日期时间类型<br />    date_col DATE COMMENT '日期类型',<br />    timestamp_col TIMESTAMP COMMENT '时间戳类型',<br /><br />    -- 布尔类型<br />    boolean_col BOOLEAN COMMENT '布尔类型',<br /><br />    -- 复杂类型<br />    array_col ARRAY<STRING> COMMENT '数组类型',<br />    map_col MAP<STRING, INT> COMMENT '映射类型',<br />    struct_col STRUCT<name:STRING, age:INT> COMMENT '结构体类型'<br />)stored as orc;<br /><br />INSERT INTO TABLE hive_orc_demo_data_types_sink VALUES<br />(<br />    -- 数值类型<br />    1,<br />    127,<br />    32767,<br />    9223372036854775807,<br />    3.14,<br />    3.141592653589793,<br />    1234.56,<br />    <br />    -- 字符串类型<br />    'Hello World',<br />    'Variable length',<br />    'Fixed     ',  -- CHAR需要填充到指定长度<br />    <br />    -- 日期时间类型<br />    '2023-01-15',<br />    '2023-01-15 14:30:25',<br />    <br />    -- 布尔类型<br />    TRUE,<br />    <br />    -- 复杂类型<br />    ARRAY('apple', 'banana', 'cherry'),<br />    MAP('key1', 100, 'key2', 200),<br />    NAMED_STRUCT('name', 'John', 'age', 25)<br />)<br /><string, int=““><name:string, age:int=““></name:string,></string,>","1. 进入离线开发-项目A-数据开发-周期任务，新建数据同步任务，source选择前置中的表hive_orc_demo_data_types_sink
 2. 进入sink端，数据源选择dm for mysql数据源，查看表名后是否有【一键生成目标表】按钮
 3. 点击【一键生成目标表】，查看建表sql
 4. 点击确定
@@ -148,5 +148,5 @@ CURDATE(), CURTIME(), NOW(), YEAR(CURDATE()),
 3. 字段和字段类型与hive一致
 4. 表名回填一键建表sql中的表名，如：hive_orc_demo_data_types_sink
 5. sink端字段和字段类型展示正确，内容与预期完全一致，无异常或错误
-6. 任务运行成功，状态显示为「运行成功/成功」，无报错信息
+6. 任务运行成功，状态显示为【运行成功/成功】，无报错信息
 7. 表存在，且数据写入正确，内容与预期完全一致，无异常或错误",1,功能测试

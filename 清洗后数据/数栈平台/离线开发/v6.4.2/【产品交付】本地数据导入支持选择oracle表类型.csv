@@ -1,5 +1,5 @@
 ﻿用例编号,用例标题,所属模块,相关需求,前置条件,步骤,预期结果,优先级,用例类型
-162538,验证.xlsx文件导入数据成功(单个sheet),/版本迭代测试用例/BatchWork_6.4.2/【江苏银行】本地数据导入- oracle(#9405),【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
+162538,验证.xlsx文件导入数据成功(单个sheet),本地数据导入- oracle,【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
 2. 点击导入, 上传test.xls文件
 3. 其它值为默认填写
 4. 选择表类型为Oracle
@@ -10,7 +10,7 @@
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test.xlsx中的数据文件正常导入",3,功能测试
-162537,验证.xlsx文件导入数据成功(多个sheet),/版本迭代测试用例/BatchWork_6.4.2/【江苏银行】本地数据导入- oracle(#9405),【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
+162537,验证.xlsx文件导入数据成功(多个sheet),本地数据导入- oracle,【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
 2. 点击导入, 上传test.xlsx文件
 3. 其它值为默认填写
 4. 选择表类型为Oracle
@@ -21,7 +21,7 @@
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test中第一个sheet中的数据被写入",1,功能测试
-162536,验证.xls文件导入数据成功(单个sheet),/版本迭代测试用例/BatchWork_6.4.2/【江苏银行】本地数据导入- oracle(#9405),【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
+162536,验证.xls文件导入数据成功(单个sheet),本地数据导入- oracle,【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
 2. 点击导入, 上传test.xls文件
 3. 其它值为默认填写
 4. 选择表类型为Oracle
@@ -32,7 +32,7 @@
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test.xls中的数据文件正常导入",3,功能测试
-162535,验证.xls文件导入数据成功(多个sheet),/版本迭代测试用例/BatchWork_6.4.2/【江苏银行】本地数据导入- oracle(#9405),【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
+162535,验证.xls文件导入数据成功(多个sheet),本地数据导入- oracle,【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
 2. 点击导入, 上传test.xls文件
 3. 其它值为默认填写
 4. 选择表类型为Oracle
@@ -43,11 +43,11 @@
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test中第一个sheet中的数据被写入",3,功能测试
-162534,验证.csv文件导入数据成功,/版本迭代测试用例/BatchWork_6.4.2/【江苏银行】本地数据导入- oracle(#9405),【产品交付】本地数据导入支持选择oracle表类型(#15080),"<p>test.csv文件</p>
+162534,验证.csv文件导入数据成功,本地数据导入- oracle,【产品交付】本地数据导入支持选择oracle表类型(#15080),"<p>test.csv文件</p>
 <p><br /></p>
 <p><!--StartFragment-->
 <pre>
-<div style=“color:#cacaca;background-color:#00000000;font-family:&quot;font-size:11px;“>
+<div style=“color:#cacaca;background-color:#00000000;font-family:""font-size:11px;“>
     <div>ID,USERNAME,EMAIL,IS_ACTIVE,SALARY,CREATED_DATE,UPDATED_TS,LOCALE,UUID_RAW,PROFILE_TEXT,AVATAR_BLOB,NOTES</div>
 
     <div>1,alice,alice@example.com,Y,85000.50,2025-10-01,2025-10-01T08:30:00,zh_CN,550e8400e29b41d4a716446655440000,Senior engineer at X,,长期合同</div>
@@ -65,7 +65,7 @@
 <p>建表语句</p>
 <p>
   <div style=“background-color:#282c34;color:#bbbbbb;“>
-<pre><span style=“color:#d55fde;font-style:italic;“>CREATE TABLE </span><span style=“color:#e5c07b;“>demo_user </span>( <span style=“color:#ef596f;font-style:italic;“>id </span><span style=“color:#d55fde;font-style:italic;“>NUMBER</span>(<span style=“color:#d19a66;“>12</span>) <span style=“color:#d55fde;font-style:italic;“>PRIMARY KEY</span>, <span style=“color:#ef596f;“>username </span><span style=“color:#d55fde;font-style:italic;“>VARCHAR2</span>(<span style=“color:#d19a66;“>100</span>) <span style=“color:#d55fde;font-style:italic;“>NOT NULL</span>, <span style=“color:#ef596f;“>email </span><span style=“color:#d55fde;font-style:italic;“>VARCHAR2</span>(<span style=“color:#d19a66;“>200</span>) <span style=“color:#d55fde;font-style:italic;“>UNIQUE</span>, <span style=“color:#ef596f;“>is_active </span><span style=“color:#d55fde;font-style:italic;“>CHAR</span>(<span style=“color:#d19a66;“>1</span>) <span style=“color:#d55fde;font-style:italic;“>DEFAULT </span><span style=“color:#89ca78;“>&#039;Y&#039; </span><span style=“color:#d55fde;font-style:italic;“>NOT NULL</span>, <span style=“color:#ef596f;“>salary </span><span style=“color:#d55fde;font-style:italic;“>NUMBER</span>(<span style=“color:#d19a66;“>12</span>,<span style=“color:#d19a66;“>2</span>), <span style=“color:#ef596f;“>created_date </span><span style=“color:#d55fde;font-style:italic;“>DATE                 DEFAULT </span><span style=“color:#61afef;font-style:italic;“>SYSDATE</span>, <span style=“color:#ef596f;“>updated_ts </span><span style=“color:#d55fde;font-style:italic;“>TIMESTAMP</span>, <span style=“color:#ef596f;“>locale </span><span style=“color:#d55fde;font-style:italic;“>NCHAR</span>(<span style=“color:#d19a66;“>5</span>), <span style=“color:#ef596f;“>uuid_raw </span><span style=“color:#d55fde;font-style:italic;“>RAW</span>(<span style=“color:#d19a66;“>16</span>), <span style=“color:#ef596f;“>profile_text </span><span style=“color:#d55fde;font-style:italic;“>CLOB</span>, <span style=“color:#ef596f;“>avatar_blob </span><span style=“color:#d55fde;font-style:italic;“>BLOB</span>, <span style=“color:#ef596f;“>notes </span><span style=“color:#d55fde;font-style:italic;“>NVARCHAR2</span>(<span style=“color:#d19a66;“>2000</span>), <span style=“color:#d55fde;font-style:italic;“>CONSTRAINT </span>chk_is_active <span style=“color:#d55fde;font-style:italic;“>CHECK </span>(<span style=“color:#ef596f;“>is_active </span><span style=“color:#d55fde;font-style:italic;“>IN </span>(<span style=“color:#89ca78;“>&#039;Y&#039;</span>,<span style=“color:#89ca78;“>&#039;N&#039;</span>))
+<pre><span style=“color:#d55fde;font-style:italic;“>CREATE TABLE </span><span style=“color:#e5c07b;“>demo_user </span>( <span style=“color:#ef596f;font-style:italic;“>id </span><span style=“color:#d55fde;font-style:italic;“>NUMBER</span>(<span style=“color:#d19a66;“>12</span>) <span style=“color:#d55fde;font-style:italic;“>PRIMARY KEY</span>, <span style=“color:#ef596f;“>username </span><span style=“color:#d55fde;font-style:italic;“>VARCHAR2</span>(<span style=“color:#d19a66;“>100</span>) <span style=“color:#d55fde;font-style:italic;“>NOT NULL</span>, <span style=“color:#ef596f;“>email </span><span style=“color:#d55fde;font-style:italic;“>VARCHAR2</span>(<span style=“color:#d19a66;“>200</span>) <span style=“color:#d55fde;font-style:italic;“>UNIQUE</span>, <span style=“color:#ef596f;“>is_active </span><span style=“color:#d55fde;font-style:italic;“>CHAR</span>(<span style=“color:#d19a66;“>1</span>) <span style=“color:#d55fde;font-style:italic;“>DEFAULT </span><span style=“color:#89ca78;“>'Y' </span><span style=“color:#d55fde;font-style:italic;“>NOT NULL</span>, <span style=“color:#ef596f;“>salary </span><span style=“color:#d55fde;font-style:italic;“>NUMBER</span>(<span style=“color:#d19a66;“>12</span>,<span style=“color:#d19a66;“>2</span>), <span style=“color:#ef596f;“>created_date </span><span style=“color:#d55fde;font-style:italic;“>DATE                 DEFAULT </span><span style=“color:#61afef;font-style:italic;“>SYSDATE</span>, <span style=“color:#ef596f;“>updated_ts </span><span style=“color:#d55fde;font-style:italic;“>TIMESTAMP</span>, <span style=“color:#ef596f;“>locale </span><span style=“color:#d55fde;font-style:italic;“>NCHAR</span>(<span style=“color:#d19a66;“>5</span>), <span style=“color:#ef596f;“>uuid_raw </span><span style=“color:#d55fde;font-style:italic;“>RAW</span>(<span style=“color:#d19a66;“>16</span>), <span style=“color:#ef596f;“>profile_text </span><span style=“color:#d55fde;font-style:italic;“>CLOB</span>, <span style=“color:#ef596f;“>avatar_blob </span><span style=“color:#d55fde;font-style:italic;“>BLOB</span>, <span style=“color:#ef596f;“>notes </span><span style=“color:#d55fde;font-style:italic;“>NVARCHAR2</span>(<span style=“color:#d19a66;“>2000</span>), <span style=“color:#d55fde;font-style:italic;“>CONSTRAINT </span>chk_is_active <span style=“color:#d55fde;font-style:italic;“>CHECK </span>(<span style=“color:#ef596f;“>is_active </span><span style=“color:#d55fde;font-style:italic;“>IN </span>(<span style=“color:#89ca78;“>'Y'</span>,<span style=“color:#89ca78;“>'N'</span>))
 );
 </pre>
 </div>
@@ -80,7 +80,7 @@
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test表中只有此次导入的数据",1,功能测试
-162533,验证.txt文件导入数据成功,/版本迭代测试用例/BatchWork_6.4.2/【江苏银行】本地数据导入- oracle(#9405),【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
+162533,验证.txt文件导入数据成功,本地数据导入- oracle,【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
 2. 点击导入, 上传test.txt文件
 3. 其它值为默认填写
 4. 选择表类型为Oracle
@@ -91,7 +91,7 @@
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test表中只有此次导入的数据",3,功能测试
-162532,验证.log文件导入数据成功,/版本迭代测试用例/BatchWork_6.4.2/【江苏银行】本地数据导入- oracle(#9405),【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
+162532,验证.log文件导入数据成功,本地数据导入- oracle,【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
 2. 点击导入, 上传test.log文件
 3. 其它值为默认填写
 4. 选择表类型为Oracle
@@ -102,7 +102,7 @@
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test表中只有此次导入的数据",3,功能测试
-162531,验证导入数据页面功能正确,/版本迭代测试用例/BatchWork_6.4.2/【江苏银行】本地数据导入- oracle(#9405),【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
+162531,验证导入数据页面功能正确,本地数据导入- oracle,【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
 2. 点击导入, 分割符默认选中逗号，自定义按钮可选
 3. 原始字符集：下拉列表，默认utf-8
 4. 导入起始行：默认1，所支持的数字大于等于1的正整数
@@ -111,7 +111,7 @@
 3. 填写数据大于列表数据条数，列表不展示数据
 4. 显示的数据即为导入的数据
 5. 默认勾选：第一行数据为标题去掉勾选，使用默认标题",3,功能测试
-162530,验证按名称匹配，导入数据正确,/版本迭代测试用例/BatchWork_6.4.2/【江苏银行】本地数据导入- oracle(#9405),【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
+162530,验证按名称匹配，导入数据正确,本地数据导入- oracle,【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
 2. 点击导入, 上传test文件
 3. 其它值为默认填写
 4. 选择表类型为Oracle
@@ -122,7 +122,7 @@
 4. 新建一张包含文件中字段的表test
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test文件中的sex，name分别对应test表中的sex，name字段",1,功能测试
-162529,验证按位置匹配，导入数据正确,/版本迭代测试用例/BatchWork_6.4.2/【江苏银行】本地数据导入- oracle(#9405),【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
+162529,验证按位置匹配，导入数据正确,本地数据导入- oracle,【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
 2. 点击导入, 上传test文件
 3. 其它值为默认填写
 4. 选择表类型为Oracle
@@ -135,7 +135,7 @@
 5. sex的源字段对应name, name的源字段对应sex
 6. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 7. test文件中的sex，name分别对应test表中的name，sex字段",3,功能测试
-162528,验证导入模式为覆盖，导入数据正确,/版本迭代测试用例/BatchWork_6.4.2/【江苏银行】本地数据导入- oracle(#9405),【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
+162528,验证导入模式为覆盖，导入数据正确,本地数据导入- oracle,【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
 2. 点击导入, 上传test文件
 3. 其它值为默认填写
 4. 选择表类型为Oracle
@@ -146,7 +146,7 @@
 4. 选择一张表test（表里已存在数据）
 5. 系统提示导入成功，数据已同步至对应列表，记录数与导入文件中数据量一致
 6. test表中只有此次导入的数据",1,功能测试
-162527,验证导入模式为追加，导入数据正确,/版本迭代测试用例/BatchWork_6.4.2/【江苏银行】本地数据导入- oracle(#9405),【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
+162527,验证导入模式为追加，导入数据正确,本地数据导入- oracle,【产品交付】本地数据导入支持选择oracle表类型(#15080),无,"1. 进入离线开发-数据开发页面
 2. 点击导入, 上传test文件
 3. 其它值为默认填写
 4. 选择表类型为Oracle

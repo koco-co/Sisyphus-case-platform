@@ -1,23 +1,23 @@
 ﻿用例编号,用例标题,所属模块,相关需求,前置条件,步骤,预期结果,优先级,用例类型
-162257,验证hivesql-验证hive2.3.8版本sql正常使用,/版本迭代测试用例/BatchWork_6.4.2/【厦门建发】hivesql支持paimon(#9391),【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),paimon文档：https://paimon.apache.org/docs/1.2/hive/sql-ddl/#create-catalog,"1. 进入数据开发模块，新建2.3.8版本的hive sql周期任务
+162257,验证hivesql-验证hive2.3.8版本sql正常使用,hivesql支持paimon,【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),paimon文档：https://paimon.apache.org/docs/1.2/hive/sql-ddl/#create-catalog,"1. 进入数据开发模块，新建2.3.8版本的hive sql周期任务
 2. 输入sql语句：前置条件内sql（普通sql）
 点击保存
 3. 点击临时运行","1. 系统提示新建成功，列表顶部出现新建的记录，记录内容与填写一致
 2. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 3. 任务正常运行，运行结果符合预期",2,功能测试
-162256,验证函数管理-hive2.3.8版本hudi系统函数正常使用,/版本迭代测试用例/BatchWork_6.4.2/【厦门建发】hivesql支持paimon(#9391),【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),"控制台计算引擎已配置hive2.3.8版本
+162256,验证函数管理-hive2.3.8版本hudi系统函数正常使用,hivesql支持paimon,【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),"控制台计算引擎已配置hive2.3.8版本
 创建项目时引入hadoop组件
 项目管理开发设置已经勾选hive sql
 sql语句列表：
 DROP TABLE if EXISTS ods_pof_holding_share_info;
 
 CREATE TABLE IF NOT EXISTS `ods_pof_holding_share_info`(
-`client_id` bigint COMMENT&#039;公募客户编号&#039;,
-`fund_code` bigint COMMENT&#039;基金代码&#039;,
-`holding_cost` decimal(24,8) COMMENT&#039;持仓总金额&#039;,
-`holding_income` decimal(24,8) COMMENT&#039;持仓总收益&#039;,
-`source` string COMMENT&#039;来源&#039;
-)comment&#039;客户持有共享信息&#039;partitioned by(
+`client_id` bigint COMMENT'公募客户编号',
+`fund_code` bigint COMMENT'基金代码',
+`holding_cost` decimal(24,8) COMMENT'持仓总金额',
+`holding_income` decimal(24,8) COMMENT'持仓总收益',
+`source` string COMMENT'来源'
+)comment'客户持有共享信息'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
@@ -25,13 +25,13 @@ lifecycle 100;
 INSERT
 INTO
 TABLE
-ods_pof_holding_share_info PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+ods_pof_holding_share_info PARTITION(pt = '${bdp.system.bizdate}')
 VALUES
-(   1,1,&#039;10000&#039;,&#039;10000&#039;,&#039;1&#039;
+(   1,1,'10000','10000','1'
 ),(
-2,2,&#039;20000&#039;,&#039;20000&#039;,&#039;2&#039;
+2,2,'20000','20000','2'
 ),(
-3,3,&#039;30000&#039;,&#039;30000&#039;,&#039;1&#039;
+3,3,'30000','30000','1'
 );
 
 
@@ -42,10 +42,10 @@ SELECT * FROM ods_pof_holding_share_info;
 DROP TABLE if EXISTS ods_11_customer_account_view;
 
 CREATE TABLE IF NOT EXISTS `ods_11_customer_account_view`(
-`customer_no` bigint COMMENT&#039;统一客户编号&#039;,
-`pub_no` bigint COMMENT&#039;公募客户编号&#039;,
-`is_delete` string COMMENT&#039;是否删除 0,1&#039;
-)comment&#039;客户账户视图&#039;partitioned by(
+`customer_no` bigint COMMENT'统一客户编号',
+`pub_no` bigint COMMENT'公募客户编号',
+`is_delete` string COMMENT'是否删除 0,1'
+)comment'客户账户视图'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
@@ -53,13 +53,13 @@ lifecycle 100;
 INSERT
 INTO
 TABLE
-ods_11_customer_account_view PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+ods_11_customer_account_view PARTITION(pt = '${bdp.system.bizdate}')
 values
-(   1,1,&#039;0&#039;
+(   1,1,'0'
 ),(
-2,2,&#039;1&#039;
+2,2,'1'
 ),(
-3,3,&#039;0&#039;
+3,3,'0'
 );
 
 
@@ -69,19 +69,19 @@ SELECT * FROM ods_11_customer_account_view;
 DROP TABLE if EXISTS ads_product_posit_cust_list;
 
 CREATE TABLE IF NOT EXISTS `ads_product_posit_cust_list`(
-`cust_no` bigint COMMENT&#039;客编&#039;,
-`fun_code` bigint COMMENT&#039;基金代码&#039;,
-`posit_amt` decimal(24,8)  COMMENT&#039;持仓总金额&#039;,
-`posit_profit` decimal(24,8) COMMENT&#039;持仓总收益&#039;,
-`posit_prof_rat` string COMMENT&#039;持仓收益率	持仓总收益/累计支出&#039;,
-`posit_type` string COMMENT&#039;汇总类别	公募，私募&#039;,
-`create_date` string COMMENT&#039;时间&#039;
-)comment&#039;客户最新持仓收益信息&#039;partitioned by(
+`cust_no` bigint COMMENT'客编',
+`fun_code` bigint COMMENT'基金代码',
+`posit_amt` decimal(24,8)  COMMENT'持仓总金额',
+`posit_profit` decimal(24,8) COMMENT'持仓总收益',
+`posit_prof_rat` string COMMENT'持仓收益率	持仓总收益/累计支出',
+`posit_type` string COMMENT'汇总类别	公募，私募',
+`create_date` string COMMENT'时间'
+)comment'客户最新持仓收益信息'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
 
-INSERT OVERWRITE TABLE ads_product_posit_cust_list PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+INSERT OVERWRITE TABLE ads_product_posit_cust_list PARTITION(pt = '${bdp.system.bizdate}')
 select
 t1.customer_no
 ,t.fund_code
@@ -97,11 +97,11 @@ client_id
 ,sum(holding_cost) as posit_amt--持仓总金额
 ,sum(holding_income) as posit_profit--持仓总收益
 ,sum(holding_income) as posit_prof_rat--持仓收益率.
-,&#039;公募&#039; as posit_type --汇总类别 公募，私募，汇总
-,&#039;${bdp.system.bizdate}&#039; as create_date--数据日期
+,'公募' as posit_type --汇总类别 公募，私募，汇总
+,'${bdp.system.bizdate}' as create_date--数据日期
 from  ods_pof_holding_share_info
-where pt=&#039;${bdp.system.bizdate}&#039;
-and source=&#039;1&#039;
+where pt='${bdp.system.bizdate}'
+and source='1'
 group by client_id,fund_code
 )t
 left join (
@@ -109,8 +109,8 @@ select
 customer_no--统一客户编号
 ,pub_no--公募客户编号
 from ods_11_customer_account_view
-where pt=&#039;${bdp.system.bizdate}&#039;
-and is_delete=&#039;0&#039;--正常
+where pt='${bdp.system.bizdate}'
+and is_delete='0'--正常
 and pub_no is not NULL
 ) t1
 on t.client_id=t1.pub_no;","1. 进入数据开发模块，新建2.3.8版本的hive sql周期任务
@@ -118,19 +118,19 @@ on t.client_id=t1.pub_no;","1. 进入数据开发模块，新建2.3.8版本的hi
 3. 点击临时运行","1. 成功进入数据开发模块，新建2.3.8版本的hive sql周期任务页面，页面内容正常加载显示，无报错
 2. 任务创建、保存成功，系统给出保存成功提示，配置/数据已持久化，页面更新为最新状态
 3. 任务正常运行，运行结果符合预期",2,功能测试
-162255,验证补数据运行-hive2.3.8版本任务补数据运行正常运行,/版本迭代测试用例/BatchWork_6.4.2/【厦门建发】hivesql支持paimon(#9391),【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),"控制台计算引擎已配置hive3.5版本
+162255,验证补数据运行-hive2.3.8版本任务补数据运行正常运行,hivesql支持paimon,【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),"控制台计算引擎已配置hive3.5版本
 创建项目时引入hadoop组件
 项目管理开发设置已经勾选hive sql
 sql语句列表：
 DROP TABLE if EXISTS ods_pof_holding_share_info;
 
 CREATE TABLE IF NOT EXISTS `ods_pof_holding_share_info`(
-`client_id` bigint COMMENT&#039;公募客户编号&#039;,
-`fund_code` bigint COMMENT&#039;基金代码&#039;,
-`holding_cost` decimal(24,8) COMMENT&#039;持仓总金额&#039;,
-`holding_income` decimal(24,8) COMMENT&#039;持仓总收益&#039;,
-`source` string COMMENT&#039;来源&#039;
-)comment&#039;客户持有共享信息&#039;partitioned by(
+`client_id` bigint COMMENT'公募客户编号',
+`fund_code` bigint COMMENT'基金代码',
+`holding_cost` decimal(24,8) COMMENT'持仓总金额',
+`holding_income` decimal(24,8) COMMENT'持仓总收益',
+`source` string COMMENT'来源'
+)comment'客户持有共享信息'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
@@ -138,13 +138,13 @@ lifecycle 100;
 INSERT
 INTO
 TABLE
-ods_pof_holding_share_info PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+ods_pof_holding_share_info PARTITION(pt = '${bdp.system.bizdate}')
 VALUES
-(   1,1,&#039;10000&#039;,&#039;10000&#039;,&#039;1&#039;
+(   1,1,'10000','10000','1'
 ),(
-2,2,&#039;20000&#039;,&#039;20000&#039;,&#039;2&#039;
+2,2,'20000','20000','2'
 ),(
-3,3,&#039;30000&#039;,&#039;30000&#039;,&#039;1&#039;
+3,3,'30000','30000','1'
 );
 
 
@@ -155,10 +155,10 @@ SELECT * FROM ods_pof_holding_share_info;
 DROP TABLE if EXISTS ods_11_customer_account_view;
 
 CREATE TABLE IF NOT EXISTS `ods_11_customer_account_view`(
-`customer_no` bigint COMMENT&#039;统一客户编号&#039;,
-`pub_no` bigint COMMENT&#039;公募客户编号&#039;,
-`is_delete` string COMMENT&#039;是否删除 0,1&#039;
-)comment&#039;客户账户视图&#039;partitioned by(
+`customer_no` bigint COMMENT'统一客户编号',
+`pub_no` bigint COMMENT'公募客户编号',
+`is_delete` string COMMENT'是否删除 0,1'
+)comment'客户账户视图'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
@@ -166,13 +166,13 @@ lifecycle 100;
 INSERT
 INTO
 TABLE
-ods_11_customer_account_view PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+ods_11_customer_account_view PARTITION(pt = '${bdp.system.bizdate}')
 values
-(   1,1,&#039;0&#039;
+(   1,1,'0'
 ),(
-2,2,&#039;1&#039;
+2,2,'1'
 ),(
-3,3,&#039;0&#039;
+3,3,'0'
 );
 
 
@@ -182,19 +182,19 @@ SELECT * FROM ods_11_customer_account_view;
 DROP TABLE if EXISTS ads_product_posit_cust_list;
 
 CREATE TABLE IF NOT EXISTS `ads_product_posit_cust_list`(
-`cust_no` bigint COMMENT&#039;客编&#039;,
-`fun_code` bigint COMMENT&#039;基金代码&#039;,
-`posit_amt` decimal(24,8)  COMMENT&#039;持仓总金额&#039;,
-`posit_profit` decimal(24,8) COMMENT&#039;持仓总收益&#039;,
-`posit_prof_rat` string COMMENT&#039;持仓收益率	持仓总收益/累计支出&#039;,
-`posit_type` string COMMENT&#039;汇总类别	公募，私募&#039;,
-`create_date` string COMMENT&#039;时间&#039;
-)comment&#039;客户最新持仓收益信息&#039;partitioned by(
+`cust_no` bigint COMMENT'客编',
+`fun_code` bigint COMMENT'基金代码',
+`posit_amt` decimal(24,8)  COMMENT'持仓总金额',
+`posit_profit` decimal(24,8) COMMENT'持仓总收益',
+`posit_prof_rat` string COMMENT'持仓收益率	持仓总收益/累计支出',
+`posit_type` string COMMENT'汇总类别	公募，私募',
+`create_date` string COMMENT'时间'
+)comment'客户最新持仓收益信息'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
 
-INSERT OVERWRITE TABLE ads_product_posit_cust_list PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+INSERT OVERWRITE TABLE ads_product_posit_cust_list PARTITION(pt = '${bdp.system.bizdate}')
 select
 t1.customer_no
 ,t.fund_code
@@ -210,11 +210,11 @@ client_id
 ,sum(holding_cost) as posit_amt--持仓总金额
 ,sum(holding_income) as posit_profit--持仓总收益
 ,sum(holding_income) as posit_prof_rat--持仓收益率.
-,&#039;公募&#039; as posit_type --汇总类别 公募，私募，汇总
-,&#039;${bdp.system.bizdate}&#039; as create_date--数据日期
+,'公募' as posit_type --汇总类别 公募，私募，汇总
+,'${bdp.system.bizdate}' as create_date--数据日期
 from  ods_pof_holding_share_info
-where pt=&#039;${bdp.system.bizdate}&#039;
-and source=&#039;1&#039;
+where pt='${bdp.system.bizdate}'
+and source='1'
 group by client_id,fund_code
 )t
 left join (
@@ -222,8 +222,8 @@ select
 customer_no--统一客户编号
 ,pub_no--公募客户编号
 from ods_11_customer_account_view
-where pt=&#039;${bdp.system.bizdate}&#039;
-and is_delete=&#039;0&#039;--正常
+where pt='${bdp.system.bizdate}'
+and is_delete='0'--正常
 and pub_no is not NULL
 ) t1
 on t.client_id=t1.pub_no;","1. 进入数据开发模块，新建2.3.8版本的hive sql周期任务
@@ -232,19 +232,19 @@ on t.client_id=t1.pub_no;","1. 进入数据开发模块，新建2.3.8版本的hi
 3. 进入运维中心-周期任务管理，点击上述任务操作列补数据按钮-确定","1. 系统提示新建成功，列表顶部出现新建的记录，记录内容与填写一致
 2. 任务保存、提交成功，系统给出提交成功提示，状态更新为下一处理阶段
 3. 任务补数据实例生成成功，实例运行结果成功，系统给出成功反馈，相关页面/数据状态更新为最新",2,功能测试
-162254,验证周期运行-hive2.3.8版本任务周期运行正常运行,/版本迭代测试用例/BatchWork_6.4.2/【厦门建发】hivesql支持paimon(#9391),【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),"控制台计算引擎已配置hive3.5版本
+162254,验证周期运行-hive2.3.8版本任务周期运行正常运行,hivesql支持paimon,【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),"控制台计算引擎已配置hive3.5版本
 创建项目时引入hadoop组件
 项目管理开发设置已经勾选hive sql
 sql语句列表：
 DROP TABLE if EXISTS ods_pof_holding_share_info;
 
 CREATE TABLE IF NOT EXISTS `ods_pof_holding_share_info`(
-`client_id` bigint COMMENT&#039;公募客户编号&#039;,
-`fund_code` bigint COMMENT&#039;基金代码&#039;,
-`holding_cost` decimal(24,8) COMMENT&#039;持仓总金额&#039;,
-`holding_income` decimal(24,8) COMMENT&#039;持仓总收益&#039;,
-`source` string COMMENT&#039;来源&#039;
-)comment&#039;客户持有共享信息&#039;partitioned by(
+`client_id` bigint COMMENT'公募客户编号',
+`fund_code` bigint COMMENT'基金代码',
+`holding_cost` decimal(24,8) COMMENT'持仓总金额',
+`holding_income` decimal(24,8) COMMENT'持仓总收益',
+`source` string COMMENT'来源'
+)comment'客户持有共享信息'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
@@ -252,13 +252,13 @@ lifecycle 100;
 INSERT
 INTO
 TABLE
-ods_pof_holding_share_info PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+ods_pof_holding_share_info PARTITION(pt = '${bdp.system.bizdate}')
 VALUES
-(   1,1,&#039;10000&#039;,&#039;10000&#039;,&#039;1&#039;
+(   1,1,'10000','10000','1'
 ),(
-2,2,&#039;20000&#039;,&#039;20000&#039;,&#039;2&#039;
+2,2,'20000','20000','2'
 ),(
-3,3,&#039;30000&#039;,&#039;30000&#039;,&#039;1&#039;
+3,3,'30000','30000','1'
 );
 
 
@@ -269,10 +269,10 @@ SELECT * FROM ods_pof_holding_share_info;
 DROP TABLE if EXISTS ods_11_customer_account_view;
 
 CREATE TABLE IF NOT EXISTS `ods_11_customer_account_view`(
-`customer_no` bigint COMMENT&#039;统一客户编号&#039;,
-`pub_no` bigint COMMENT&#039;公募客户编号&#039;,
-`is_delete` string COMMENT&#039;是否删除 0,1&#039;
-)comment&#039;客户账户视图&#039;partitioned by(
+`customer_no` bigint COMMENT'统一客户编号',
+`pub_no` bigint COMMENT'公募客户编号',
+`is_delete` string COMMENT'是否删除 0,1'
+)comment'客户账户视图'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
@@ -280,13 +280,13 @@ lifecycle 100;
 INSERT
 INTO
 TABLE
-ods_11_customer_account_view PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+ods_11_customer_account_view PARTITION(pt = '${bdp.system.bizdate}')
 values
-(   1,1,&#039;0&#039;
+(   1,1,'0'
 ),(
-2,2,&#039;1&#039;
+2,2,'1'
 ),(
-3,3,&#039;0&#039;
+3,3,'0'
 );
 
 
@@ -296,19 +296,19 @@ SELECT * FROM ods_11_customer_account_view;
 DROP TABLE if EXISTS ads_product_posit_cust_list;
 
 CREATE TABLE IF NOT EXISTS `ads_product_posit_cust_list`(
-`cust_no` bigint COMMENT&#039;客编&#039;,
-`fun_code` bigint COMMENT&#039;基金代码&#039;,
-`posit_amt` decimal(24,8)  COMMENT&#039;持仓总金额&#039;,
-`posit_profit` decimal(24,8) COMMENT&#039;持仓总收益&#039;,
-`posit_prof_rat` string COMMENT&#039;持仓收益率	持仓总收益/累计支出&#039;,
-`posit_type` string COMMENT&#039;汇总类别	公募，私募&#039;,
-`create_date` string COMMENT&#039;时间&#039;
-)comment&#039;客户最新持仓收益信息&#039;partitioned by(
+`cust_no` bigint COMMENT'客编',
+`fun_code` bigint COMMENT'基金代码',
+`posit_amt` decimal(24,8)  COMMENT'持仓总金额',
+`posit_profit` decimal(24,8) COMMENT'持仓总收益',
+`posit_prof_rat` string COMMENT'持仓收益率	持仓总收益/累计支出',
+`posit_type` string COMMENT'汇总类别	公募，私募',
+`create_date` string COMMENT'时间'
+)comment'客户最新持仓收益信息'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
 
-INSERT OVERWRITE TABLE ads_product_posit_cust_list PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+INSERT OVERWRITE TABLE ads_product_posit_cust_list PARTITION(pt = '${bdp.system.bizdate}')
 select
 t1.customer_no
 ,t.fund_code
@@ -324,11 +324,11 @@ client_id
 ,sum(holding_cost) as posit_amt--持仓总金额
 ,sum(holding_income) as posit_profit--持仓总收益
 ,sum(holding_income) as posit_prof_rat--持仓收益率.
-,&#039;公募&#039; as posit_type --汇总类别 公募，私募，汇总
-,&#039;${bdp.system.bizdate}&#039; as create_date--数据日期
+,'公募' as posit_type --汇总类别 公募，私募，汇总
+,'${bdp.system.bizdate}' as create_date--数据日期
 from  ods_pof_holding_share_info
-where pt=&#039;${bdp.system.bizdate}&#039;
-and source=&#039;1&#039;
+where pt='${bdp.system.bizdate}'
+and source='1'
 group by client_id,fund_code
 )t
 left join (
@@ -336,26 +336,26 @@ select
 customer_no--统一客户编号
 ,pub_no--公募客户编号
 from ods_11_customer_account_view
-where pt=&#039;${bdp.system.bizdate}&#039;
-and is_delete=&#039;0&#039;--正常
+where pt='${bdp.system.bizdate}'
+and is_delete='0'--正常
 and pub_no is not NULL
 ) t1
 on t.client_id=t1.pub_no;","1. 进入数据开发模块，新建2.3.8版本的hive sql周期任务
 2. 针对上述hivesql任务，次日后进入运维中心-周期任务实例查看","1. 成功进入数据开发模块，新建2.3.8版本的hive sql周期任务页面，页面内容正常加载显示，无报错
 2. 周期实例生成成功，实例运行结果成功，系统给出成功反馈，相关页面/数据状态更新为最新",2,功能测试
-162253,验证临时查询-hive2.3.8版本临时查询正常运行,/版本迭代测试用例/BatchWork_6.4.2/【厦门建发】hivesql支持paimon(#9391),【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),"控制台计算引擎已配置hive3.5版本
+162253,验证临时查询-hive2.3.8版本临时查询正常运行,hivesql支持paimon,【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),"控制台计算引擎已配置hive3.5版本
 创建项目时引入hadoop组件
 项目管理开发设置已经勾选hive sql
 sql语句列表：
 DROP TABLE if EXISTS ods_pof_holding_share_info;
 
 CREATE TABLE IF NOT EXISTS `ods_pof_holding_share_info`(
-`client_id` bigint COMMENT&#039;公募客户编号&#039;,
-`fund_code` bigint COMMENT&#039;基金代码&#039;,
-`holding_cost` decimal(24,8) COMMENT&#039;持仓总金额&#039;,
-`holding_income` decimal(24,8) COMMENT&#039;持仓总收益&#039;,
-`source` string COMMENT&#039;来源&#039;
-)comment&#039;客户持有共享信息&#039;partitioned by(
+`client_id` bigint COMMENT'公募客户编号',
+`fund_code` bigint COMMENT'基金代码',
+`holding_cost` decimal(24,8) COMMENT'持仓总金额',
+`holding_income` decimal(24,8) COMMENT'持仓总收益',
+`source` string COMMENT'来源'
+)comment'客户持有共享信息'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
@@ -363,13 +363,13 @@ lifecycle 100;
 INSERT
 INTO
 TABLE
-ods_pof_holding_share_info PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+ods_pof_holding_share_info PARTITION(pt = '${bdp.system.bizdate}')
 VALUES
-(   1,1,&#039;10000&#039;,&#039;10000&#039;,&#039;1&#039;
+(   1,1,'10000','10000','1'
 ),(
-2,2,&#039;20000&#039;,&#039;20000&#039;,&#039;2&#039;
+2,2,'20000','20000','2'
 ),(
-3,3,&#039;30000&#039;,&#039;30000&#039;,&#039;1&#039;
+3,3,'30000','30000','1'
 );
 
 
@@ -380,10 +380,10 @@ SELECT * FROM ods_pof_holding_share_info;
 DROP TABLE if EXISTS ods_11_customer_account_view;
 
 CREATE TABLE IF NOT EXISTS `ods_11_customer_account_view`(
-`customer_no` bigint COMMENT&#039;统一客户编号&#039;,
-`pub_no` bigint COMMENT&#039;公募客户编号&#039;,
-`is_delete` string COMMENT&#039;是否删除 0,1&#039;
-)comment&#039;客户账户视图&#039;partitioned by(
+`customer_no` bigint COMMENT'统一客户编号',
+`pub_no` bigint COMMENT'公募客户编号',
+`is_delete` string COMMENT'是否删除 0,1'
+)comment'客户账户视图'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
@@ -391,13 +391,13 @@ lifecycle 100;
 INSERT
 INTO
 TABLE
-ods_11_customer_account_view PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+ods_11_customer_account_view PARTITION(pt = '${bdp.system.bizdate}')
 values
-(   1,1,&#039;0&#039;
+(   1,1,'0'
 ),(
-2,2,&#039;1&#039;
+2,2,'1'
 ),(
-3,3,&#039;0&#039;
+3,3,'0'
 );
 
 
@@ -407,19 +407,19 @@ SELECT * FROM ods_11_customer_account_view;
 DROP TABLE if EXISTS ads_product_posit_cust_list;
 
 CREATE TABLE IF NOT EXISTS `ads_product_posit_cust_list`(
-`cust_no` bigint COMMENT&#039;客编&#039;,
-`fun_code` bigint COMMENT&#039;基金代码&#039;,
-`posit_amt` decimal(24,8)  COMMENT&#039;持仓总金额&#039;,
-`posit_profit` decimal(24,8) COMMENT&#039;持仓总收益&#039;,
-`posit_prof_rat` string COMMENT&#039;持仓收益率	持仓总收益/累计支出&#039;,
-`posit_type` string COMMENT&#039;汇总类别	公募，私募&#039;,
-`create_date` string COMMENT&#039;时间&#039;
-)comment&#039;客户最新持仓收益信息&#039;partitioned by(
+`cust_no` bigint COMMENT'客编',
+`fun_code` bigint COMMENT'基金代码',
+`posit_amt` decimal(24,8)  COMMENT'持仓总金额',
+`posit_profit` decimal(24,8) COMMENT'持仓总收益',
+`posit_prof_rat` string COMMENT'持仓收益率	持仓总收益/累计支出',
+`posit_type` string COMMENT'汇总类别	公募，私募',
+`create_date` string COMMENT'时间'
+)comment'客户最新持仓收益信息'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
 
-INSERT OVERWRITE TABLE ads_product_posit_cust_list PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+INSERT OVERWRITE TABLE ads_product_posit_cust_list PARTITION(pt = '${bdp.system.bizdate}')
 select
 t1.customer_no
 ,t.fund_code
@@ -435,11 +435,11 @@ client_id
 ,sum(holding_cost) as posit_amt--持仓总金额
 ,sum(holding_income) as posit_profit--持仓总收益
 ,sum(holding_income) as posit_prof_rat--持仓收益率.
-,&#039;公募&#039; as posit_type --汇总类别 公募，私募，汇总
-,&#039;${bdp.system.bizdate}&#039; as create_date--数据日期
+,'公募' as posit_type --汇总类别 公募，私募，汇总
+,'${bdp.system.bizdate}' as create_date--数据日期
 from  ods_pof_holding_share_info
-where pt=&#039;${bdp.system.bizdate}&#039;
-and source=&#039;1&#039;
+where pt='${bdp.system.bizdate}'
+and source='1'
 group by client_id,fund_code
 )t
 left join (
@@ -447,8 +447,8 @@ select
 customer_no--统一客户编号
 ,pub_no--公募客户编号
 from ods_11_customer_account_view
-where pt=&#039;${bdp.system.bizdate}&#039;
-and is_delete=&#039;0&#039;--正常
+where pt='${bdp.system.bizdate}'
+and is_delete='0'--正常
 and pub_no is not NULL
 ) t1
 on t.client_id=t1.pub_no;","1. 进入数据开发模块，新建2.3.8版本的hive sql临时查询
@@ -457,19 +457,19 @@ on t.client_id=t1.pub_no;","1. 进入数据开发模块，新建2.3.8版本的hi
 3. 点击临时运行","1. 系统提示新建成功，列表顶部出现新建的记录，记录内容与填写一致
 2. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 3. 任务正常运行，运行结果符合预期",1,功能测试
-162252,验证手动任务-hive2.3.8版本手动任务正常运行,/版本迭代测试用例/BatchWork_6.4.2/【厦门建发】hivesql支持paimon(#9391),【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),"控制台计算引擎已配置hive3.5版本
+162252,验证手动任务-hive2.3.8版本手动任务正常运行,hivesql支持paimon,【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),"控制台计算引擎已配置hive3.5版本
 创建项目时引入hadoop组件
 项目管理开发设置已经勾选hive sql
 sql语句列表：
 DROP TABLE if EXISTS ods_pof_holding_share_info;
 
 CREATE TABLE IF NOT EXISTS `ods_pof_holding_share_info`(
-`client_id` bigint COMMENT&#039;公募客户编号&#039;,
-`fund_code` bigint COMMENT&#039;基金代码&#039;,
-`holding_cost` decimal(24,8) COMMENT&#039;持仓总金额&#039;,
-`holding_income` decimal(24,8) COMMENT&#039;持仓总收益&#039;,
-`source` string COMMENT&#039;来源&#039;
-)comment&#039;客户持有共享信息&#039;partitioned by(
+`client_id` bigint COMMENT'公募客户编号',
+`fund_code` bigint COMMENT'基金代码',
+`holding_cost` decimal(24,8) COMMENT'持仓总金额',
+`holding_income` decimal(24,8) COMMENT'持仓总收益',
+`source` string COMMENT'来源'
+)comment'客户持有共享信息'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
@@ -477,13 +477,13 @@ lifecycle 100;
 INSERT
 INTO
 TABLE
-ods_pof_holding_share_info PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+ods_pof_holding_share_info PARTITION(pt = '${bdp.system.bizdate}')
 VALUES
-(   1,1,&#039;10000&#039;,&#039;10000&#039;,&#039;1&#039;
+(   1,1,'10000','10000','1'
 ),(
-2,2,&#039;20000&#039;,&#039;20000&#039;,&#039;2&#039;
+2,2,'20000','20000','2'
 ),(
-3,3,&#039;30000&#039;,&#039;30000&#039;,&#039;1&#039;
+3,3,'30000','30000','1'
 );
 
 
@@ -494,10 +494,10 @@ SELECT * FROM ods_pof_holding_share_info;
 DROP TABLE if EXISTS ods_11_customer_account_view;
 
 CREATE TABLE IF NOT EXISTS `ods_11_customer_account_view`(
-`customer_no` bigint COMMENT&#039;统一客户编号&#039;,
-`pub_no` bigint COMMENT&#039;公募客户编号&#039;,
-`is_delete` string COMMENT&#039;是否删除 0,1&#039;
-)comment&#039;客户账户视图&#039;partitioned by(
+`customer_no` bigint COMMENT'统一客户编号',
+`pub_no` bigint COMMENT'公募客户编号',
+`is_delete` string COMMENT'是否删除 0,1'
+)comment'客户账户视图'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
@@ -505,13 +505,13 @@ lifecycle 100;
 INSERT
 INTO
 TABLE
-ods_11_customer_account_view PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+ods_11_customer_account_view PARTITION(pt = '${bdp.system.bizdate}')
 values
-(   1,1,&#039;0&#039;
+(   1,1,'0'
 ),(
-2,2,&#039;1&#039;
+2,2,'1'
 ),(
-3,3,&#039;0&#039;
+3,3,'0'
 );
 
 
@@ -521,19 +521,19 @@ SELECT * FROM ods_11_customer_account_view;
 DROP TABLE if EXISTS ads_product_posit_cust_list;
 
 CREATE TABLE IF NOT EXISTS `ads_product_posit_cust_list`(
-`cust_no` bigint COMMENT&#039;客编&#039;,
-`fun_code` bigint COMMENT&#039;基金代码&#039;,
-`posit_amt` decimal(24,8)  COMMENT&#039;持仓总金额&#039;,
-`posit_profit` decimal(24,8) COMMENT&#039;持仓总收益&#039;,
-`posit_prof_rat` string COMMENT&#039;持仓收益率	持仓总收益/累计支出&#039;,
-`posit_type` string COMMENT&#039;汇总类别	公募，私募&#039;,
-`create_date` string COMMENT&#039;时间&#039;
-)comment&#039;客户最新持仓收益信息&#039;partitioned by(
+`cust_no` bigint COMMENT'客编',
+`fun_code` bigint COMMENT'基金代码',
+`posit_amt` decimal(24,8)  COMMENT'持仓总金额',
+`posit_profit` decimal(24,8) COMMENT'持仓总收益',
+`posit_prof_rat` string COMMENT'持仓收益率	持仓总收益/累计支出',
+`posit_type` string COMMENT'汇总类别	公募，私募',
+`create_date` string COMMENT'时间'
+)comment'客户最新持仓收益信息'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
 
-INSERT OVERWRITE TABLE ads_product_posit_cust_list PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+INSERT OVERWRITE TABLE ads_product_posit_cust_list PARTITION(pt = '${bdp.system.bizdate}')
 select
 t1.customer_no
 ,t.fund_code
@@ -549,11 +549,11 @@ client_id
 ,sum(holding_cost) as posit_amt--持仓总金额
 ,sum(holding_income) as posit_profit--持仓总收益
 ,sum(holding_income) as posit_prof_rat--持仓收益率.
-,&#039;公募&#039; as posit_type --汇总类别 公募，私募，汇总
-,&#039;${bdp.system.bizdate}&#039; as create_date--数据日期
+,'公募' as posit_type --汇总类别 公募，私募，汇总
+,'${bdp.system.bizdate}' as create_date--数据日期
 from  ods_pof_holding_share_info
-where pt=&#039;${bdp.system.bizdate}&#039;
-and source=&#039;1&#039;
+where pt='${bdp.system.bizdate}'
+and source='1'
 group by client_id,fund_code
 )t
 left join (
@@ -561,8 +561,8 @@ select
 customer_no--统一客户编号
 ,pub_no--公募客户编号
 from ods_11_customer_account_view
-where pt=&#039;${bdp.system.bizdate}&#039;
-and is_delete=&#039;0&#039;--正常
+where pt='${bdp.system.bizdate}'
+and is_delete='0'--正常
 and pub_no is not NULL
 ) t1
 on t.client_id=t1.pub_no;","1. 进入数据开发模块，新建2.3.8版本的hive sql手动任务
@@ -571,19 +571,19 @@ on t.client_id=t1.pub_no;","1. 进入数据开发模块，新建2.3.8版本的hi
 3. 点击临时运行","1. 系统提示新建成功，列表顶部出现新建的记录，记录内容与填写一致
 2. 系统提示任务保存成功，任务已保存至任务列表，可继续编辑或提交
 3. 任务正常运行，运行结果符合预期",1,功能测试
-162251,验证周期任务-hive2.3.8版本周期任务正常运行,/版本迭代测试用例/BatchWork_6.4.2/【厦门建发】hivesql支持paimon(#9391),【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),"控制台计算引擎已配置hive3.5版本
+162251,验证周期任务-hive2.3.8版本周期任务正常运行,hivesql支持paimon,【产品交付】厦门建发-HiveSQL支持Paimon读写(#14881),"控制台计算引擎已配置hive3.5版本
 创建项目时引入hadoop组件
 项目管理开发设置已经勾选hive sql
 sql语句列表：
 DROP TABLE if EXISTS ods_pof_holding_share_info;
 
 CREATE TABLE IF NOT EXISTS `ods_pof_holding_share_info`(
-`client_id` bigint COMMENT&#039;公募客户编号&#039;,
-`fund_code` bigint COMMENT&#039;基金代码&#039;,
-`holding_cost` decimal(24,8) COMMENT&#039;持仓总金额&#039;,
-`holding_income` decimal(24,8) COMMENT&#039;持仓总收益&#039;,
-`source` string COMMENT&#039;来源&#039;
-)comment&#039;客户持有共享信息&#039;partitioned by(
+`client_id` bigint COMMENT'公募客户编号',
+`fund_code` bigint COMMENT'基金代码',
+`holding_cost` decimal(24,8) COMMENT'持仓总金额',
+`holding_income` decimal(24,8) COMMENT'持仓总收益',
+`source` string COMMENT'来源'
+)comment'客户持有共享信息'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
@@ -591,13 +591,13 @@ lifecycle 100;
 INSERT
 INTO
 TABLE
-ods_pof_holding_share_info PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+ods_pof_holding_share_info PARTITION(pt = '${bdp.system.bizdate}')
 VALUES
-(   1,1,&#039;10000&#039;,&#039;10000&#039;,&#039;1&#039;
+(   1,1,'10000','10000','1'
 ),(
-2,2,&#039;20000&#039;,&#039;20000&#039;,&#039;2&#039;
+2,2,'20000','20000','2'
 ),(
-3,3,&#039;30000&#039;,&#039;30000&#039;,&#039;1&#039;
+3,3,'30000','30000','1'
 );
 
 
@@ -608,10 +608,10 @@ SELECT * FROM ods_pof_holding_share_info;
 DROP TABLE if EXISTS ods_11_customer_account_view;
 
 CREATE TABLE IF NOT EXISTS `ods_11_customer_account_view`(
-`customer_no` bigint COMMENT&#039;统一客户编号&#039;,
-`pub_no` bigint COMMENT&#039;公募客户编号&#039;,
-`is_delete` string COMMENT&#039;是否删除 0,1&#039;
-)comment&#039;客户账户视图&#039;partitioned by(
+`customer_no` bigint COMMENT'统一客户编号',
+`pub_no` bigint COMMENT'公募客户编号',
+`is_delete` string COMMENT'是否删除 0,1'
+)comment'客户账户视图'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
@@ -619,13 +619,13 @@ lifecycle 100;
 INSERT
 INTO
 TABLE
-ods_11_customer_account_view PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+ods_11_customer_account_view PARTITION(pt = '${bdp.system.bizdate}')
 values
-(   1,1,&#039;0&#039;
+(   1,1,'0'
 ),(
-2,2,&#039;1&#039;
+2,2,'1'
 ),(
-3,3,&#039;0&#039;
+3,3,'0'
 );
 
 
@@ -635,19 +635,19 @@ SELECT * FROM ods_11_customer_account_view;
 DROP TABLE if EXISTS ads_product_posit_cust_list;
 
 CREATE TABLE IF NOT EXISTS `ads_product_posit_cust_list`(
-`cust_no` bigint COMMENT&#039;客编&#039;,
-`fun_code` bigint COMMENT&#039;基金代码&#039;,
-`posit_amt` decimal(24,8)  COMMENT&#039;持仓总金额&#039;,
-`posit_profit` decimal(24,8) COMMENT&#039;持仓总收益&#039;,
-`posit_prof_rat` string COMMENT&#039;持仓收益率	持仓总收益/累计支出&#039;,
-`posit_type` string COMMENT&#039;汇总类别	公募，私募&#039;,
-`create_date` string COMMENT&#039;时间&#039;
-)comment&#039;客户最新持仓收益信息&#039;partitioned by(
+`cust_no` bigint COMMENT'客编',
+`fun_code` bigint COMMENT'基金代码',
+`posit_amt` decimal(24,8)  COMMENT'持仓总金额',
+`posit_profit` decimal(24,8) COMMENT'持仓总收益',
+`posit_prof_rat` string COMMENT'持仓收益率	持仓总收益/累计支出',
+`posit_type` string COMMENT'汇总类别	公募，私募',
+`create_date` string COMMENT'时间'
+)comment'客户最新持仓收益信息'partitioned by(
 pt string
 )stored as orc
 lifecycle 100;
 
-INSERT OVERWRITE TABLE ads_product_posit_cust_list PARTITION(pt = &#039;${bdp.system.bizdate}&#039;)
+INSERT OVERWRITE TABLE ads_product_posit_cust_list PARTITION(pt = '${bdp.system.bizdate}')
 select
 t1.customer_no
 ,t.fund_code
@@ -663,11 +663,11 @@ client_id
 ,sum(holding_cost) as posit_amt--持仓总金额
 ,sum(holding_income) as posit_profit--持仓总收益
 ,sum(holding_income) as posit_prof_rat--持仓收益率.
-,&#039;公募&#039; as posit_type --汇总类别 公募，私募，汇总
-,&#039;${bdp.system.bizdate}&#039; as create_date--数据日期
+,'公募' as posit_type --汇总类别 公募，私募，汇总
+,'${bdp.system.bizdate}' as create_date--数据日期
 from  ods_pof_holding_share_info
-where pt=&#039;${bdp.system.bizdate}&#039;
-and source=&#039;1&#039;
+where pt='${bdp.system.bizdate}'
+and source='1'
 group by client_id,fund_code
 )t
 left join (
@@ -675,8 +675,8 @@ select
 customer_no--统一客户编号
 ,pub_no--公募客户编号
 from ods_11_customer_account_view
-where pt=&#039;${bdp.system.bizdate}&#039;
-and is_delete=&#039;0&#039;--正常
+where pt='${bdp.system.bizdate}'
+and is_delete='0'--正常
 and pub_no is not NULL
 ) t1
 on t.client_id=t1.pub_no;","1. 进入数据开发模块，新建2.3.8版本的hive sql周期任务
