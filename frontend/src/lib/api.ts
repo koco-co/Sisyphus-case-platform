@@ -332,8 +332,8 @@ export const requirementsApi = {
 };
 
 export const diagnosisApi = {
-  createReport: (reqId: string) => api.post<DiagnosisReport>(`/diagnosis/${reqId}/report`),
-  getReport: (reqId: string) => api.get<DiagnosisReport>(`/diagnosis/${reqId}/report`),
+  createReport: (reqId: string) => api.post<DiagnosisReport>(`/diagnosis/${reqId}/create`),
+  getReport: (reqId: string) => api.get<DiagnosisReport>(`/diagnosis/${reqId}`),
   listMessages: (reqId: string) => api.get<ChatMessage[]>(`/diagnosis/${reqId}/messages`),
 };
 

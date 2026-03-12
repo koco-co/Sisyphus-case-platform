@@ -66,7 +66,10 @@ async def chat_diagnosis(
 async def create_report(requirement_id: uuid.UUID, session: AsyncSessionDep) -> DiagnosisReportResponse:
     svc = DiagnosisService(session)
     report = await svc.create_or_get_report(requirement_id)
-    return DiagnosisReportResponse.model_validate(report)
+    risks = await svc.list_risks(report.id)
+    resp = DiagnosisReportResponse.model_validate(report)
+    resp.risks = [DiagnosisRiskResponse.model_validate(r) for r in risks]
+    return resp
 
 
 @router.get("/{requirement_id}/messages")

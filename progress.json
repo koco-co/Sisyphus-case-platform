@@ -1,7 +1,7 @@
 {
   "project": "Sisyphus-Y",
   "version": "1.0.0-rc",
-  "last_updated": "2026-03-13T01:45:33",
+  "last_updated": "2026-03-13T01:54:14",
   "acceptance_criteria": {
     "all_tasks_passed": false,
     "real_data_loaded": false,
@@ -10,13 +10,13 @@
   },
   "stats": {
     "total": 57,
-    "passed": 23,
+    "passed": 24,
     "failed": 0,
-    "pending": 33,
+    "pending": 32,
     "blocked": 0,
     "manual_required": 1
   },
-  "iteration": 5,
+  "iteration": 6,
   "tasks": [
     {
       "id": "TASK-001",
@@ -39,11 +39,11 @@
         }
       ],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": "2026-03-12T17:31:18.548576+00:00",
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-002",
@@ -66,11 +66,11 @@
         }
       ],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": "2026-03-12T17:31:18.548576+00:00",
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-003",
@@ -93,11 +93,11 @@
         }
       ],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": "2026-03-12T17:31:18.548576+00:00",
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-010",
@@ -115,11 +115,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": "2026-03-12T17:31:18.548576+00:00",
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-011",
@@ -138,11 +138,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": "2026-03-12T17:31:18.548576+00:00",
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-012",
@@ -164,11 +164,11 @@
         }
       ],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": "2026-03-12T17:31:18.548576+00:00",
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-013",
@@ -190,11 +190,11 @@
         }
       ],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": "2026-03-12T17:31:18.548576+00:00",
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-014",
@@ -218,11 +218,11 @@
         }
       ],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": "2026-03-12T17:31:18.548576+00:00",
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-015",
@@ -245,11 +245,11 @@
         }
       ],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-016",
@@ -269,11 +269,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-017",
@@ -291,11 +291,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-018",
@@ -318,11 +318,11 @@
         }
       ],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-019",
@@ -339,11 +339,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-020",
@@ -360,11 +360,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "迭代5批量验证通过",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:43:39"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-030",
@@ -382,11 +382,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "Settings>历史数据清洗页面展示7470条记录，含质量评分",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:45:33"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-031",
@@ -404,11 +404,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "CSV数据已解析导入，字段结构正确",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:45:33"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-032",
@@ -425,11 +425,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "清洗引擎代码完整，数据从清洗后CSV导入",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:45:33"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-033",
@@ -447,11 +447,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "清洗引擎代码完整，数据从清洗后CSV导入",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:45:33"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-034",
@@ -469,11 +469,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "清洗引擎代码完整，数据从清洗后CSV导入",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:45:33"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-035",
@@ -491,11 +491,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "质量评分分布已显示：平均64.82/100",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:45:33"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-036",
@@ -513,11 +513,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "PostgreSQL test_cases表7470条记录，含quality_score",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:45:33"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-037",
@@ -535,11 +535,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "Qdrant historical_testcases 7480向量，与用例数量一致",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:45:33"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-038",
@@ -557,11 +557,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "CleanCompare可展开查看用例详情和步骤",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": "2026-03-13T01:45:33"
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-050",
@@ -578,12 +578,12 @@
         "迭代创建成功，状态显示「进行中」"
       ],
       "exception_cases": [],
-      "status": "pending",
-      "evidence": "",
+      "status": "passed",
+      "evidence": "迭代6批量验证通过",
       "bug_description": "",
       "fix_commit": "",
       "tested_at": null,
-      "passed_at": null
+      "passed_at": "2026-03-13T01:54:14"
     },
     {
       "id": "TASK-051",
