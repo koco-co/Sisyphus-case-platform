@@ -11,24 +11,33 @@ interface ParamTooltipProps {
 export function ParamTooltip({ content, className = '' }: ParamTooltipProps) {
   const [show, setShow] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const hideTimer = useRef<ReturnType<typeof setTimeout>>(null);
+
+  const handleMouseEnter = () => {
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    setShow(true);
+  };
+
+  const handleMouseLeave = () => {
+    hideTimer.current = setTimeout(() => setShow(false), 100);
+  };
 
   useEffect(() => {
-    if (!show) return;
-    const handleClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setShow(false);
-      }
+    return () => {
+      if (hideTimer.current) clearTimeout(hideTimer.current);
     };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [show]);
+  }, []);
 
   return (
-    <div className={`relative inline-flex ${className}`} ref={ref}>
+    <div
+      className={`relative inline-flex ${className}`}
+      ref={ref}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <button
         type="button"
         className="text-sy-text-3 hover:text-sy-text-2 transition-colors"
-        onClick={() => setShow(!show)}
         aria-label="参数说明"
       >
         <HelpCircle className="w-3.5 h-3.5" />
