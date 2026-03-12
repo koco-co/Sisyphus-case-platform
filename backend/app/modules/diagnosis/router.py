@@ -90,6 +90,30 @@ async def list_messages(requirement_id: uuid.UUID, session: AsyncSessionDep) -> 
     ]
 
 
+@router.post("/{requirement_id}/complete", response_model=DiagnosisReportResponse)
+async def complete_diagnosis(requirement_id: uuid.UUID, session: AsyncSessionDep) -> DiagnosisReportResponse:
+    svc = DiagnosisService(session)
+    report = await svc.get_report(requirement_id)
+    if not report:
+        raise HTTPException(status_code=404, detail="DiagnosisReport not found")
+    if report.status != "completed":
+        risks = await svc.list_risks(report.id)
+        high = sum(1 for r in risks if r.level == "high")
+        medium = sum(1 for r in risks if r.level == "medium")
+        industry = sum(1 for r in risks if r.level == "industry")
+        report = await svc.complete_report(
+            report.id,
+            summary=f"诊断完成，发现 {high} 个高风险、{medium} 个中风险项",
+            risk_count_high=high,
+            risk_count_medium=medium,
+            risk_count_industry=industry,
+        )
+    risks = await svc.list_risks(report.id)
+    resp = DiagnosisReportResponse.model_validate(report)
+    resp.risks = [DiagnosisRiskResponse.model_validate(r) for r in risks]
+    return resp
+
+
 @router.patch("/{requirement_id}/risks/{risk_id}", response_model=DiagnosisRiskResponse)
 async def update_risk(
     requirement_id: uuid.UUID,

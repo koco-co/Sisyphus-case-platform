@@ -341,7 +341,7 @@ export const sceneMapApi = {
   get: (reqId: string) => api.get<SceneMapData>(`/scene-map/${reqId}`),
   listTestPoints: (reqId: string) => api.get<TestPoint[]>(`/scene-map/${reqId}/test-points`),
   confirmPoint: (pointId: string) => api.post<void>(`/scene-map/test-points/${pointId}/confirm`),
-  confirmAll: (reqId: string) => api.post<void>(`/scene-map/${reqId}/confirm-all`),
+  confirmAll: (reqId: string) => api.post<void>(`/scene-map/${reqId}/confirm`),
   deletePoint: (pointId: string) => api.delete<void>(`/scene-map/test-points/${pointId}`),
 };
 
