@@ -128,21 +128,16 @@ function SortableFolderItem({
     }
   }, [isEditing]);
 
-  // Is this the parent of the inline-create input?
+  // Is this the parent of the inline-create input? (needed to auto-expand)
   const showCreateInput =
     inlineCreate !== null && inlineCreate.parentId === node.id && inlineCreate.depth === depth + 1;
-
-  useEffect(() => {
-    if (showCreateInput) {
-      createInputRef.current?.focus();
-    }
-  }, [showCreateInput]);
 
   const padLeft = 8 + depth * 14;
 
   return (
     <div ref={setNodeRef} style={style}>
       {/* Row */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: context menu on folder row */}
       <div
         className={`group relative flex items-center gap-1 rounded-md transition-all
           ${isSelected ? 'bg-sy-accent/10' : 'hover:bg-sy-bg-2'}
@@ -676,7 +671,7 @@ export function FolderTree({
   const activeNode = activeId ? nodeMap.current.get(activeId) : null;
 
   return (
-    <div className="flex flex-col h-full" onClick={() => setContextMenu(null)}>
+    <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-sy-border shrink-0">
         <span className="text-[11.5px] font-semibold text-sy-text-3 uppercase tracking-wider">
@@ -750,8 +745,6 @@ export function FolderTree({
               onInlineCreateCancel={handleInlineCreateCancel}
               onInlineCreateChange={setInlineCreateName}
               inlineCreateName={inlineCreateName}
-              showCreateInput={inlineCreate?.parentId !== null}
-              createInputRef={useRef(null)}
             />
 
             {/* Root-level inline create */}
@@ -789,9 +782,9 @@ export function FolderTree({
       {contextMenu && (
         <div
           ref={contextMenuRef}
+          role="menu"
           className="fixed z-50 min-w-[120px] bg-sy-bg-1 border border-sy-border rounded-md shadow-lg py-1"
           style={{ top: contextMenu.y, left: contextMenu.x }}
-          onClick={(e) => e.stopPropagation()}
         >
           <button
             type="button"
@@ -820,39 +813,46 @@ export function FolderTree({
 
       {/* Delete confirm dialog */}
       {deleteConfirm && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-          onClick={() => setDeleteConfirm(null)}
-        >
+        <>
+          {/* biome-ignore lint/a11y/noStaticElementInteractions: backdrop overlay pattern */}
           <div
-            className="bg-sy-bg-1 border border-sy-border rounded-[10px] p-5 max-w-sm w-full mx-4 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            onClick={() => setDeleteConfirm(null)}
+            onKeyDown={(e) => e.key === 'Escape' && setDeleteConfirm(null)}
           >
-            <h3 className="text-[14px] font-semibold text-sy-text mb-2">删除目录</h3>
-            <p className="text-[12.5px] text-sy-text-2 leading-relaxed mb-4">
-              该目录下有{' '}
-              <span className="text-sy-warn font-semibold">{deleteConfirm.caseCount}</span>{' '}
-              条用例，删除后用例将移入回收站，目录结构不可恢复，是否继续？
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setDeleteConfirm(null)}
-                className="px-3 py-1.5 text-[12.5px] text-sy-text-2 border border-sy-border rounded-md hover:bg-sy-bg-2 transition-colors"
-              >
-                取消
-              </button>
-              <button
-                type="button"
-                disabled={deleting}
-                onClick={() => performDelete(deleteConfirm.folderId)}
-                className="px-3 py-1.5 text-[12.5px] text-white bg-sy-danger/80 hover:bg-sy-danger rounded-md disabled:opacity-50 transition-colors"
-              >
-                {deleting ? '删除中...' : '确认删除'}
-              </button>
+            <div
+              role="dialog"
+              aria-modal="true"
+              className="bg-sy-bg-1 border border-sy-border rounded-[10px] p-5 max-w-sm w-full mx-4 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-[14px] font-semibold text-sy-text mb-2">删除目录</h3>
+              <p className="text-[12.5px] text-sy-text-2 leading-relaxed mb-4">
+                该目录下有{' '}
+                <span className="text-sy-warn font-semibold">{deleteConfirm.caseCount}</span>{' '}
+                条用例，删除后用例将移入回收站，目录结构不可恢复，是否继续？
+              </p>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDeleteConfirm(null)}
+                  className="px-3 py-1.5 text-[12.5px] text-sy-text-2 border border-sy-border rounded-md hover:bg-sy-bg-2 transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  type="button"
+                  disabled={deleting}
+                  onClick={() => performDelete(deleteConfirm.folderId)}
+                  className="px-3 py-1.5 text-[12.5px] text-white bg-sy-danger/80 hover:bg-sy-danger rounded-md disabled:opacity-50 transition-colors"
+                >
+                  {deleting ? '删除中...' : '确认删除'}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
