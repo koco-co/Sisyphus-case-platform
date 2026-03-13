@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **用例目录管理** — 支持多级目录（最多 3 层）：新建、行内双击重命名（Enter 确认/Esc 取消）、删除（含回收站软删除）；系统目录「未分类」不可删除/重命名
+- **FolderTree dnd-kit 拖拽排序** — 同级目录间拖拽排序，结果持久化到 DB；右键菜单提供重命名/删除入口
+- **用例导入增强** — 支持 4 种格式（Excel/CSV/JSON/XMind）；新增导入模板下载（xlsx/csv/xmind）；目录选择器默认「未分类」；逐条重复检测策略（覆盖/跳过/重命名）；成功后 Toast 汇报「导入 N 条/跳过 M 条/覆盖 K 条」
+- **XMind 解析** — 后端接入 `xmindparser`，支持 xmind2026 格式；递归展平思维导图节点为测试用例行
+- **导入解析 API** — `POST /testcases/import/parse-file`（解析+预览）、`POST /testcases/import/check-duplicates`（重复检测）、`POST /testcases/import/batch`（带策略批量导入）
+- **DB 迁移** — `is_system` 字段加入 `test_case_folders`；`requirement_id` 改为可空（支持导入用例无需关联需求）；多 Alembic head 合并为单一 `ec4b13b4028c`
+
+### Fixed
+- **GlobalSearch.tsx 类型错误** — `useRef` 初始值显式传 `undefined`；`SearchResultItem` 类型映射修正
+- **testcases/page.tsx** — `ExportDialog` 改为默认导入；`selectedIds.length` → `selectedIds.size`
+
 - **6 模块 System Prompt 重写** — 每个模块包含独立的 ①身份声明 ②任务边界 ③输出规范 ④质量红线 四部分结构，各模块角色声明差异化
 - **Prompt 编辑器「默认值」badge** — 未自定义的模块显示「默认值」标识，保存后显示保存时间
 - **需求文档标准模板** — `public/templates/需求文档模板.md` + `.docx`，内置功能背景/功能描述（含业务规则/异常处理/数据约束）/接口说明/非功能要求章节
