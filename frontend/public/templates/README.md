@@ -6,10 +6,15 @@
 
 | 文件 | 说明 | 格式 |
 |------|------|------|
-| `testcase-import-template.csv` | 用例导入模板 | CSV |
-| `requirement-template.md` | 需求文档模板 | Markdown |
+| `用例导入模板.xlsx` | 用例导入模板（推荐） | Excel |
+| `用例导入模板.csv` | 用例导入模板 | CSV |
+| `用例导入模板.xmind` | 用例导入模板 | XMind |
+| `需求文档模板.md` | 需求文档模板 | Markdown |
+| `需求文档模板.docx` | 需求文档模板 | Word |
+
+> `testcase-import-template.csv` 为旧版模板，请使用 `用例导入模板.*` 系列文件。
 
 ## 使用方式
 
-- 在「用例库」页面点击「导入」按钮时，可下载 CSV 模板
+- 在「用例库」页面点击「导入 → 下载模板」时，可下载 Excel / CSV / XMind 三种格式
 - 在「分析台」页面点击「下载模板」按钮时，可下载需求文档模板

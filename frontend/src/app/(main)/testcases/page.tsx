@@ -17,10 +17,10 @@ import { CaseTable } from './_components/CaseTable';
 import { ChangeAlert } from './_components/ChangeAlert';
 import { CleanCompareDrawer } from './_components/CleanCompareDrawer';
 import { DiscardedRecordsModal } from './_components/DiscardedRecordsModal';
+import ExportDialog from './_components/ExportDialog';
 import { FilterToolbar } from './_components/FilterToolbar';
 import { FolderTree } from './_components/FolderTree';
 import { ImportDialog } from './_components/ImportDialog';
-import { ExportDialog } from './_components/ExportDialog';
 import { ImportedCasesTab } from './_components/ImportedCasesTab';
 import type {
   CaseFilters,
@@ -140,7 +140,8 @@ export default function TestCasesPage() {
   }>({ total: 0, approved: 0, review: 0, draft: 0 });
 
   // ── 目录树 ──
-  const [selectedFolderPath, setSelectedFolderPath] = useState<string | null>(null);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [selectedFolderName, setSelectedFolderName] = useState<string | null>(null);
   const [folderRefreshKey, setFolderRefreshKey] = useState(0);
 
   // ── Pagination ──
@@ -228,7 +229,7 @@ export default function TestCasesPage() {
       if (filters.status) params.status = filters.status;
       if (filters.caseType) params.case_type = filters.caseType;
       if (filters.source) params.source = filters.source;
-      if (selectedFolderPath) params.module_path = selectedFolderPath;
+      if (selectedFolderId) params.folder_id = selectedFolderId;
       if (filters.cleanStatus) params.clean_status = filters.cleanStatus;
 
       const qs = new URLSearchParams(params).toString();
@@ -243,7 +244,7 @@ export default function TestCasesPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, filters, sortField, sortDirection, selectedFolderPath]);
+  }, [page, search, filters, sortField, sortDirection, selectedFolderId]);
 
   useEffect(() => {
     fetchCases();
@@ -463,241 +464,257 @@ export default function TestCasesPage() {
       {activeTab === 'imported' && <ImportedCasesTab />}
 
       {/* ── AI Cases Tab ── */}
-      {activeTab === 'ai' && (<>
-
-      {/* ── Change Alert ── */}
-      {showAlert && (
-        <ChangeAlert
-          count={0}
-          onNavigate={() => router.push('/diff')}
-          onDismiss={() => setShowAlert(false)}
-        />
-      )}
-
-      {/* ── Stats (全量统计) ── */}
-      <div className="grid grid-cols-4 gap-3 mb-5">
-        <StatCard value={globalStats.total} label="总用例数" highlighted />
-        <StatCard value={globalStats.approved} label="已通过" />
-        <StatCard value={globalStats.review} label="评审中" />
-        <StatCard value={globalStats.draft} label="草稿" />
-      </div>
-
-      {/* ── 双栏布局：左侧目录树 + 右侧用例列表 ── */}
-      <div className="flex gap-4 min-h-0">
-        {/* 左侧目录树 */}
-        <div
-          className="w-[220px] shrink-0 bg-sy-bg-1 border border-sy-border rounded-[10px] overflow-hidden flex flex-col"
-          style={{ maxHeight: 'calc(100vh - 260px)', position: 'sticky', top: '12px' }}
-        >
-          <FolderTree
-            selectedPath={selectedFolderPath}
-            totalCount={globalStats.total}
-            refreshKey={folderRefreshKey}
-            onSelect={(path) => {
-              setSelectedFolderPath(path);
-              setPage(1);
-              setSelectedIds(new Set());
-            }}
-          />
-        </div>
-
-        {/* 右侧主内容 */}
-        <div className="flex-1 min-w-0">
-          {/* ── Search + Filters + View Toggle ── */}
-          <div className="flex items-center gap-3 mb-4">
-            <SearchInput
-              value={search}
-              onChange={(v) => {
-                setSearch(v);
-                setPage(1);
-              }}
-              placeholder="搜索用例编号或标题..."
-              className="w-[240px]"
+      {activeTab === 'ai' && (
+        <>
+          {/* ── Change Alert ── */}
+          {showAlert && (
+            <ChangeAlert
+              count={0}
+              onNavigate={() => router.push('/diff')}
+              onDismiss={() => setShowAlert(false)}
             />
-            <FilterToolbar
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onClearAll={handleClearFilters}
-            />
-            <div className="flex-1" />
-            {selectedFolderPath && (
-              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-sy-bg-3 text-[11.5px] text-sy-text-2">
-                <span className="text-sy-text-3">目录：</span>
-                {selectedFolderPath === '__uncategorized__' ? '未分类' : selectedFolderPath}
-                <button
-                  type="button"
-                  className="ml-1 text-sy-text-3 hover:text-sy-text"
-                  onClick={() => {
-                    setSelectedFolderPath(null);
+          )}
+
+          {/* ── Stats (全量统计) ── */}
+          <div className="grid grid-cols-4 gap-3 mb-5">
+            <StatCard value={globalStats.total} label="总用例数" highlighted />
+            <StatCard value={globalStats.approved} label="已通过" />
+            <StatCard value={globalStats.review} label="评审中" />
+            <StatCard value={globalStats.draft} label="草稿" />
+          </div>
+
+          {/* ── 双栏布局：左侧目录树 + 右侧用例列表 ── */}
+          <div className="flex gap-4 min-h-0">
+            {/* 左侧目录树 */}
+            <div
+              className="w-[220px] shrink-0 bg-sy-bg-1 border border-sy-border rounded-[10px] overflow-hidden flex flex-col"
+              style={{ maxHeight: 'calc(100vh - 260px)', position: 'sticky', top: '12px' }}
+            >
+              <FolderTree
+                selectedFolderId={selectedFolderId}
+                totalCount={globalStats.total}
+                refreshKey={folderRefreshKey}
+                onSelect={(id, name) => {
+                  setSelectedFolderId(id);
+                  setSelectedFolderName(name ?? null);
+                  setPage(1);
+                  setSelectedIds(new Set());
+                }}
+                onCasesChanged={() => {
+                  fetchCases();
+                  fetchStats();
+                  setFolderRefreshKey((k) => k + 1);
+                }}
+              />
+            </div>
+
+            {/* 右侧主内容 */}
+            <div className="flex-1 min-w-0">
+              {/* ── Search + Filters + View Toggle ── */}
+              <div className="flex items-center gap-3 mb-4">
+                <SearchInput
+                  value={search}
+                  onChange={(v) => {
+                    setSearch(v);
                     setPage(1);
                   }}
-                >
-                  ×
-                </button>
-              </span>
-            )}
-            <div className="flex items-center gap-1 p-0.5 bg-sy-bg-2 border border-sy-border rounded-md">
-              <button
-                type="button"
-                onClick={() => setViewMode('table')}
-                className={`p-1.5 rounded transition-colors ${
-                  viewMode === 'table'
-                    ? 'bg-sy-bg-3 text-sy-text'
-                    : 'text-sy-text-3 hover:text-sy-text-2'
-                }`}
-                title="表格视图"
-              >
-                <Table2 className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('card')}
-                className={`p-1.5 rounded transition-colors ${
-                  viewMode === 'card'
-                    ? 'bg-sy-bg-3 text-sy-text'
-                    : 'text-sy-text-3 hover:text-sy-text-2'
-                }`}
-                title="卡片视图"
-              >
-                <LayoutGrid className="w-3.5 h-3.5" />
-              </button>
+                  placeholder="搜索用例编号或标题..."
+                  className="w-[240px]"
+                />
+                <FilterToolbar
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  onClearAll={handleClearFilters}
+                />
+                <div className="flex-1" />
+                {selectedFolderId && (
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-sy-bg-3 text-[11.5px] text-sy-text-2">
+                    <span className="text-sy-text-3">目录：</span>
+                    {selectedFolderName}
+                    <button
+                      type="button"
+                      className="ml-1 text-sy-text-3 hover:text-sy-text"
+                      onClick={() => {
+                        setSelectedFolderId(null);
+                        setSelectedFolderName(null);
+                        setPage(1);
+                      }}
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+                <div className="flex items-center gap-1 p-0.5 bg-sy-bg-2 border border-sy-border rounded-md">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('table')}
+                    className={`p-1.5 rounded transition-colors ${
+                      viewMode === 'table'
+                        ? 'bg-sy-bg-3 text-sy-text'
+                        : 'text-sy-text-3 hover:text-sy-text-2'
+                    }`}
+                    title="表格视图"
+                  >
+                    <Table2 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('card')}
+                    className={`p-1.5 rounded transition-colors ${
+                      viewMode === 'card'
+                        ? 'bg-sy-bg-3 text-sy-text'
+                        : 'text-sy-text-3 hover:text-sy-text-2'
+                    }`}
+                    title="卡片视图"
+                  >
+                    <LayoutGrid className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* ── Batch Actions ── */}
+              {selectedIds.size > 0 && (
+                <BatchActions
+                  selectedCount={selectedIds.size}
+                  onStatusChange={handleBatchStatusChange}
+                  onExport={handleBatchExport}
+                  onDelete={() =>
+                    setDeleteTarget({
+                      ids: Array.from(selectedIds),
+                      single: false,
+                    })
+                  }
+                  onClearSelection={() => setSelectedIds(new Set())}
+                />
+              )}
+
+              {/* ── Content ── */}
+              {!loading && cases.length === 0 ? (
+                <div className="bg-sy-bg-1 border border-sy-border rounded-[10px]">
+                  <EmptyState
+                    icon={<ClipboardList className="w-12 h-12" />}
+                    title="暂无用例数据"
+                    description={
+                      selectedFolderId ? '该目录下暂无用例' : '当用例生成完成后，会自动出现在这里'
+                    }
+                  />
+                </div>
+              ) : viewMode === 'table' ? (
+                <CaseTable
+                  cases={cases}
+                  selectedIds={selectedIds}
+                  onToggleSelect={handleToggleSelect}
+                  onToggleSelectAll={handleToggleSelectAll}
+                  onRowClick={handleRowClick}
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
+                  loading={loading}
+                />
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  {loading ? (
+                    <p className="col-span-2 py-16 text-center text-[12.5px] text-sy-text-3">
+                      加载中...
+                    </p>
+                  ) : (
+                    cases.map((tc) => (
+                      <button
+                        type="button"
+                        key={tc.id}
+                        className="cursor-pointer bg-transparent border-0 p-0 text-left"
+                        onClick={() => handleRowClick(tc)}
+                      >
+                        <CaseCard
+                          caseId={tc.case_id}
+                          title={tc.title}
+                          priority={tc.priority as 'P0' | 'P1' | 'P2' | 'P3'}
+                          type={typeLabel[tc.case_type] ?? tc.case_type}
+                          status={statusLabel[tc.status] ?? tc.status}
+                          steps={tc.steps ?? []}
+                          aiScore={tc.ai_score ?? undefined}
+                          className="mb-0"
+                        />
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* ── Pagination ── */}
+              <Pagination current={page} total={total} pageSize={PAGE_SIZE} onChange={setPage} />
             </div>
           </div>
 
-          {/* ── Batch Actions ── */}
-          {selectedIds.size > 0 && (
-            <BatchActions
-              selectedCount={selectedIds.size}
-              onStatusChange={handleBatchStatusChange}
-              onExport={handleBatchExport}
-              onDelete={() =>
-                setDeleteTarget({
-                  ids: Array.from(selectedIds),
-                  single: false,
-                })
-              }
-              onClearSelection={() => setSelectedIds(new Set())}
-            />
-          )}
+          {/* ── Detail Drawer ── */}
+          <CaseDetailDrawer
+            testCase={selectedCase}
+            open={drawerOpen}
+            onClose={() => {
+              setDrawerOpen(false);
+              setSelectedCase(null);
+            }}
+            onEdit={handleEdit}
+            onDelete={(id) => setDeleteTarget({ ids: [id], single: true })}
+            onCompare={(tc) => {
+              setDrawerOpen(false);
+              setCompareOpen(true);
+              setSelectedCase(tc);
+            }}
+          />
 
-          {/* ── Content ── */}
-          {!loading && cases.length === 0 ? (
-            <div className="bg-sy-bg-1 border border-sy-border rounded-[10px]">
-              <EmptyState
-                icon={<ClipboardList className="w-12 h-12" />}
-                title="暂无用例数据"
-                description={
-                  selectedFolderPath ? '该目录下暂无用例' : '当用例生成完成后，会自动出现在这里'
-                }
-              />
-            </div>
-          ) : viewMode === 'table' ? (
-            <CaseTable
-              cases={cases}
-              selectedIds={selectedIds}
-              onToggleSelect={handleToggleSelect}
-              onToggleSelectAll={handleToggleSelectAll}
-              onRowClick={handleRowClick}
-              sortField={sortField}
-              sortDirection={sortDirection}
-              onSort={handleSort}
-              loading={loading}
-            />
-          ) : (
-            <div className="grid grid-cols-2 gap-3">
-              {loading ? (
-                <p className="col-span-2 py-16 text-center text-[12.5px] text-sy-text-3">
-                  加载中...
-                </p>
-              ) : (
-                cases.map((tc) => (
-                  <button
-                    type="button"
-                    key={tc.id}
-                    className="cursor-pointer bg-transparent border-0 p-0 text-left"
-                    onClick={() => handleRowClick(tc)}
-                  >
-                    <CaseCard
-                      caseId={tc.case_id}
-                      title={tc.title}
-                      priority={tc.priority as 'P0' | 'P1' | 'P2' | 'P3'}
-                      type={typeLabel[tc.case_type] ?? tc.case_type}
-                      status={statusLabel[tc.status] ?? tc.status}
-                      steps={tc.steps ?? []}
-                      aiScore={tc.ai_score ?? undefined}
-                      className="mb-0"
-                    />
-                  </button>
-                ))
-              )}
-            </div>
-          )}
+          {/* ── Edit Form ── */}
+          <CaseEditForm
+            testCase={editingCase}
+            open={editFormOpen}
+            onSave={handleSave}
+            onCancel={() => {
+              setEditFormOpen(false);
+              setEditingCase(null);
+            }}
+          />
 
-          {/* ── Pagination ── */}
-          <Pagination current={page} total={total} pageSize={PAGE_SIZE} onChange={setPage} />
-        </div>
-      </div>
+          {/* ── Delete Confirmation ── */}
+          <ConfirmDialog
+            open={deleteTarget !== null}
+            title={
+              deleteTarget?.single ? '删除用例' : `批量删除 ${deleteTarget?.ids.length ?? 0} 个用例`
+            }
+            description={
+              deleteTarget?.single
+                ? '此操作将软删除该用例，确认继续？'
+                : `将软删除选中的 ${deleteTarget?.ids.length ?? 0} 个用例，确认继续？`
+            }
+            variant="danger"
+            confirmText="删除"
+            onConfirm={() => deleteTarget && handleDelete(deleteTarget.ids)}
+            onCancel={() => setDeleteTarget(null)}
+          />
 
-      {/* ── Detail Drawer ── */}
-      <CaseDetailDrawer
-        testCase={selectedCase}
-        open={drawerOpen}
-        onClose={() => {
-          setDrawerOpen(false);
-          setSelectedCase(null);
-        }}
-        onEdit={handleEdit}
-        onDelete={(id) => setDeleteTarget({ ids: [id], single: true })}
-        onCompare={(tc) => {
-          setDrawerOpen(false);
-          setCompareOpen(true);
-          setSelectedCase(tc);
-        }}
-      />
+          {/* ── Clean Compare Drawer ── */}
+          <CleanCompareDrawer
+            open={compareOpen}
+            testCase={selectedCase}
+            onClose={() => setCompareOpen(false)}
+          />
 
-      {/* ── Edit Form ── */}
-      <CaseEditForm
-        testCase={editingCase}
-        open={editFormOpen}
-        onSave={handleSave}
-        onCancel={() => {
-          setEditFormOpen(false);
-          setEditingCase(null);
-        }}
-      />
+          {/* ── Discarded Records Modal ── */}
+          <DiscardedRecordsModal open={discardedOpen} onClose={() => setDiscardedOpen(false)} />
 
-      {/* ── Delete Confirmation ── */}
-      <ConfirmDialog
-        open={deleteTarget !== null}
-        title={
-          deleteTarget?.single ? '删除用例' : `批量删除 ${deleteTarget?.ids.length ?? 0} 个用例`
-        }
-        description={
-          deleteTarget?.single
-            ? '此操作将软删除该用例，确认继续？'
-            : `将软删除选中的 ${deleteTarget?.ids.length ?? 0} 个用例，确认继续？`
-        }
-        variant="danger"
-        confirmText="删除"
-        onConfirm={() => deleteTarget && handleDelete(deleteTarget.ids)}
-        onCancel={() => setDeleteTarget(null)}
-      />
-
-      {/* ── Clean Compare Drawer ── */}
-      <CleanCompareDrawer
-        open={compareOpen}
-        testCase={selectedCase}
-        onClose={() => setCompareOpen(false)}
-      />
-
-      {/* ── Discarded Records Modal ── */}
-      <DiscardedRecordsModal open={discardedOpen} onClose={() => setDiscardedOpen(false)} />
-
-      {/* ── Import / Export Dialogs ── */}
-      <ImportDialog open={importOpen} onClose={() => setImportOpen(false)} onImportComplete={fetchCases} />
-      <ExportDialog open={exportOpen} onClose={() => setExportOpen(false)} selectedCount={selectedIds.length} currentFolder={selectedFolder} />
-
-      </>)}
+          {/* ── Import / Export Dialogs ── */}
+          <ImportDialog
+            open={importOpen}
+            onClose={() => setImportOpen(false)}
+            onImportComplete={fetchCases}
+          />
+          <ExportDialog
+            open={exportOpen}
+            onClose={() => setExportOpen(false)}
+            selectedCount={selectedIds.size}
+            currentFolder={selectedFolderName}
+          />
+        </>
+      )}
     </div>
   );
 }

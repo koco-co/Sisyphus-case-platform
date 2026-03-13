@@ -2,57 +2,129 @@
 
 import {
   Activity,
-  CheckCircle,
   ChevronDown,
   ChevronRight,
   FileText,
   FolderOpen,
   IterationCw,
   Loader2,
-  Play,
+  ShieldAlert,
 } from 'lucide-react';
-import { ThreeColLayout } from '@/components/layout/ThreeColLayout';
+import Link from 'next/link';
+import { useCallback, useEffect, useState } from 'react';
 import { useDiagnosis } from '@/hooks/useDiagnosis';
 import { useRequirementTree } from '@/hooks/useRequirementTree';
-import { useDiagnosisStore } from '@/stores/diagnosis-store';
-import { ChatInput } from './_components/ChatInput';
-import { DiagnosisChat } from './_components/DiagnosisChat';
-import { FlowSteps } from './_components/FlowSteps';
-import { ReportList } from './_components/ReportList';
-import { ScenePreview } from './_components/ScenePreview';
+import { diagnosisApi } from '@/lib/api';
+import { AnalysisTab } from './_components/AnalysisTab';
+import { CoverageMatrix } from './_components/CoverageMatrix';
+import { RequirementDetailTab } from './_components/RequirementDetailTab';
+
+type ActiveTab = 'detail' | 'analysis' | 'coverage';
+
+const tabLabels: { key: ActiveTab; label: string }[] = [
+  { key: 'detail', label: '需求详情' },
+  { key: 'analysis', label: 'AI 分析' },
+  { key: 'coverage', label: '覆盖追踪' },
+];
+
+// Status badge for each requirement
+type ReqStatus = 'unanalyzed' | 'analyzing' | 'completed';
+
+function statusBadge(status: ReqStatus) {
+  const map: Record<ReqStatus, { label: string; cls: string }> = {
+    unanalyzed: { label: '未分析', cls: 'bg-bg3 text-text3 border-border' },
+    analyzing: { label: '分析中', cls: 'bg-amber/10 text-amber border-amber/30' },
+    completed: { label: '已完成', cls: 'bg-accent/10 text-accent border-accent/30' },
+  };
+  const cfg = map[status];
+  return (
+    <span
+      className={`flex-shrink-0 inline-flex items-center px-1.5 py-0.5 rounded-full border font-mono text-[10px] ${cfg.cls}`}
+    >
+      {cfg.label}
+    </span>
+  );
+}
+
+function reportStatusToReqStatus(reportStatus: string | undefined): ReqStatus {
+  if (!reportStatus || reportStatus === 'pending') return 'unanalyzed';
+  if (reportStatus === 'completed') return 'completed';
+  return 'analyzing';
+}
 
 export default function DiagnosisPage() {
   const tree = useRequirementTree();
-  const { currentStep } = useDiagnosisStore();
-  const {
-    report,
-    messages,
-    sceneMap,
-    loading,
-    sse,
-    sendMessage,
-    startDiagnosis,
-    completeDiagnosis,
-  } = useDiagnosis(tree.selectedReqId);
+  const [activeTab, setActiveTab] = useState<ActiveTab>('detail');
+  const [reqStatusMap, setReqStatusMap] = useState<Record<string, ReqStatus>>({});
 
-  const left = (
-    <div className="flex flex-col h-full">
+  const { report, messages, loading, sse, sendMessage, startDiagnosis } = useDiagnosis(
+    tree.selectedReqId,
+  );
+
+  // Keep status map updated whenever report changes
+  useEffect(() => {
+    if (!tree.selectedReqId || !report) return;
+    setReqStatusMap((prev) => ({
+      ...prev,
+      [tree.selectedReqId as string]: reportStatusToReqStatus(report.status),
+    }));
+  }, [report, tree.selectedReqId]);
+
+  // Background-fetch diagnosis status for newly loaded requirements
+  const fetchStatusForRequirements = useCallback((reqIds: string[]) => {
+    for (const id of reqIds) {
+      diagnosisApi
+        .getReport(id)
+        .then((r) => {
+          setReqStatusMap((prev) => ({
+            ...prev,
+            [id]: reportStatusToReqStatus(r.status),
+          }));
+        })
+        .catch(() => {
+          // 404 = unanalyzed, leave as default
+        });
+    }
+  }, []);
+
+  // When new requirements are loaded into the tree, fetch their status
+  // biome-ignore lint/correctness/useExhaustiveDependencies: fetchStatusForRequirements is stable (useCallback)
+  useEffect(() => {
+    const allIds = Object.values(tree.requirements)
+      .flat()
+      .map((r) => r.id);
+    if (allIds.length > 0) {
+      fetchStatusForRequirements(allIds);
+    }
+  }, [tree.requirements]);
+
+  const handleStartAnalysis = useCallback(() => {
+    setActiveTab('analysis');
+    startDiagnosis();
+  }, [startDiagnosis]);
+
+  const hasUnhandledHighRisk = (report?.risks ?? []).some(
+    (r) => r.severity === 'high' && (!r.status || r.status === 'open'),
+  );
+
+  // ── Left panel ─────────────────────────────────────────────────────────────
+  const leftPanel = (
+    <div
+      className="flex-shrink-0 flex flex-col border-r border-border overflow-hidden bg-bg1"
+      style={{ width: 280 }}
+    >
       {/* Header */}
-      <div className="px-3.5 py-2.5 border-b border-border flex items-center gap-2 sticky top-0 bg-bg1 z-5">
+      <div className="px-3.5 py-2.5 border-b border-border flex items-center gap-2 flex-shrink-0">
         <Activity className="w-3.5 h-3.5 text-accent" />
-        <span className="text-[12px] font-semibold text-text2">需求需求分析</span>
+        <span className="text-[12px] font-semibold text-text2">AI 分析</span>
       </div>
 
-      {/* Flow Steps */}
-      <div className="border-b border-border">
-        <FlowSteps currentStep={currentStep} />
-      </div>
-
-      {/* Requirement Tree */}
+      {/* Tree */}
       <div className="flex-1 overflow-y-auto px-2 py-2">
         <div className="text-[10px] font-semibold text-text3 uppercase tracking-wider px-2 mb-1.5">
           需求列表
         </div>
+
         {tree.products.map((product) => (
           <div key={product.id}>
             <button
@@ -66,11 +138,12 @@ export default function DiagnosisPage() {
                 <ChevronRight className="w-3.5 h-3.5 text-text3 flex-shrink-0" />
               )}
               <FolderOpen className="w-3.5 h-3.5 text-accent flex-shrink-0" />
-              <span className="truncate">{product.name}</span>
+              <span className="truncate flex-1 text-left">{product.name}</span>
             </button>
+
             {tree.expandedProducts.has(product.id) &&
-              (tree.iterations[product.id] || []).map((iter) => (
-                <div key={iter.id} className="pl-5">
+              (tree.iterations[product.id] ?? []).map((iter) => (
+                <div key={iter.id} className="pl-4">
                   <button
                     type="button"
                     onClick={() => tree.toggleIteration(product.id, iter.id)}
@@ -82,121 +155,145 @@ export default function DiagnosisPage() {
                       <ChevronRight className="w-3 h-3 flex-shrink-0" />
                     )}
                     <IterationCw className="w-3 h-3 flex-shrink-0" />
-                    <span className="truncate">{iter.name}</span>
+                    <span className="truncate flex-1 text-left">{iter.name}</span>
                   </button>
+
                   {tree.expandedIterations.has(iter.id) &&
-                    (tree.requirements[iter.id] || []).map((req) => (
-                      <button
-                        type="button"
-                        key={req.id}
-                        onClick={() => tree.selectRequirement(req)}
-                        className={`w-full flex items-center gap-1.5 px-2 py-1 ml-5 rounded-md text-[12px] transition-colors ${
-                          tree.selectedReqId === req.id
-                            ? 'bg-accent-d text-accent'
-                            : 'text-text3 hover:bg-bg2 hover:text-text2'
-                        }`}
-                      >
-                        <FileText className="w-3 h-3 flex-shrink-0" />
-                        <span className="truncate">{req.title || req.req_id}</span>
-                      </button>
-                    ))}
+                    (tree.requirements[iter.id] ?? []).map((req) => {
+                      const status = reqStatusMap[req.id] ?? 'unanalyzed';
+                      const isSelected = tree.selectedReqId === req.id;
+                      return (
+                        <button
+                          type="button"
+                          key={req.id}
+                          onClick={() => tree.selectRequirement(req)}
+                          className={`w-full flex items-center gap-1.5 px-2 py-1.5 ml-4 rounded-md text-[12px] transition-colors ${
+                            isSelected
+                              ? 'bg-accent/10 text-accent'
+                              : 'text-text3 hover:bg-bg2 hover:text-text2'
+                          }`}
+                        >
+                          <FileText className="w-3 h-3 flex-shrink-0" />
+                          <span className="truncate flex-1 text-left">
+                            {req.title || req.req_id}
+                          </span>
+                          {statusBadge(status)}
+                        </button>
+                      );
+                    })}
                 </div>
               ))}
           </div>
         ))}
+
         {tree.products.length === 0 && (
           <div className="text-center py-6 text-text3 text-[13px]">暂无产品数据</div>
         )}
       </div>
-
-      {/* Report Summary */}
-      {tree.selectedReqId && (
-        <div className="border-t border-border">
-          <ReportList report={report} loading={loading} />
-        </div>
-      )}
     </div>
   );
 
-  const center = (
-    <div className="flex flex-col h-full">
-      {/* Start Diagnosis Button */}
-      {tree.selectedReqId &&
-        currentStep === 'scan' &&
-        messages.length === 0 &&
-        !sse.isStreaming && (
-          <div className="flex-shrink-0 px-4 py-3 border-b border-border">
-            <button
-              type="button"
-              onClick={startDiagnosis}
-              disabled={sse.isStreaming}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-accent text-white dark:text-black font-semibold text-[13px] hover:bg-accent2 transition-colors disabled:opacity-50"
-            >
-              {sse.isStreaming ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  分析进行中...
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4" />
-                  开始分析
-                </>
-              )}
-            </button>
-          </div>
-        )}
-
-      <DiagnosisChat
-        messages={messages}
-        isStreaming={sse.isStreaming}
-        streamContent={sse.content}
-        streamThinking={sse.thinking}
-        reqTitle={tree.selectedReqTitle}
-        hasRequirement={!!tree.selectedReqId}
-      />
-
-      {tree.selectedReqId && (
-        <ChatInput
-          onSend={sendMessage}
-          isStreaming={sse.isStreaming}
-          disabled={!tree.selectedReqId}
-        />
-      )}
+  // ── Right panel ────────────────────────────────────────────────────────────
+  const rightPanel = !tree.selectedReqId ? (
+    <div className="flex-1 flex items-center justify-center bg-bg">
+      <div className="text-center">
+        <Activity className="w-16 h-16 text-text3 opacity-15 mx-auto mb-4" />
+        <p className="text-[15px] text-text3">从左侧选择需求开始分析</p>
+      </div>
     </div>
-  );
+  ) : (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Top bar */}
+      <div
+        className="flex-shrink-0 flex items-center gap-3 px-5 border-b border-border bg-bg1"
+        style={{ height: 48 }}
+      >
+        <FileText className="w-4 h-4 text-accent flex-shrink-0" />
+        <span className="text-[13px] font-semibold text-text truncate flex-1">
+          {tree.selectedReqTitle}
+        </span>
 
-  const right = (
-    <div className="flex flex-col h-full">
-      <ScenePreview sceneMap={sceneMap} loading={loading} />
-
-      {/* Quick Actions */}
-      {tree.selectedReqId && (
-        <div className="mt-auto p-4 border-t border-border">
-          <button
-            type="button"
-            onClick={completeDiagnosis}
-            disabled={sse.isStreaming || report?.status === 'completed'}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-accent text-white dark:text-black font-semibold text-[12.5px] hover:bg-accent2 transition-colors disabled:opacity-40"
+        {/* 进入工作台 button */}
+        <div className="relative group flex-shrink-0">
+          <Link
+            href="/workbench"
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-colors ${
+              hasUnhandledHighRisk
+                ? 'opacity-40 pointer-events-none bg-bg3 text-text3 border border-border cursor-not-allowed'
+                : 'bg-accent text-white dark:text-black hover:bg-accent2'
+            }`}
+            aria-disabled={hasUnhandledHighRisk}
+            onClick={(e) => hasUnhandledHighRisk && e.preventDefault()}
           >
-            <CheckCircle className="w-4 h-4" />
-            {report?.status === 'completed' ? '分析已完成' : '完成分析'}
-          </button>
+            {loading ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <ShieldAlert className="w-3.5 h-3.5" />
+            )}
+            进入工作台
+          </Link>
+          {hasUnhandledHighRisk && (
+            <div className="absolute right-0 top-full mt-1 w-44 px-2.5 py-1.5 rounded-md bg-bg2 border border-border text-[11px] text-text2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 whitespace-nowrap">
+              请先处理高风险遗漏项
+            </div>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Tab nav */}
+      <div className="flex-shrink-0 flex border-b border-border bg-bg1 px-1">
+        {tabLabels.map(({ key, label }) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setActiveTab(key)}
+            className={`px-4 py-2.5 text-[12.5px] font-medium transition-colors relative ${
+              activeTab === key ? 'text-accent' : 'text-text3 hover:text-text2'
+            }`}
+          >
+            {label}
+            {activeTab === key && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-t-sm" />
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content — all mounted to preserve state, toggled via visibility */}
+      <div className="flex-1 overflow-hidden relative">
+        <div className={`absolute inset-0 ${activeTab === 'detail' ? '' : 'hidden'}`}>
+          <div className="h-full overflow-hidden">
+            <RequirementDetailTab
+              reqId={tree.selectedReqId}
+              onStartAnalysis={handleStartAnalysis}
+            />
+          </div>
+        </div>
+
+        <div className={`absolute inset-0 ${activeTab === 'analysis' ? '' : 'hidden'}`}>
+          <AnalysisTab
+            reqId={tree.selectedReqId}
+            reqTitle={tree.selectedReqTitle}
+            report={report}
+            messages={messages}
+            sse={sse}
+            loading={loading}
+            onSendMessage={sendMessage}
+            onStartDiagnosis={handleStartAnalysis}
+          />
+        </div>
+
+        <div className={`absolute inset-0 ${activeTab === 'coverage' ? '' : 'hidden'}`}>
+          <CoverageMatrix reqId={tree.selectedReqId} />
+        </div>
+      </div>
     </div>
   );
 
   return (
-    <div className="p-4">
-      <ThreeColLayout
-        left={left}
-        center={center}
-        right={right}
-        leftWidth="280px"
-        rightWidth="320px"
-        subNavHeight={32}
-      />
+    <div className="flex overflow-hidden" style={{ height: 'calc(100vh - 49px)' }}>
+      {leftPanel}
+      {rightPanel}
     </div>
   );
 }

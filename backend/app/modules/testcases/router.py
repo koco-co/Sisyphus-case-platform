@@ -1,12 +1,14 @@
 import math
 import uuid
-from typing import cast
+from typing import Annotated, Any, cast
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, File, Query, UploadFile, status
 
 from app.core.dependencies import AsyncSessionDep
+from app.modules.testcases.import_service import TestCaseImportService
 from app.modules.testcases.schemas import (
     FolderCreate,
+    FolderReorderRequest,
     FolderResponse,
     FolderUpdate,
     MoveCasesRequest,
@@ -24,6 +26,61 @@ from app.modules.testcases.schemas import (
 from app.modules.testcases.service import FolderService, TestCaseService
 
 router = APIRouter(prefix="/testcases", tags=["testcases"])
+
+
+# ── Import endpoints ───────────────────────────────────────────────
+
+
+@router.post("/import/parse-file")
+async def parse_import_file(
+    session: AsyncSessionDep,
+    file: Annotated[UploadFile, File(...)],
+) -> dict[str, Any]:
+    """Parse an uploaded file (xlsx/csv/json/xmind) for import preview.
+
+    Returns columns, first-5 preview rows, full row list, auto-mapping, and
+    whether the file matches the standard template.
+    """
+    svc = TestCaseImportService(session)
+    return await svc.parse_file(file)
+
+
+@router.post("/import/check-duplicates")
+async def check_import_duplicates(
+    data: dict[str, Any],
+    session: AsyncSessionDep,
+) -> list[dict[str, Any]]:
+    """Check which cases in the payload already exist in the target folder.
+
+    Body: ``{"cases": [{title, ...}, ...], "folder_id": "<uuid> | null"}``
+    Returns a list of duplicate-info objects (index, title, existing_id).
+    """
+    svc = TestCaseImportService(session)
+    folder_id = uuid.UUID(data["folder_id"]) if data.get("folder_id") else None
+    return await svc.check_duplicates(data["cases"], folder_id)
+
+
+@router.post("/import/batch")
+async def batch_import_cases(
+    data: dict[str, Any],
+    session: AsyncSessionDep,
+) -> dict[str, int]:
+    """Batch-import cases with per-case duplicate strategies.
+
+    Body::
+
+        {
+            "cases": [{title, steps, expected_result, ...}, ...],
+            "folder_id": "<uuid> | null",
+            "per_case_strategies": {"0": "skip", "3": "overwrite", "5": "rename"}
+        }
+
+    Returns import stats: imported / skipped / overwritten / renamed.
+    """
+    svc = TestCaseImportService(session)
+    folder_id = uuid.UUID(data["folder_id"]) if data.get("folder_id") else None
+    per_case_strategies = {int(k): v for k, v in data.get("per_case_strategies", {}).items()}
+    return await svc.batch_import(data["cases"], folder_id, per_case_strategies)
 
 
 # ── Static paths (must precede /{case_id}) ─────────────────────────
@@ -99,6 +156,7 @@ async def list_cases(
     source: str | None = None,
     keyword: str | None = None,
     module_path: str | None = None,
+    folder_id: uuid.UUID | None = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
 ) -> TestCaseListResponse:
@@ -113,6 +171,7 @@ async def list_cases(
         source=source,
         keyword=keyword,
         module_path=module_path,
+        folder_id=folder_id,
         page=page,
         page_size=page_size,
     )
@@ -248,6 +307,7 @@ async def create_folder(data: FolderCreate, session: AsyncSessionDep) -> FolderR
         parent_id=folder.parent_id,
         sort_order=folder.sort_order,
         level=folder.level,
+        is_system=folder.is_system,
         case_count=count,
         created_at=folder.created_at,
         updated_at=folder.updated_at,
@@ -265,16 +325,17 @@ async def update_folder(folder_id: uuid.UUID, data: FolderUpdate, session: Async
         parent_id=folder.parent_id,
         sort_order=folder.sort_order,
         level=folder.level,
+        is_system=folder.is_system,
         case_count=count,
         created_at=folder.created_at,
         updated_at=folder.updated_at,
     )
 
 
-@router.delete("/folders/{folder_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_folder(folder_id: uuid.UUID, session: AsyncSessionDep) -> None:
+@router.delete("/folders/{folder_id}")
+async def delete_folder(folder_id: uuid.UUID, session: AsyncSessionDep) -> dict:
     svc = FolderService(session)
-    await svc.delete_folder(folder_id)
+    return await svc.delete_folder(folder_id)
 
 
 @router.post("/folders/move-cases")
@@ -282,3 +343,17 @@ async def move_cases_to_folder(data: MoveCasesRequest, session: AsyncSessionDep)
     svc = FolderService(session)
     count = await svc.move_cases(data.case_ids, data.folder_id)
     return {"moved": count}
+
+
+@router.post("/folders/reorder")
+async def reorder_folders(data: FolderReorderRequest, session: AsyncSessionDep) -> dict:
+    svc = FolderService(session)
+    await svc.batch_reorder([{"id": item.id, "sort_order": item.sort_order} for item in data.items])
+    return {"ok": True}
+
+
+@router.post("/folders/init-from-products")
+async def init_folders_from_products(session: AsyncSessionDep) -> dict:
+    """根据产品/迭代/需求结构自动初始化系统目录树（幂等）。"""
+    svc = FolderService(session)
+    return await svc.init_from_products()

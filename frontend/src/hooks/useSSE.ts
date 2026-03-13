@@ -18,7 +18,7 @@ export interface SSEStreamingCase {
   steps: { step_num?: number; action: string; expected_result: string }[];
 }
 
-interface SSEState {
+export interface SSEState {
   isStreaming: boolean;
   content: string;
   thinking: string;

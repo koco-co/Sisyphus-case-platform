@@ -61,7 +61,7 @@ class TestCaseUpdate(BaseSchema):
 
 
 class TestCaseResponse(BaseResponse):
-    requirement_id: uuid.UUID
+    requirement_id: uuid.UUID | None
     scene_node_id: uuid.UUID | None
     generation_session_id: uuid.UUID | None
     case_id: str
@@ -168,6 +168,7 @@ class FolderResponse(BaseResponse):
     parent_id: uuid.UUID | None
     sort_order: int
     level: int
+    is_system: bool = False
     case_count: int = 0
 
 
@@ -176,6 +177,7 @@ class FolderTreeNode(BaseSchema):
     name: str
     level: int
     sort_order: int
+    is_system: bool = False
     case_count: int = 0
     children: list["FolderTreeNode"] = []
 
@@ -183,3 +185,12 @@ class FolderTreeNode(BaseSchema):
 class MoveCasesRequest(BaseSchema):
     case_ids: list[uuid.UUID]
     folder_id: uuid.UUID | None = None
+
+
+class FolderReorderItem(BaseSchema):
+    id: uuid.UUID
+    sort_order: int
+
+
+class FolderReorderRequest(BaseSchema):
+    items: list[FolderReorderItem]

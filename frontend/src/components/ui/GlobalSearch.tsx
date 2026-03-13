@@ -89,7 +89,7 @@ export function GlobalSearch() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const searchTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const router = useRouter();
 
   // Debounced API search
@@ -103,13 +103,15 @@ export function GlobalSearch() {
       setSearching(true);
       try {
         const data = await searchApi.search(query, undefined, 10);
+        type ValidType = SearchResult['type'];
+        const validTypes: ValidType[] = ['requirement', 'testcase', 'diagnosis', 'template', 'knowledge'];
         setSearchResults(
-          (data.items ?? []).map((item: Record<string, string>) => ({
+          (data.items ?? []).map((item) => ({
             id: item.id,
             title: item.title,
-            type: item.type ?? 'requirement',
-            description: item.description ?? item.subtitle ?? '',
-            url: item.url ?? `/${item.type}s`,
+            type: (validTypes.includes(item.type as ValidType) ? item.type : 'requirement') as ValidType,
+            description: item.content ?? item.summary ?? item.highlight ?? '',
+            url: `/${item.type}s`,
           })),
         );
       } catch {

@@ -135,6 +135,8 @@ export interface DiagnosisRisk {
   severity: string;
   description: string;
   suggestion?: string;
+  status?: string; // 'open' | 'acknowledged' | 'accepted' | 'ignored'
+  title?: string;
 }
 
 export interface ChatMessage {

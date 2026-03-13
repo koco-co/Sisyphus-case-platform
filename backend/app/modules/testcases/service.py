@@ -28,6 +28,7 @@ class TestCaseService:
         source: str | None = None,
         keyword: str | None = None,
         module_path: str | None = None,
+        folder_id: UUID | None = None,
         page: int = 1,
         page_size: int = 20,
     ) -> tuple[list[TestCase], int]:
@@ -104,6 +105,10 @@ class TestCaseService:
                 )
                 q = q.where(path_filter)
                 count_q = count_q.where(path_filter)
+
+        if folder_id is not None:
+            q = q.where(TestCase.folder_id == folder_id)
+            count_q = count_q.where(TestCase.folder_id == folder_id)
 
         total = (await self.session.execute(count_q)).scalar() or 0
         q = q.order_by(TestCase.created_at.desc()).offset((page - 1) * page_size).limit(page_size)
@@ -471,6 +476,15 @@ class FolderService:
                     detail=f"最多支持 {self.MAX_DEPTH} 级目录",
                 )
 
+        # Check duplicate sibling name
+        dup_q = select(func.count()).where(
+            TestCaseFolder.name == name,
+            TestCaseFolder.parent_id == parent_id if parent_id else TestCaseFolder.parent_id.is_(None),
+            TestCaseFolder.deleted_at.is_(None),
+        )
+        if (await self.session.execute(dup_q)).scalar() > 0:
+            raise HTTPException(status_code=400, detail="同级目录下已存在同名目录")
+
         max_order_q = select(func.max(TestCaseFolder.sort_order)).where(
             TestCaseFolder.parent_id == parent_id if parent_id else TestCaseFolder.parent_id.is_(None),
             TestCaseFolder.deleted_at.is_(None),
@@ -484,8 +498,23 @@ class FolderService:
         return folder
 
     async def update_folder(self, folder_id: UUID, name: str | None = None, sort_order: int | None = None):
+        from app.modules.testcases.models import TestCaseFolder
+
         folder = await self.get_folder(folder_id)
-        if name is not None:
+        if name is not None and name != folder.name:
+            if not name.strip():
+                raise HTTPException(status_code=400, detail="目录名称不能为空")
+            name = name[:20]  # max 20 chars
+            dup_q = select(func.count()).where(
+                TestCaseFolder.name == name,
+                TestCaseFolder.parent_id == folder.parent_id
+                if folder.parent_id
+                else TestCaseFolder.parent_id.is_(None),
+                TestCaseFolder.id != folder_id,
+                TestCaseFolder.deleted_at.is_(None),
+            )
+            if (await self.session.execute(dup_q)).scalar() > 0:
+                raise HTTPException(status_code=400, detail="同级目录下已存在同名目录")
             folder.name = name
         if sort_order is not None:
             folder.sort_order = sort_order
@@ -493,30 +522,74 @@ class FolderService:
         await self.session.refresh(folder)
         return folder
 
-    async def delete_folder(self, folder_id: UUID) -> None:
+    async def delete_folder(self, folder_id: UUID) -> dict:
+        """删除目录（含子目录和所有用例），全部进回收站。返回删除的用例数量。"""
+        from datetime import UTC, datetime
+
+        from app.modules.recycle.models import RecycleItem
         from app.modules.testcases.models import TestCaseFolder
 
         folder = await self.get_folder(folder_id)
-        # Check for children
-        children_q = select(func.count()).where(
-            TestCaseFolder.parent_id == folder_id,
+        if folder.is_system:
+            raise HTTPException(status_code=403, detail="系统目录不可删除")
+
+        # Collect all folder IDs recursively (DFS)
+        async def collect_folder_ids(fid: UUID) -> list[UUID]:
+            ids = [fid]
+            children_q = select(TestCaseFolder.id).where(
+                TestCaseFolder.parent_id == fid,
+                TestCaseFolder.deleted_at.is_(None),
+            )
+            children = (await self.session.execute(children_q)).scalars().all()
+            for child_id in children:
+                ids.extend(await collect_folder_ids(child_id))
+            return ids
+
+        all_folder_ids = await collect_folder_ids(folder_id)
+        now = datetime.now(UTC)
+
+        # Move all cases in these folders to recycle bin
+        cases_q = select(TestCase).where(
+            TestCase.folder_id.in_(all_folder_ids),
+            TestCase.deleted_at.is_(None),
+        )
+        cases = (await self.session.execute(cases_q)).scalars().all()
+        case_count = len(cases)
+
+        for tc in cases:
+            recycle = RecycleItem(
+                object_type="test_case",
+                object_id=tc.id,
+                object_name=tc.title,
+                object_snapshot={"case_id": tc.case_id, "title": tc.title, "folder_id": str(folder_id)},
+                reason=f"随目录「{folder.name}」删除",
+            )
+            self.session.add(recycle)
+            tc.deleted_at = now
+
+        # Move all folders to recycle bin
+        folders_q = select(TestCaseFolder).where(
+            TestCaseFolder.id.in_(all_folder_ids),
             TestCaseFolder.deleted_at.is_(None),
         )
-        child_count = (await self.session.execute(children_q)).scalar() or 0
-        if child_count > 0:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="请先删除或移动子目录",
+        folders = (await self.session.execute(folders_q)).scalars().all()
+        for f in folders:
+            recycle_f = RecycleItem(
+                object_type="test_case_folder",
+                object_id=f.id,
+                object_name=f.name,
+                object_snapshot={
+                    "name": f.name,
+                    "level": f.level,
+                    "parent_id": str(f.parent_id) if f.parent_id else None,
+                },
+                reason="目录被删除",
             )
+            self.session.add(recycle_f)
+            f.deleted_at = now
 
-        # Unassign cases in this folder
-        cases_q = select(TestCase).where(TestCase.folder_id == folder_id, TestCase.deleted_at.is_(None))
-        result = await self.session.execute(cases_q)
-        for tc in result.scalars().all():
-            tc.folder_id = None
-
-        folder.deleted_at = datetime.now(UTC)
         await self.session.commit()
+        return {"deleted_case_count": case_count}
 
     async def move_cases(self, case_ids: list[UUID], folder_id: UUID | None) -> int:
         if folder_id:
@@ -532,6 +605,87 @@ class FolderService:
     async def get_case_count(self, folder_id: UUID) -> int:
         q = select(func.count()).where(TestCase.folder_id == folder_id, TestCase.deleted_at.is_(None))
         return (await self.session.execute(q)).scalar() or 0
+
+    async def batch_reorder(self, orders: list[dict]) -> None:
+        """批量更新同级目录排序。orders: [{id: UUID, sort_order: int}]"""
+        from app.modules.testcases.models import TestCaseFolder
+
+        for item in orders:
+            q = select(TestCaseFolder).where(
+                TestCaseFolder.id == item["id"],
+                TestCaseFolder.deleted_at.is_(None),
+            )
+            folder = (await self.session.execute(q)).scalar_one_or_none()
+            if folder:
+                folder.sort_order = item["sort_order"]
+        await self.session.commit()
+
+    async def init_from_products(self) -> dict:
+        """根据产品/迭代/需求层级自动生成三级系统目录。幂等：已存在则跳过。"""
+        from app.modules.products.models import Iteration, Product, Requirement
+        from app.modules.testcases.models import TestCaseFolder
+
+        created = 0
+
+        async def get_or_create(name: str, parent_id: UUID | None, level: int) -> UUID:
+            nonlocal created
+            q = select(TestCaseFolder).where(
+                TestCaseFolder.name == name,
+                TestCaseFolder.parent_id == parent_id if parent_id else TestCaseFolder.parent_id.is_(None),
+                TestCaseFolder.deleted_at.is_(None),
+            )
+            existing = (await self.session.execute(q)).scalar_one_or_none()
+            if existing:
+                return existing.id
+            f = TestCaseFolder(name=name, parent_id=parent_id, level=level, is_system=True, sort_order=0)
+            self.session.add(f)
+            await self.session.flush()
+            created += 1
+            return f.id
+
+        products = (await self.session.execute(select(Product).where(Product.deleted_at.is_(None)))).scalars().all()
+
+        for p in products:
+            p_fid = await get_or_create(p.name, None, 1)
+            iterations = (
+                (
+                    await self.session.execute(
+                        select(Iteration).where(Iteration.product_id == p.id, Iteration.deleted_at.is_(None))
+                    )
+                )
+                .scalars()
+                .all()
+            )
+            for it in iterations:
+                it_fid = await get_or_create(it.name, p_fid, 2)
+                reqs = (
+                    (
+                        await self.session.execute(
+                            select(Requirement).where(
+                                Requirement.iteration_id == it.id, Requirement.deleted_at.is_(None)
+                            )
+                        )
+                    )
+                    .scalars()
+                    .all()
+                )
+                for req in reqs:
+                    await get_or_create(req.title, it_fid, 3)
+
+        # Ensure "未分类" root folder exists
+        await get_or_create("未分类", None, 1)
+        # Mark 未分类 as system
+        uncat_q = select(TestCaseFolder).where(
+            TestCaseFolder.name == "未分类",
+            TestCaseFolder.parent_id.is_(None),
+            TestCaseFolder.deleted_at.is_(None),
+        )
+        uncat = (await self.session.execute(uncat_q)).scalar_one_or_none()
+        if uncat:
+            uncat.is_system = True
+
+        await self.session.commit()
+        return {"created": created}
 
     async def get_tree(self) -> list[dict]:
         folders = await self.list_folders()
@@ -552,6 +706,7 @@ class FolderService:
                     "name": f.name,
                     "level": f.level,
                     "sort_order": f.sort_order,
+                    "is_system": f.is_system,
                     "case_count": count_map.get(f.id, 0),
                     "children": build(f.id),
                 }
