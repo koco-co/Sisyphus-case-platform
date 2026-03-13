@@ -7,7 +7,8 @@ import { api } from '@/lib/api';
 interface PromptConfig {
 	module_key: string;
 	prompt_text: string;
-	updated_at: string;
+	updated_at: string | null;
+	is_default?: boolean;
 }
 
 interface PromptHistoryItem {
@@ -21,7 +22,7 @@ const modules = [
 	{
 		key: 'diagnosis',
 		label: '需求分析',
-		description: '需求需求分析时的 AI 系统提示词',
+		description: '需求分析时的 AI 系统提示词',
 	},
 	{
 		key: 'scene_map',
@@ -39,9 +40,9 @@ const modules = [
 		description: '追问式对话时的 AI 系统提示词',
 	},
 	{
-		key: 'diff_semantic',
-		label: '语义 Diff',
-		description: '需求变更语义分析时的 AI 系统提示词',
+		key: 'diff',
+		label: '需求 Diff 分析',
+		description: '需求版本变更的测试影响分析时的 AI 系统提示词',
 	},
 	{
 		key: 'exploratory',
@@ -55,6 +56,7 @@ export function PromptManager() {
 	const [prompts, setPrompts] = useState<Record<string, string>>({});
 	const [originalPrompts, setOriginalPrompts] = useState<Record<string, string>>({});
 	const [history, setHistory] = useState<PromptHistoryItem[]>([]);
+	const [defaultModules, setDefaultModules] = useState<Set<string>>(new Set());
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [showHistory, setShowHistory] = useState(false);
@@ -69,6 +71,8 @@ export function PromptManager() {
 			for (const p of data) {
 				promptMap[p.module_key] = p.prompt_text;
 			}
+			const defaults = new Set(data.filter((p) => p.is_default).map((p) => p.module_key));
+			setDefaultModules(defaults);
 			setPrompts(promptMap);
 			setOriginalPrompts(promptMap);
 		} catch {
@@ -147,8 +151,8 @@ export function PromptManager() {
 			<div className="alert-banner mb-4">
 				<AlertTriangle className="w-4 h-4" />
 				<span className="text-[12.5px]">
-					修改系统 Prompt 会直接影响 AI 生成质量，请谨慎操作。每个模块保留最近 5
-					个历史版本。
+				修改 System Prompt 会直接影响 AI 输出质量，建议在测试环境验证后再用于生产。每个模块保留最近 5
+					次修改记录，可随时回滚。
 				</span>
 			</div>
 
@@ -190,6 +194,9 @@ export function PromptManager() {
 						<p className="text-[12px] text-text3 mt-0.5">
 							{currentModule.description}
 						</p>
+						{defaultModules.has(activeModule) && (
+							<span className="text-[10px] text-text3 bg-bg2 px-1.5 py-0.5 rounded font-mono">默认值</span>
+						)}
 					</div>
 					<div className="flex items-center gap-2">
 						<button
@@ -272,6 +279,9 @@ export function PromptManager() {
 										<span className="text-[11px] text-text3 ml-3">
 											{new Date(h.created_at).toLocaleString('zh-CN')}
 										</span>
+										<p className="text-[10.5px] text-text3 mt-0.5 font-mono truncate max-w-[400px]">
+											{h.prompt_text?.slice(0, 80)}...
+										</p>
 									</div>
 									<button
 										type="button"

@@ -3,6 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query, status
 
+from app.ai.prompts import _MODULE_PROMPTS, get_system_prompt
 from app.core.dependencies import AsyncSessionDep
 from app.modules.ai_config.schemas import (
     AiConfigCreate,
@@ -279,11 +280,39 @@ async def test_model_config(model_config_id: uuid.UUID, session: AsyncSessionDep
 # ── Prompt Configuration endpoints ────────────────────────────────
 
 
-@router.get("/prompts", response_model=list[PromptConfigResponse])
-async def list_prompt_configs(session: AsyncSessionDep) -> list[PromptConfigResponse]:
+@router.get("/prompts")
+async def list_prompt_configs(session: AsyncSessionDep) -> list[dict]:
+    """Return all 6 module prompts, merging DB records with hardcoded defaults."""
     svc = PromptConfigService(session)
-    items = await svc.list_prompts()
-    return [PromptConfigResponse.model_validate(p) for p in items]
+    db_records = await svc.list_prompts()
+    db_map = {r.module: r for r in db_records}
+
+    result = []
+    for module_key in _MODULE_PROMPTS:
+        if module_key in db_map:
+            r = db_map[module_key]
+            result.append({
+                "id": str(r.id),
+                "module_key": r.module,
+                "prompt_text": r.system_prompt,
+                "is_default": False,
+                "is_customized": r.is_customized,
+                "version": r.version,
+                "updated_at": r.updated_at.isoformat() if r.updated_at else None,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+            })
+        else:
+            result.append({
+                "id": None,
+                "module_key": module_key,
+                "prompt_text": get_system_prompt(module_key),
+                "is_default": True,
+                "is_customized": False,
+                "version": 0,
+                "updated_at": None,
+                "created_at": None,
+            })
+    return result
 
 
 @router.get("/prompts/{module}", response_model=PromptConfigResponse | None)
