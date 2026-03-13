@@ -1,11 +1,18 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Form, Input, Modal, message, Popconfirm, Skeleton, Table } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
+
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { FormDialog } from '@/components/ui/FormDialog';
+import { FormField } from '@/components/ui/FormField';
+import { Pagination } from '@/components/ui/Pagination';
+import { SearchInput } from '@/components/ui/SearchInput';
+import { TableSkeleton } from '@/components/ui/TableSkeleton';
 
 /* ── Inline API client ── */
 
@@ -52,14 +59,24 @@ interface Product {
 
 /* ── Page ── */
 
+const PAGE_SIZE = 20;
+
 export default function ProductsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [searchText, setSearchText] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Dialog states
   const [createOpen, setCreateOpen] = useState(false);
   const [editItem, setEditItem] = useState<Product | null>(null);
-  const [createForm] = Form.useForm();
-  const [editForm] = Form.useForm();
-  const [searchText, setSearchText] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+
+  // Form states
+  const [formName, setFormName] = useState('');
+  const [formSlug, setFormSlug] = useState('');
+  const [formDesc, setFormDesc] = useState('');
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ['products'],
@@ -70,12 +87,11 @@ export default function ProductsPage() {
     mutationFn: (values: { name: string; slug: string; description?: string }) =>
       apiClient.post('/products', values),
     onSuccess: () => {
-      message.success('子产品创建成功');
-      setCreateOpen(false);
-      createForm.resetFields();
+      toast.success('子产品创建成功');
+      closeCreateDialog();
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
-    onError: () => message.error('创建失败，请重试'),
+    onError: () => toast.error('创建失败，请重试'),
   });
 
   const updateMutation = useMutation({
@@ -89,22 +105,78 @@ export default function ProductsPage() {
       description?: string;
     }) => apiClient.patch(`/products/${id}`, data),
     onSuccess: () => {
-      message.success('更新成功');
-      setEditItem(null);
-      editForm.resetFields();
+      toast.success('更新成功');
+      closeEditDialog();
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
-    onError: () => message.error('更新失败，请重试'),
+    onError: () => toast.error('更新失败，请重试'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.delete(`/products/${id}`),
     onSuccess: () => {
-      message.success('已删除');
+      toast.success('已删除');
+      setDeleteTarget(null);
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
-    onError: () => message.error('删除失败'),
+    onError: () => toast.error('删除失败'),
   });
+
+  /* ── Helpers ── */
+
+  const resetForm = () => {
+    setFormName('');
+    setFormSlug('');
+    setFormDesc('');
+    setFormErrors({});
+  };
+
+  const closeCreateDialog = () => {
+    setCreateOpen(false);
+    resetForm();
+  };
+
+  const closeEditDialog = () => {
+    setEditItem(null);
+    resetForm();
+  };
+
+  const openEditDialog = (p: Product) => {
+    setFormName(p.name);
+    setFormSlug(p.slug);
+    setFormDesc(p.description ?? '');
+    setFormErrors({});
+    setEditItem(p);
+  };
+
+  const validate = () => {
+    const errs: Record<string, string> = {};
+    if (!formName.trim()) errs.name = '请输入名称';
+    if (!formSlug.trim()) errs.slug = '请输入标识';
+    setFormErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleCreate = () => {
+    if (!validate()) return;
+    createMutation.mutate({
+      name: formName.trim(),
+      slug: formSlug.trim(),
+      description: formDesc.trim() || undefined,
+    });
+  };
+
+  const handleEdit = () => {
+    if (!editItem || !validate()) return;
+    updateMutation.mutate({
+      id: editItem.id,
+      name: formName.trim(),
+      slug: formSlug.trim(),
+      description: formDesc.trim() || undefined,
+    });
+  };
+
+  /* ── Filtering & Pagination ── */
 
   const filtered = (products ?? []).filter(
     (p) =>
@@ -113,103 +185,44 @@ export default function ProductsPage() {
       p.slug.toLowerCase().includes(searchText.toLowerCase()),
   );
 
-  const columns: ColumnsType<Product> = [
-    {
-      title: '名称',
-      dataIndex: 'name',
-      key: 'name',
-      render: (name: string, record) => (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            router.push(`/iterations?productId=${record.id}`);
-          }}
-          className="btn btn-link"
-          style={{ fontWeight: 600, color: 'var(--accent)', cursor: 'pointer' }}
-        >
-          {name}
-        </button>
-      ),
-    },
-    {
-      title: '标识',
-      dataIndex: 'slug',
-      key: 'slug',
-      render: (slug: string) => (
-        <span className="mono" style={{ color: 'var(--text3)' }}>
-          {slug}
-        </span>
-      ),
-    },
-    {
-      title: '描述',
-      dataIndex: 'description',
-      key: 'description',
-      render: (desc: string | null) => desc || <span style={{ color: 'var(--text3)' }}>—</span>,
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'created_at',
-      key: 'created_at',
-      width: 180,
-      render: (val: string) => {
-        try {
-          return <span className="mono">{new Date(val).toLocaleString('zh-CN')}</span>;
-        } catch {
-          return val;
-        }
-      },
-    },
-    {
-      title: '操作',
-      key: 'actions',
-      width: 120,
-      render: (_, record) => (
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            type="button"
-            className="btn btn-ghost btn-sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              setEditItem(record);
-              editForm.setFieldsValue({
-                name: record.name,
-                slug: record.slug,
-                description: record.description,
-              });
-            }}
-            title="编辑"
-          >
-            <Pencil size={14} />
-          </button>
-          <Popconfirm
-            title="确定删除此子产品？"
-            onConfirm={(e) => {
-              e?.stopPropagation();
-              deleteMutation.mutate(record.id);
-            }}
-            onCancel={(e) => e?.stopPropagation()}
-            okText="删除"
-            cancelText="取消"
-          >
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={(e) => e.stopPropagation()}
-              title="删除"
-            >
-              <Trash2 size={14} style={{ color: 'var(--red)' }} />
-            </button>
-          </Popconfirm>
-        </div>
-      ),
-    },
-  ];
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  /* ── Form fields (shared between create/edit) ── */
+
+  const renderFormFields = () => (
+    <>
+      <FormField label="名称" required error={formErrors.name}>
+        <input
+          className="input w-full"
+          placeholder="例如：离线开发平台"
+          value={formName}
+          onChange={(e) => setFormName(e.target.value)}
+        />
+      </FormField>
+      <FormField label="标识" required error={formErrors.slug}>
+        <input
+          className="input w-full"
+          placeholder="例如：offline-dev"
+          value={formSlug}
+          onChange={(e) => setFormSlug(e.target.value)}
+        />
+      </FormField>
+      <FormField label="描述">
+        <textarea
+          className="input w-full"
+          rows={3}
+          placeholder="项目简介（可选）"
+          value={formDesc}
+          onChange={(e) => setFormDesc(e.target.value)}
+        />
+      </FormField>
+    </>
+  );
 
   return (
     <div className="no-sidebar">
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+      <div className="max-w-[1200px] mx-auto">
         {/* ── Top bar ── */}
         <div className="topbar">
           <div>
@@ -218,122 +231,162 @@ export default function ProductsPage() {
             <div className="sub">管理所有子产品，点击名称查看迭代</div>
           </div>
           <div className="spacer" />
-          <div style={{ position: 'relative' }}>
-            <Search
-              size={14}
-              style={{
-                position: 'absolute',
-                left: 10,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--text3)',
-              }}
-            />
-            <input
-              className="input"
-              placeholder="搜索子产品..."
-              style={{ width: 220, paddingLeft: 32 }}
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-          </div>
+          <SearchInput
+            value={searchText}
+            onChange={(v) => {
+              setSearchText(v);
+              setCurrentPage(1);
+            }}
+            placeholder="搜索子产品..."
+            className="w-[220px]"
+          />
           <button
             type="button"
-            className="btn btn-primary"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
-            onClick={() => setCreateOpen(true)}
+            className="btn btn-primary inline-flex items-center gap-1"
+            onClick={() => {
+              resetForm();
+              setCreateOpen(true);
+            }}
           >
-            <Plus size={14} /> 新建子产品
+            <Plus size={14} /> 新建
           </button>
         </div>
 
         {/* ── Table ── */}
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div className="card p-0 overflow-hidden">
           {isLoading ? (
-            <div style={{ padding: 24 }}>
-              <Skeleton active paragraph={{ rows: 6 }} title={false} />
-            </div>
-          ) : (
-            <Table<Product>
-              columns={columns}
-              dataSource={filtered}
-              rowKey="id"
-              pagination={{
-                pageSize: 20,
-                showSizeChanger: false,
-                showTotal: (total) => `共 ${total} 条`,
-              }}
-              locale={{ emptyText: '暂无子产品，点击右上角新建' }}
-              onRow={(record) => ({
-                style: { cursor: 'pointer' },
-                onClick: () => router.push(`/iterations?productId=${record.id}`),
-              })}
+            <TableSkeleton rows={6} cols={4} />
+          ) : filtered.length === 0 ? (
+            <EmptyState
+              title={searchText ? '未找到匹配的子产品' : '暂无子产品'}
+              description={searchText ? '请尝试其他搜索关键词' : '点击右上角「新建」创建第一个子产品'}
             />
+          ) : (
+            <>
+              <table className="tbl w-full">
+                <thead>
+                  <tr>
+                    <th className="text-left">名称</th>
+                    <th className="text-left">标识</th>
+                    <th className="text-left">描述</th>
+                    <th className="text-left w-[180px]">创建时间</th>
+                    <th className="text-right w-[100px]">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginated.map((p) => (
+                    <tr
+                      key={p.id}
+                      className="cursor-pointer hover:bg-bg2 transition-colors"
+                      onClick={() => router.push(`/iterations?productId=${p.id}`)}
+                    >
+                      <td>
+                        <button
+                          type="button"
+                          className="font-semibold text-accent hover:text-accent2 transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/iterations?productId=${p.id}`);
+                          }}
+                        >
+                          {p.name}
+                        </button>
+                      </td>
+                      <td>
+                        <span className="font-mono text-text3">{p.slug}</span>
+                      </td>
+                      <td>{p.description || <span className="text-text3">—</span>}</td>
+                      <td>
+                        <span className="font-mono">
+                          {(() => {
+                            try {
+                              return new Date(p.created_at).toLocaleString('zh-CN');
+                            } catch {
+                              return p.created_at;
+                            }
+                          })()}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="flex justify-end gap-1">
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openEditDialog(p);
+                            }}
+                            title="编辑"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm text-red"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteTarget(p);
+                            }}
+                            title="删除"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="px-4 pb-3">
+                <Pagination
+                  current={currentPage}
+                  total={filtered.length}
+                  pageSize={PAGE_SIZE}
+                  onChange={setCurrentPage}
+                  showPageSizeChanger={false}
+                  showQuickJumper={false}
+                />
+              </div>
+            </>
           )}
         </div>
       </div>
 
-      {/* ── Create modal ── */}
-      <Modal
-        title="新建子产品"
+      {/* ── Create dialog ── */}
+      <FormDialog
         open={createOpen}
-        onCancel={() => {
-          setCreateOpen(false);
-          createForm.resetFields();
-        }}
-        onOk={() => createForm.submit()}
-        confirmLoading={createMutation.isPending}
-        okText="创建"
-        cancelText="取消"
+        onClose={closeCreateDialog}
+        onSubmit={handleCreate}
+        title="新建子产品"
+        submitText="创建"
+        loading={createMutation.isPending}
       >
-        <Form
-          form={createForm}
-          layout="vertical"
-          onFinish={(v) => createMutation.mutate(v)}
-          style={{ marginTop: 16 }}
-        >
-          <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
-            <Input placeholder="例如：离线开发平台" />
-          </Form.Item>
-          <Form.Item name="slug" label="标识" rules={[{ required: true, message: '请输入标识' }]}>
-            <Input placeholder="例如：offline-dev" />
-          </Form.Item>
-          <Form.Item name="description" label="描述">
-            <Input.TextArea rows={3} placeholder="项目简介（可选）" />
-          </Form.Item>
-        </Form>
-      </Modal>
+        {renderFormFields()}
+      </FormDialog>
 
-      {/* ── Edit modal ── */}
-      <Modal
-        title="编辑子产品"
+      {/* ── Edit dialog ── */}
+      <FormDialog
         open={!!editItem}
-        onCancel={() => {
-          setEditItem(null);
-          editForm.resetFields();
-        }}
-        onOk={() => editForm.submit()}
-        confirmLoading={updateMutation.isPending}
-        okText="保存"
-        cancelText="取消"
+        onClose={closeEditDialog}
+        onSubmit={handleEdit}
+        title="编辑子产品"
+        submitText="保存"
+        loading={updateMutation.isPending}
       >
-        <Form
-          form={editForm}
-          layout="vertical"
-          onFinish={(v) => editItem && updateMutation.mutate({ id: editItem.id, ...v })}
-          style={{ marginTop: 16 }}
-        >
-          <Form.Item name="name" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="slug" label="标识" rules={[{ required: true, message: '请输入标识' }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="description" label="描述">
-            <Input.TextArea rows={3} />
-          </Form.Item>
-        </Form>
-      </Modal>
+        {renderFormFields()}
+      </FormDialog>
+
+      {/* ── Delete confirm ── */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        onCancel={() => setDeleteTarget(null)}
+        title="删除子产品"
+        description={`确定要删除「${deleteTarget?.name}」吗？此操作不可撤销。`}
+        confirmText="删除"
+        variant="danger"
+      />
     </div>
   );
 }

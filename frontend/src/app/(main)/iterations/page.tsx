@@ -1,11 +1,17 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { DatePicker, Empty, Form, Input, Modal, message, Popconfirm, Skeleton, Table } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
 import { ArrowLeft, Calendar, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
+import { toast } from 'sonner';
+
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { FormDialog } from '@/components/ui/FormDialog';
+import { FormField } from '@/components/ui/FormField';
+import { Pagination } from '@/components/ui/Pagination';
+import { TableSkeleton } from '@/components/ui/TableSkeleton';
 
 /* ── Inline API client ── */
 
@@ -65,6 +71,8 @@ const STATUS_MAP: Record<string, { label: string; cls: string }> = {
   archived: { label: '已归档', cls: 'pill-amber' },
 };
 
+const PAGE_SIZE = 20;
+
 /* ── Page ── */
 
 function IterationsContent() {
@@ -72,10 +80,18 @@ function IterationsContent() {
   const searchParams = useSearchParams();
   const productId = searchParams.get('productId');
   const queryClient = useQueryClient();
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Dialog states
   const [createOpen, setCreateOpen] = useState(false);
   const [editItem, setEditItem] = useState<Iteration | null>(null);
-  const [createForm] = Form.useForm();
-  const [editForm] = Form.useForm();
+  const [deleteTarget, setDeleteTarget] = useState<Iteration | null>(null);
+
+  // Form states
+  const [formName, setFormName] = useState('');
+  const [formStartDate, setFormStartDate] = useState('');
+  const [formEndDate, setFormEndDate] = useState('');
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const { data: product } = useQuery<Product | null>({
     queryKey: ['product', productId],
@@ -96,12 +112,11 @@ function IterationsContent() {
     mutationFn: (values: { name: string; product_id: string; start_date?: string; end_date?: string }) =>
       apiClient.post(`/products/${productId}/iterations`, values),
     onSuccess: () => {
-      message.success('迭代创建成功');
-      setCreateOpen(false);
-      createForm.resetFields();
+      toast.success('迭代创建成功');
+      closeCreateDialog();
       queryClient.invalidateQueries({ queryKey: ['iterations', productId] });
     },
-    onError: () => message.error('创建失败，请重试'),
+    onError: () => toast.error('创建失败，请重试'),
   });
 
   const updateMutation = useMutation({
@@ -116,176 +131,145 @@ function IterationsContent() {
       status?: string;
     }) => apiClient.patch(`/products/iterations/${id}`, data),
     onSuccess: () => {
-      message.success('更新成功');
-      setEditItem(null);
-      editForm.resetFields();
+      toast.success('更新成功');
+      closeEditDialog();
       queryClient.invalidateQueries({ queryKey: ['iterations', productId] });
     },
-    onError: () => message.error('更新失败'),
+    onError: () => toast.error('更新失败'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.delete(`/products/iterations/${id}`),
     onSuccess: () => {
-      message.success('已删除');
+      toast.success('已删除');
+      setDeleteTarget(null);
       queryClient.invalidateQueries({ queryKey: ['iterations', productId] });
     },
-    onError: () => message.error('删除失败'),
+    onError: () => toast.error('删除失败'),
   });
+
+  /* ── Helpers ── */
+
+  const resetForm = () => {
+    setFormName('');
+    setFormStartDate('');
+    setFormEndDate('');
+    setFormErrors({});
+  };
+
+  const closeCreateDialog = () => {
+    setCreateOpen(false);
+    resetForm();
+  };
+
+  const closeEditDialog = () => {
+    setEditItem(null);
+    resetForm();
+  };
+
+  const openEditDialog = (item: Iteration) => {
+    setFormName(item.name);
+    setFormStartDate(item.start_date ?? '');
+    setFormEndDate(item.end_date ?? '');
+    setFormErrors({});
+    setEditItem(item);
+  };
+
+  const validate = () => {
+    const errs: Record<string, string> = {};
+    if (!formName.trim()) errs.name = '请输入迭代名称';
+    setFormErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleCreate = () => {
+    if (!validate()) return;
+    const payload: { name: string; product_id: string; start_date?: string; end_date?: string } = {
+      name: formName.trim(),
+      product_id: productId!,
+    };
+    if (formStartDate) payload.start_date = formStartDate;
+    if (formEndDate) payload.end_date = formEndDate;
+    createMutation.mutate(payload);
+  };
+
+  const handleEdit = () => {
+    if (!editItem || !validate()) return;
+    const payload: { id: string; name?: string; start_date?: string; end_date?: string } = {
+      id: editItem.id,
+      name: formName.trim(),
+    };
+    if (formStartDate) payload.start_date = formStartDate;
+    if (formEndDate) payload.end_date = formEndDate;
+    updateMutation.mutate(payload);
+  };
+
+  /* ── No product selected ── */
 
   if (!productId) {
     return (
       <div className="no-sidebar">
-        <div style={{ maxWidth: 1200, margin: '0 auto', paddingTop: 80 }}>
-          <Empty description="请先选择一个子产品">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => router.push('/products')}
-            >
-              前往子产品管理
-            </button>
-          </Empty>
+        <div className="max-w-[1200px] mx-auto pt-20">
+          <EmptyState
+            description="请先选择一个子产品"
+            action={
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => router.push('/products')}
+              >
+                前往子产品管理
+              </button>
+            }
+          />
         </div>
       </div>
     );
   }
 
-  const handleCreateFinish = (values: Record<string, unknown>) => {
-    const payload: { name: string; product_id: string; start_date?: string; end_date?: string } = {
-      name: values.name as string,
-      product_id: productId!,
-    };
-    if (values.start_date)
-      payload.start_date = (values.start_date as { format: (f: string) => string }).format(
-        'YYYY-MM-DD',
-      );
-    if (values.end_date)
-      payload.end_date = (values.end_date as { format: (f: string) => string }).format(
-        'YYYY-MM-DD',
-      );
-    createMutation.mutate(payload);
-  };
+  /* ── Pagination ── */
 
-  const handleEditFinish = (values: Record<string, unknown>) => {
-    if (!editItem) return;
-    const payload: { id: string; name?: string; start_date?: string; end_date?: string } = {
-      id: editItem.id,
-      name: values.name as string,
-    };
-    if (values.start_date)
-      payload.start_date = (values.start_date as { format: (f: string) => string }).format(
-        'YYYY-MM-DD',
-      );
-    if (values.end_date)
-      payload.end_date = (values.end_date as { format: (f: string) => string }).format(
-        'YYYY-MM-DD',
-      );
-    updateMutation.mutate(payload);
-  };
+  const items = iterations ?? [];
+  const paginated = items.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  const columns: ColumnsType<Iteration> = [
-    {
-      title: '迭代名称',
-      dataIndex: 'name',
-      key: 'name',
-      render: (name: string, record) => (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            router.push(`/requirements?iterationId=${record.id}`);
-          }}
-          className="btn btn-link"
-          style={{ fontWeight: 600, color: 'var(--accent)', cursor: 'pointer' }}
-        >
-          {name}
-        </button>
-      ),
-    },
-    {
-      title: '开始日期',
-      dataIndex: 'start_date',
-      key: 'start_date',
-      width: 140,
-      render: (val: string | null) =>
-        val ? (
-          <span className="mono">{val}</span>
-        ) : (
-          <span style={{ color: 'var(--text3)' }}>—</span>
-        ),
-    },
-    {
-      title: '结束日期',
-      dataIndex: 'end_date',
-      key: 'end_date',
-      width: 140,
-      render: (val: string | null) =>
-        val ? (
-          <span className="mono">{val}</span>
-        ) : (
-          <span style={{ color: 'var(--text3)' }}>—</span>
-        ),
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
-      width: 120,
-      render: (status: string) => {
-        const s = STATUS_MAP[status] ?? { label: status, cls: 'pill-gray' };
-        return <span className={`pill ${s.cls}`}>{s.label}</span>;
-      },
-    },
-    {
-      title: '操作',
-      key: 'actions',
-      width: 120,
-      render: (_, record) => (
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            type="button"
-            className="btn btn-ghost btn-sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              setEditItem(record);
-              editForm.setFieldsValue({ name: record.name });
-            }}
-            title="编辑"
-          >
-            <Pencil size={14} />
-          </button>
-          <Popconfirm
-            title="确定删除此迭代？"
-            onConfirm={(e) => {
-              e?.stopPropagation();
-              deleteMutation.mutate(record.id);
-            }}
-            onCancel={(e) => e?.stopPropagation()}
-            okText="删除"
-            cancelText="取消"
-          >
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={(e) => e.stopPropagation()}
-              title="删除"
-            >
-              <Trash2 size={14} style={{ color: 'var(--red)' }} />
-            </button>
-          </Popconfirm>
-        </div>
-      ),
-    },
-  ];
+  /* ── Form fields (shared) ── */
+
+  const renderFormFields = () => (
+    <>
+      <FormField label="迭代名称" required error={formErrors.name}>
+        <input
+          className="input w-full"
+          placeholder="例如：Sprint 24-W05"
+          value={formName}
+          onChange={(e) => setFormName(e.target.value)}
+        />
+      </FormField>
+      <FormField label="开始日期">
+        <input
+          type="date"
+          className="input w-full"
+          value={formStartDate}
+          onChange={(e) => setFormStartDate(e.target.value)}
+        />
+      </FormField>
+      <FormField label="结束日期">
+        <input
+          type="date"
+          className="input w-full"
+          value={formEndDate}
+          onChange={(e) => setFormEndDate(e.target.value)}
+        />
+      </FormField>
+    </>
+  );
 
   return (
     <div className="no-sidebar">
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+      <div className="max-w-[1200px] mx-auto">
         {/* ── Top bar ── */}
         <div className="topbar">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <div className="flex items-center gap-2 mb-1">
               <button
                 type="button"
                 className="btn btn-ghost btn-sm"
@@ -296,7 +280,7 @@ function IterationsContent() {
               </button>
               <div className="page-watermark">SISYPHUS · 迭代管理</div>
             </div>
-            <h1 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <h1 className="flex items-center gap-2">
               <Calendar size={20} />
               {product?.name ?? '子产品'} — 迭代列表
             </h1>
@@ -305,109 +289,156 @@ function IterationsContent() {
           <div className="spacer" />
           <button
             type="button"
-            className="btn btn-primary"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
-            onClick={() => setCreateOpen(true)}
+            className="btn btn-primary inline-flex items-center gap-1"
+            onClick={() => {
+              resetForm();
+              setCreateOpen(true);
+            }}
           >
             <Plus size={14} /> 新建迭代
           </button>
         </div>
 
         {/* ── Table ── */}
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div className="card p-0 overflow-hidden">
           {isLoading ? (
-            <div style={{ padding: 24 }}>
-              <Skeleton active paragraph={{ rows: 5 }} title={false} />
-            </div>
-          ) : (
-            <Table<Iteration>
-              columns={columns}
-              dataSource={iterations ?? []}
-              rowKey="id"
-              pagination={{
-                pageSize: 20,
-                showSizeChanger: false,
-                showTotal: (total) => `共 ${total} 条`,
-              }}
-              locale={{ emptyText: '暂无迭代，点击右上角新建' }}
-              onRow={(record) => ({
-                style: { cursor: 'pointer' },
-                onClick: () => router.push(`/requirements?iterationId=${record.id}`),
-              })}
+            <TableSkeleton rows={5} cols={5} />
+          ) : items.length === 0 ? (
+            <EmptyState
+              title="暂无迭代"
+              description="点击右上角「新建迭代」开始"
             />
+          ) : (
+            <>
+              <table className="tbl w-full">
+                <thead>
+                  <tr>
+                    <th className="text-left">迭代名称</th>
+                    <th className="text-left w-[140px]">开始日期</th>
+                    <th className="text-left w-[140px]">结束日期</th>
+                    <th className="text-left w-[120px]">状态</th>
+                    <th className="text-right w-[100px]">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginated.map((item) => {
+                    const s = STATUS_MAP[item.status] ?? { label: item.status, cls: 'pill-gray' };
+                    return (
+                      <tr
+                        key={item.id}
+                        className="cursor-pointer hover:bg-bg2 transition-colors"
+                        onClick={() => router.push(`/requirements?iterationId=${item.id}`)}
+                      >
+                        <td>
+                          <button
+                            type="button"
+                            className="font-semibold text-accent hover:text-accent2 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/requirements?iterationId=${item.id}`);
+                            }}
+                          >
+                            {item.name}
+                          </button>
+                        </td>
+                        <td>
+                          {item.start_date ? (
+                            <span className="font-mono">{item.start_date}</span>
+                          ) : (
+                            <span className="text-text3">—</span>
+                          )}
+                        </td>
+                        <td>
+                          {item.end_date ? (
+                            <span className="font-mono">{item.end_date}</span>
+                          ) : (
+                            <span className="text-text3">—</span>
+                          )}
+                        </td>
+                        <td>
+                          <span className={`pill ${s.cls}`}>{s.label}</span>
+                        </td>
+                        <td>
+                          <div className="flex justify-end gap-1">
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openEditDialog(item);
+                              }}
+                              title="编辑"
+                            >
+                              <Pencil size={14} />
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-sm text-red"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteTarget(item);
+                              }}
+                              title="删除"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+
+              <div className="px-4 pb-3">
+                <Pagination
+                  current={currentPage}
+                  total={items.length}
+                  pageSize={PAGE_SIZE}
+                  onChange={setCurrentPage}
+                  showPageSizeChanger={false}
+                  showQuickJumper={false}
+                />
+              </div>
+            </>
           )}
         </div>
       </div>
 
-      {/* ── Create modal ── */}
-      <Modal
-        title="新建迭代"
+      {/* ── Create dialog ── */}
+      <FormDialog
         open={createOpen}
-        onCancel={() => {
-          setCreateOpen(false);
-          createForm.resetFields();
-        }}
-        onOk={() => createForm.submit()}
-        confirmLoading={createMutation.isPending}
-        okText="创建"
-        cancelText="取消"
+        onClose={closeCreateDialog}
+        onSubmit={handleCreate}
+        title="新建迭代"
+        submitText="创建"
+        loading={createMutation.isPending}
       >
-        <Form
-          form={createForm}
-          layout="vertical"
-          onFinish={handleCreateFinish}
-          style={{ marginTop: 16 }}
-        >
-          <Form.Item
-            name="name"
-            label="迭代名称"
-            rules={[{ required: true, message: '请输入迭代名称' }]}
-          >
-            <Input placeholder="例如：Sprint 24-W05" />
-          </Form.Item>
-          <Form.Item name="start_date" label="开始日期">
-            <DatePicker style={{ width: '100%' }} placeholder="选择开始日期" />
-          </Form.Item>
-          <Form.Item name="end_date" label="结束日期">
-            <DatePicker style={{ width: '100%' }} placeholder="选择结束日期" />
-          </Form.Item>
-        </Form>
-      </Modal>
+        {renderFormFields()}
+      </FormDialog>
 
-      {/* ── Edit modal ── */}
-      <Modal
-        title="编辑迭代"
+      {/* ── Edit dialog ── */}
+      <FormDialog
         open={!!editItem}
-        onCancel={() => {
-          setEditItem(null);
-          editForm.resetFields();
-        }}
-        onOk={() => editForm.submit()}
-        confirmLoading={updateMutation.isPending}
-        okText="保存"
-        cancelText="取消"
+        onClose={closeEditDialog}
+        onSubmit={handleEdit}
+        title="编辑迭代"
+        submitText="保存"
+        loading={updateMutation.isPending}
       >
-        <Form
-          form={editForm}
-          layout="vertical"
-          onFinish={handleEditFinish}
-          style={{ marginTop: 16 }}
-        >
-          <Form.Item
-            name="name"
-            label="迭代名称"
-            rules={[{ required: true, message: '请输入迭代名称' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item name="start_date" label="开始日期">
-            <DatePicker style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item name="end_date" label="结束日期">
-            <DatePicker style={{ width: '100%' }} />
-          </Form.Item>
-        </Form>
-      </Modal>
+        {renderFormFields()}
+      </FormDialog>
+
+      {/* ── Delete confirm ── */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        onCancel={() => setDeleteTarget(null)}
+        title="删除迭代"
+        description={`确定要删除「${deleteTarget?.name}」吗？此操作不可撤销。`}
+        confirmText="删除"
+        variant="danger"
+      />
     </div>
   );
 }
@@ -417,9 +448,9 @@ export default function IterationsPage() {
     <Suspense
       fallback={
         <div className="no-sidebar">
-          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div className="max-w-[1200px] mx-auto">
             <div className="card">
-              <Skeleton active paragraph={{ rows: 6 }} title={false} />
+              <TableSkeleton rows={6} cols={5} />
             </div>
           </div>
         </div>

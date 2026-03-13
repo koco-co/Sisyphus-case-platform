@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { DM_Sans, JetBrains_Mono, Syne } from 'next/font/google';
-import { AntdProvider } from '@/components/providers/AntdProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { Toaster } from 'sonner';
 import './globals.css';
 
 const dmSans = DM_Sans({
@@ -40,10 +40,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body>
         <ThemeProvider>
-          <QueryProvider>
-            <AntdProvider>{children}</AntdProvider>
-          </QueryProvider>
+          <QueryProvider>{children}</QueryProvider>
         </ThemeProvider>
+        <Toaster position="top-right" theme="dark" richColors closeButton />
       </body>
     </html>
   );
