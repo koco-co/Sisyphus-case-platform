@@ -1,6 +1,7 @@
 'use client';
 
 import { Clock, FileText, GitCompareArrows, History, Loader2, Target } from 'lucide-react';
+import { useState } from 'react';
 import { ThreeColLayout } from '@/components/layout/ThreeColLayout';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { StatusBadge } from '@/components/ui/StatusBadge';
@@ -186,6 +187,7 @@ function CenterColumn() {
     dismissSuggestion,
     computing,
   } = useDiff();
+  const [activeTab, setActiveTab] = useState<'text' | 'summary'>('text');
 
   if (computing) {
     return (
@@ -209,41 +211,77 @@ function CenterColumn() {
   }
 
   return (
-    <div className="p-4 space-y-4">
-      {/* Summary */}
-      {diffResult.summary && (
-        <div className="p-3 bg-bg1 border border-border rounded-lg">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-accent text-white dark:text-black">
-              AI 摘要
-            </span>
-          </div>
-          <p className="text-[12.5px] text-text2 leading-relaxed">{diffResult.summary}</p>
+    <div className="flex flex-col h-full">
+      {/* Dual tab */}
+      <div className="flex items-center gap-1 px-4 pt-3 pb-2">
+        <div className="flex bg-bg2 rounded-lg p-0.5">
+          <button
+            type="button"
+            onClick={() => setActiveTab('text')}
+            className={`px-3 py-1 rounded-md text-[12px] font-medium transition-all ${
+              activeTab === 'text'
+                ? 'bg-bg1 text-text shadow-sm'
+                : 'text-text3 hover:text-text2'
+            }`}
+          >
+            文本对比
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('summary')}
+            className={`px-3 py-1 rounded-md text-[12px] font-medium transition-all ${
+              activeTab === 'summary'
+                ? 'bg-bg1 text-text shadow-sm'
+                : 'text-text3 hover:text-text2'
+            }`}
+          >
+            变更摘要
+          </button>
         </div>
-      )}
+      </div>
 
-      {/* Diff view */}
-      {diffResult.text_diff?.diff_text && (
-        <DiffView
-          diffText={diffResult.text_diff.diff_text}
-          additions={diffResult.text_diff.additions}
-          deletions={diffResult.text_diff.deletions}
-        />
-      )}
+      <div className="flex-1 overflow-y-auto p-4 pt-0 space-y-4">
+        {activeTab === 'text' ? (
+          <>
+            {/* Diff view */}
+            {diffResult.text_diff?.diff_text && (
+              <DiffView
+                diffText={diffResult.text_diff.diff_text}
+                additions={diffResult.text_diff.additions}
+                deletions={diffResult.text_diff.deletions}
+              />
+            )}
+          </>
+        ) : (
+          <>
+            {/* AI Summary */}
+            {diffResult.summary && (
+              <div className="p-3 bg-bg1 border border-border rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-accent text-white dark:text-black">
+                    AI 摘要
+                  </span>
+                </div>
+                <p className="text-[12.5px] text-text2 leading-relaxed">{diffResult.summary}</p>
+              </div>
+            )}
 
-      {/* Semantic analysis */}
-      {diffResult.semantic_impact && <SemanticAnalysis impact={diffResult.semantic_impact} />}
+            {/* Semantic analysis */}
+            {diffResult.semantic_impact && <SemanticAnalysis impact={diffResult.semantic_impact} />}
+          </>
+        )}
 
-      {/* Suggested test points */}
-      {suggestions.length > 0 && (
-        <SuggestedPoints
-          suggestions={suggestions}
-          adoptedIds={adoptedIds}
-          dismissedIds={dismissedIds}
-          onAdopt={adoptSuggestion}
-          onDismiss={dismissSuggestion}
-        />
-      )}
+        {/* Suggested test points (always visible) */}
+        {suggestions.length > 0 && (
+          <SuggestedPoints
+            suggestions={suggestions}
+            adoptedIds={adoptedIds}
+            dismissedIds={dismissedIds}
+            onAdopt={adoptSuggestion}
+            onDismiss={dismissSuggestion}
+          />
+        )}
+      </div>
     </div>
   );
 }

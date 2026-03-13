@@ -1,6 +1,6 @@
 'use client';
 
-import { Archive, ClipboardList, LayoutGrid, Table2, Trash } from 'lucide-react';
+import { Archive, ClipboardList, Download, LayoutGrid, Table2, Trash, Upload } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -19,6 +19,8 @@ import { CleanCompareDrawer } from './_components/CleanCompareDrawer';
 import { DiscardedRecordsModal } from './_components/DiscardedRecordsModal';
 import { FilterToolbar } from './_components/FilterToolbar';
 import { FolderTree } from './_components/FolderTree';
+import { ImportDialog } from './_components/ImportDialog';
+import { ExportDialog } from './_components/ExportDialog';
 import { ImportedCasesTab } from './_components/ImportedCasesTab';
 import type {
   CaseFilters,
@@ -176,6 +178,10 @@ export default function TestCasesPage() {
   // ── Clean Compare / Discarded ──
   const [compareOpen, setCompareOpen] = useState(false);
   const [discardedOpen, setDiscardedOpen] = useState(false);
+
+  // ── Import / Export ──
+  const [importOpen, setImportOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
 
   // ── Delete confirmation ──
   const [deleteTarget, setDeleteTarget] = useState<{
@@ -398,6 +404,22 @@ export default function TestCasesPage() {
         <h1 className="font-display text-[20px] font-bold text-sy-text">用例管理中心</h1>
         <span className="text-[12px] text-sy-text-3">Test Case Management</span>
         <div className="flex-1" />
+        <button
+          type="button"
+          onClick={() => setImportOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] text-sy-text-2 hover:text-sy-text border border-sy-border hover:border-sy-border-2 rounded-md transition-colors bg-sy-bg-2 hover:bg-sy-bg-3"
+        >
+          <Upload className="w-3.5 h-3.5" />
+          导入
+        </button>
+        <button
+          type="button"
+          onClick={() => setExportOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] text-sy-text-2 hover:text-sy-text border border-sy-border hover:border-sy-border-2 rounded-md transition-colors bg-sy-bg-2 hover:bg-sy-bg-3"
+        >
+          <Download className="w-3.5 h-3.5" />
+          导出
+        </button>
         <button
           type="button"
           onClick={() => setDiscardedOpen(true)}
@@ -670,6 +692,10 @@ export default function TestCasesPage() {
 
       {/* ── Discarded Records Modal ── */}
       <DiscardedRecordsModal open={discardedOpen} onClose={() => setDiscardedOpen(false)} />
+
+      {/* ── Import / Export Dialogs ── */}
+      <ImportDialog open={importOpen} onClose={() => setImportOpen(false)} onImportComplete={fetchCases} />
+      <ExportDialog open={exportOpen} onClose={() => setExportOpen(false)} selectedCount={selectedIds.length} currentFolder={selectedFolder} />
 
       </>)}
     </div>
