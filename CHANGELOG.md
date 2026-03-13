@@ -10,12 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **6 模块 System Prompt 重写** — 每个模块包含独立的 ①身份声明 ②任务边界 ③输出规范 ④质量红线 四部分结构，各模块角色声明差异化
 - **Prompt 编辑器「默认值」badge** — 未自定义的模块显示「默认值」标识，保存后显示保存时间
+- **需求文档标准模板** — `public/templates/需求文档模板.md` + `.docx`，内置功能背景/功能描述（含业务规则/异常处理/数据约束）/接口说明/非功能要求章节
+- **UDA 结构化解析端点** — `POST /uda/parse-structure`，解析文档后按章节拆分返回条目列表 + 置信度评分（0.2~0.9），不入库
+- **需求上传两步对话框** — Step 1 含模板下载入口及引导文案，Step 2 展示解析条目（可编辑/删除/添加），低置信度时显示非阻断警告，确认后才保存，不自动触发 AI 分析
 
 ### Fixed
 - **Prompt 管理器 key 错误** — `diff_semantic` 修正为 `diff`，与后端 `_MODULE_PROMPTS` 一致
 - **GET /ai-config/prompts 空列表问题** — 首次安装无 DB 记录时，现在始终返回全部 6 个模块，默认值标注 `is_default: true`
 - **文案 typo** — 「需求需求分析时」→「需求分析时」
 - **历史记录缺少预览** — 历史面板每条记录新增 80 字符内容预览
+
+### Changed
+- **全站「诊断」→「分析」文案替换** — 前端 progress、useDashboard、useDiagnosis 中 UI 文本；后端 diagnosis/search/dashboard 模块注释、日志、Prompt 文案（变量名/路由/类名保持不变）
 
 ## [2.0.0-rc] - 2026-03-13
 
