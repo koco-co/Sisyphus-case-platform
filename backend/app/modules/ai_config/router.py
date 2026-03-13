@@ -53,10 +53,15 @@ async def get_providers() -> dict:
                 "api_key_placeholder": "xxxxxxxx.xxxxxxxxxx",
                 "models": [
                     {
+                        "id": "glm-5",
+                        "name": "GLM-5",
+                        "description": "能力最强，稳定性最高，适合复杂用例生成",
+                        "recommended": True,
+                    },
+                    {
                         "id": "glm-4-flash",
                         "name": "GLM-4-Flash",
                         "description": "速度最快，适合实时对话",
-                        "recommended": True,
                     },
                     {"id": "glm-4", "name": "GLM-4", "description": "综合能力强，性价比高"},
                     {"id": "glm-4-air", "name": "GLM-4-Air", "description": "轻量版，低延迟"},

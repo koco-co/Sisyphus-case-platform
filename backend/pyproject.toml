@@ -25,6 +25,7 @@ dependencies = [
     "markdown>=3.5",
     "qdrant-client>=1.12",
     "openpyxl>=3.1",
+    "xmindparser>=1.2.2",
 ]
 
 [project.optional-dependencies]
@@ -52,6 +53,9 @@ select = [
     "SIM",
     "ASYNC",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"app/ai/prompts.py" = ["E501"]  # Long prompt strings are exempt from line-length limits
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]

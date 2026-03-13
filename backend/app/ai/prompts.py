@@ -132,7 +132,101 @@ GENERATION_SYSTEM = """## ① 身份声明
 - 用例标题不符合 [模块名]-[功能点]-[场景描述] 格式
 - step_num 不连续或从 0 开始
 - 整批用例缺少 exception 类型（无论多少测试点，必须至少一条异常用例）
-- action 不以动词开头"""
+- action 不以动词开头
+
+## ⑤ Few-Shot 示例（来自 7493 条历史用例，质量评审通过）
+
+### ✅ 正例 1 — 正常场景（normal）
+```json
+{
+  "title": "指标开发-原子指标-下游联动发布验证",
+  "priority": "P1",
+  "case_type": "normal",
+  "precondition": "1. 已用{教师_Model}创建原子指标 yz_01（已发布），计算逻辑：avg(amount)；\n2. yz_01 已创建即席查询派生指标 jx_ps_01（已发布）；\n3. jx_ps_01 已创建即席查询复合指标 jx_fuhe_01（未发布）和 jx_fuhe_02（已发布）。",
+  "keywords": ["原子指标", "下游联动", "发布审批"],
+  "steps": [
+    {"step_num": 1, "action": "进入【指标开发】-【指标定义】列表页面，编辑 yz_01 指标，修改过滤条件，其他信息不变，点击【保存并发布】", "expected_result": "弹出联动更新提示窗：「本次更新将影响下游指标 jx_ps_01、jx_fuhe_01、jx_fuhe_02」"},
+    {"step_num": 2, "action": "点击【发布并更新下游指标】按钮", "expected_result": "弹窗关闭，跳转回指标定义列表，yz_01 操作状态显示「发布审批中」"},
+    {"step_num": 3, "action": "yz_01 审批通过后，查看指标详情-变更记录", "expected_result": "最新版本记录【系统说明】显示「下游受影响指标更新中」，点击展开进度：jx_ps_01 等待更新/发布中/已发布"},
+    {"step_num": 4, "action": "更新完成后，查看 jx_ps_01、jx_fuhe_01、jx_fuhe_02 详情", "expected_result": "jx_ps_01 发布新版本，SQL 中含【且】拼接过滤条件；jx_fuhe_02 发布新版本；jx_fuhe_01（未发布）仅记录变更，不触发新版本发布"}
+  ]
+}
+```
+
+### ✅ 正例 2 — 异常场景（exception）
+```json
+{
+  "title": "公共组件-MinIO存储-accessKey/secretKey 异常输入验证",
+  "priority": "P2",
+  "case_type": "exception",
+  "precondition": "1. 控制台-存储组件已存在可用的 MinIO 实例配置页面；\n2. 当前账号有「控制台管理员」权限。",
+  "keywords": ["MinIO", "accessKey", "异常输入"],
+  "steps": [
+    {"step_num": 1, "action": "进入【控制台】-【存储组件】-【组件配置】，点击【新增】，选择 MinIO 类型，填写必填字段", "expected_result": "打开新增 MinIO 组件弹窗，表单字段完整显示：名称、accessKey、secretKey、Endpoint 等"},
+    {"step_num": 2, "action": "在 accessKey 和 secretKey 中输入错误凭证（与实际不符），填写其余字段后点击【保存】，再点击【测试联通性】", "expected_result": "保存成功，列表顶部出现新建记录，内容与填写一致；测试联通性失败，提示「认证失败，请检查 accessKey 和 secretKey 是否正确」"},
+    {"step_num": 3, "action": "编辑该记录，将 secretKey 清空，点击【保存】", "expected_result": "页面校验拦截，提示「密码不能为空」，记录不被保存"}
+  ]
+}
+```
+
+### ✅ 正例 3 — 边界场景（boundary）
+```json
+{
+  "title": "公共组件-集群配置-Milvus 组件模板下载文件名校验",
+  "priority": "P2",
+  "case_type": "boundary",
+  "precondition": "1. 已在控制台添加 Milvus 组件，并保存有具体参数配置；\n2. 当前账号有集群配置查看权限。",
+  "keywords": ["Milvus", "下载模板", "文件名校验"],
+  "steps": [
+    {"step_num": 1, "action": "进入【控制台】-【多集群管理】，选择指定集群，进入【集群配置】-【公共组件】，定位 Milvus 组件", "expected_result": "页面显示 Milvus 组件卡片，【下载模板】按钮可见且可点击"},
+    {"step_num": 2, "action": "点击【下载模板】按钮", "expected_result": "浏览器自动下载文件，文件名精确为「MILVUS.json」（区分大小写）"},
+    {"step_num": 3, "action": "打开下载的文件，校验内容完整性", "expected_result": "文件内容与控制台保存的 Milvus 参数完全一致，JSON 格式合法，无乱码或缺字段"}
+  ]
+}
+```
+
+### ❌ 负例 1 — 预期结果模糊（禁止生成此类内容）
+**问题**：预期中含「无报错」「正常加载」「显示正常」等不可客观验证的断言。
+```json
+{
+  "steps": [
+    {"step_num": 1, "action": "进入数据开发模块，新建向导模式的数据同步任务",
+     "expected_result": "❌ 页面内容正常加载显示，无报错"},
+    {"step_num": 2, "action": "查看计算引擎名称显示",
+     "expected_result": "❌ 显示正常，功能行为符合预期，无报错或异常"}
+  ]
+}
+```
+**正确做法**：改为「浏览器控制台无 JS 错误日志，页面列表/按钮/筛选栏均可见」「引擎名称显示为「OceanBase for MySQL」和「OceanBase for Oracle」，字符大小写与产品规范一致」。
+
+### ❌ 负例 2 — 第一步路径不完整（禁止生成此类内容）
+**问题**：步骤 1 未精确到功能页面路径，测试员无法独立定位入口。
+```json
+{
+  "steps": [
+    {"step_num": 1, "action": "❌ 进入数据开发模块，新建向导模式的数据同步任务",
+     "expected_result": "成功进入页面"},
+    {"step_num": 2, "action": "新建 OceanBase for MySQL SQL 任务",
+     "expected_result": "..."}
+  ]
+}
+```
+**正确做法**：改为 `"进入【数据开发】-【离线任务】，点击【新建任务】，类型选择「数据同步」，模式选择「向导模式」"` 。
+
+### ❌ 负例 3 — 前置条件缺失（禁止生成此类内容）
+**问题**：步骤依赖预先存在的数据，但 precondition 写「无」或为空，导致首次执行时无测试数据。
+```json
+{
+  "precondition": "❌ 无",
+  "steps": [
+    {"step_num": 1, "action": "进入【权限管理】-【角色管理】，搜索角色「数据分析师」",
+     "expected_result": "搜索结果显示「数据分析师」角色记录"},
+    {"step_num": 2, "action": "点击该角色，查看权限列表",
+     "expected_result": "权限列表显示已配置的权限项"}
+  ]
+}
+```
+**正确做法**：前置条件改为「1. 已在【角色管理】中预创建角色「数据分析师」，并分配「查看报表」权限；2. 当前登录账号有角色管理查看权限。」"""
 
 # ── 4. 深度追问链 ──────────────────────────────────────────────────
 

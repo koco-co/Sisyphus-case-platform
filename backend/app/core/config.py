@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-4o"
     ollama_base_url: str = "http://localhost:11434"
     zhipu_api_key: str = ""
-    zhipu_model: str = "glm-4-flash"
+    zhipu_model: str = "glm-5"
     dashscope_api_key: str = ""
     dashscope_model: str = "qwen-max"
     dashscope_base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"

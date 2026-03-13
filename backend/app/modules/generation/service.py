@@ -75,7 +75,7 @@ class GenerationService:
             requirement_id=requirement_id,
             mode=mode,
             status="active",
-            model_used="glm-4-flash",
+            model_used="glm-5",
         )
         self.session.add(gen_session)
         await self.session.commit()
@@ -298,13 +298,22 @@ class GenerationService:
                 }
             )
 
+        # RAG: retrieve similar historical cases as few-shot reference
+        from app.engine.rag.retriever import retrieve_cases_as_context
+
+        rag_context = await retrieve_cases_as_context(
+            user_message,
+            top_k=5,
+            score_threshold=0.72,
+        )
+
         # Select prompt module based on session mode
         if gen_session.mode == "test_point_driven":
             task_instruction = "根据已确认的测试点，生成高质量、可执行的测试用例，输出 JSON 数组。"
-            system = assemble_prompt("generation", task_instruction)
+            system = assemble_prompt("generation", task_instruction, rag_context=rag_context)
         else:
             task_instruction = "与用户协作完成测试用例设计，根据对话上下文生成或调整用例。"
-            system = assemble_prompt("exploratory", task_instruction)
+            system = assemble_prompt("exploratory", task_instruction, rag_context=rag_context)
         return await get_thinking_stream_with_fallback(history, system=system)
 
     # ── SSE stream with auto-persistence ──────────────────────────────
