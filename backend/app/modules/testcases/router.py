@@ -3,6 +3,7 @@ import uuid
 from typing import Annotated, Any, cast
 
 from fastapi import APIRouter, File, Query, UploadFile, status
+from pydantic import BaseModel
 
 from app.core.dependencies import AsyncSessionDep
 from app.modules.testcases.import_service import TestCaseImportService
@@ -45,42 +46,36 @@ async def parse_import_file(
     return await svc.parse_file(file)
 
 
+class CheckDuplicatesRequest(BaseModel):
+    cases: list[dict[str, str]]
+    folder_id: uuid.UUID | None = None
+
+
+class BatchImportRequest(BaseModel):
+    cases: list[dict[str, str]]
+    folder_id: uuid.UUID | None = None
+    per_case_strategies: dict[str, str] = {}
+
+
 @router.post("/import/check-duplicates")
 async def check_import_duplicates(
-    data: dict[str, Any],
+    data: CheckDuplicatesRequest,
     session: AsyncSessionDep,
 ) -> list[dict[str, Any]]:
-    """Check which cases in the payload already exist in the target folder.
-
-    Body: ``{"cases": [{title, ...}, ...], "folder_id": "<uuid> | null"}``
-    Returns a list of duplicate-info objects (index, title, existing_id).
-    """
+    """Check which cases in the payload already exist in the target folder."""
     svc = TestCaseImportService(session)
-    folder_id = uuid.UUID(data["folder_id"]) if data.get("folder_id") else None
-    return await svc.check_duplicates(data["cases"], folder_id)
+    return await svc.check_duplicates(data.cases, data.folder_id)
 
 
 @router.post("/import/batch")
 async def batch_import_cases(
-    data: dict[str, Any],
+    data: BatchImportRequest,
     session: AsyncSessionDep,
 ) -> dict[str, int]:
-    """Batch-import cases with per-case duplicate strategies.
-
-    Body::
-
-        {
-            "cases": [{title, steps, expected_result, ...}, ...],
-            "folder_id": "<uuid> | null",
-            "per_case_strategies": {"0": "skip", "3": "overwrite", "5": "rename"}
-        }
-
-    Returns import stats: imported / skipped / overwritten / renamed.
-    """
+    """Batch-import cases with per-case duplicate strategies."""
     svc = TestCaseImportService(session)
-    folder_id = uuid.UUID(data["folder_id"]) if data.get("folder_id") else None
-    per_case_strategies = {int(k): v for k, v in data.get("per_case_strategies", {}).items()}
-    return await svc.batch_import(data["cases"], folder_id, per_case_strategies)
+    per_case_strategies = {int(k): v for k, v in data.per_case_strategies.items()}
+    return await svc.batch_import(data.cases, data.folder_id, per_case_strategies)
 
 
 # ── Static paths (must precede /{case_id}) ─────────────────────────
