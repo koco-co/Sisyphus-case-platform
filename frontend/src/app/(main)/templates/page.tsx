@@ -595,7 +595,7 @@ export default function TemplatesPage() {
               disabled={saving}
             >
               {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-              {editingId ? '保存修改' : '创建模板'}
+              {editingId ? '保存修改' : '新建模板'}
             </button>
             <button
               type="button"

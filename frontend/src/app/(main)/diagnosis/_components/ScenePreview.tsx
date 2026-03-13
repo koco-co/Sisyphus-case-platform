@@ -148,7 +148,7 @@ export function ScenePreview({ sceneMap, loading }: ScenePreviewProps) {
       ) : (
         <div className="text-center py-6">
           <MapPinned className="w-10 h-10 text-text3 opacity-30 mx-auto mb-2" />
-          <div className="text-[12px] text-text3">完成诊断后自动生成场景地图</div>
+          <div className="text-[12px] text-text3">完成分析后自动生成场景地图</div>
         </div>
       )}
     </div>

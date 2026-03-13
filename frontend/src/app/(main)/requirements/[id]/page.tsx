@@ -18,7 +18,7 @@ const statusConfig: Record<
 > = {
   draft: { variant: 'gray', label: '草稿' },
   confirmed: { variant: 'green', label: '已确认' },
-  diagnosed: { variant: 'blue', label: '已诊断' },
+  diagnosed: { variant: 'blue', label: '已分析' },
   generating: { variant: 'amber', label: '生成中' },
   completed: { variant: 'green', label: '已完成' },
 };
@@ -114,7 +114,7 @@ export default function RequirementDetailPage() {
               type="button"
               className="flex items-center gap-1.5 px-4 py-2 rounded-md text-[12.5px] font-semibold bg-accent text-black hover:bg-accent2 transition-colors"
             >
-              <Stethoscope size={14} /> 开始健康诊断
+              <Stethoscope size={14} /> 开始需求分析
             </button>
           </Link>
         </div>
@@ -166,7 +166,7 @@ export default function RequirementDetailPage() {
                   type="button"
                   className="w-full flex items-center gap-2 text-left px-3 py-2 rounded-md text-[12px] bg-bg2 border border-border text-text2 hover:text-text hover:border-border2 transition-colors"
                 >
-                  <Stethoscope size={13} /> 健康诊断
+                  <Stethoscope size={13} /> 需求分析
                 </button>
               </Link>
               <Link href={`/scene-map/${id}`} className="block">

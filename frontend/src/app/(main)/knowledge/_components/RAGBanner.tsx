@@ -57,7 +57,7 @@ export default function RAGBanner() {
         <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.7 }}>
           上传测试规范、检查清单、领域文档等知识文件，系统将自动进行向量化处理。在
           <span style={{ color: 'var(--accent)', fontWeight: 500 }}>用例生成</span>和
-          <span style={{ color: 'var(--accent)', fontWeight: 500 }}>需求诊断</span>
+          <span style={{ color: 'var(--accent)', fontWeight: 500 }}>需求分析</span>
           时，AI 引擎会检索相关知识片段作为上下文，显著提升生成质量与准确度。
         </div>
         <div

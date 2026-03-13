@@ -359,7 +359,7 @@ export default function ProductsPage() {
         onClose={closeCreateDialog}
         onSubmit={handleCreate}
         title="新建子产品"
-        submitText="创建"
+        submitText="新建"
         loading={createMutation.isPending}
       >
         {renderFormFields()}

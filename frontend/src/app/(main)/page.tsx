@@ -198,7 +198,7 @@ export default function DashboardPage() {
                     欢迎回到 Sisyphus-Y
                   </div>
                   <div style={{ fontSize: 12, color: 'var(--text2)' }}>
-                    需求录入 → 健康诊断 → 测试点确认 → 用例生成 → 执行回流，构建完整测试生命周期
+                    需求录入 → 需求分析 → 测试点确认 → 用例生成 → 执行回流，构建完整测试生命周期
                   </div>
                 </div>
               </div>

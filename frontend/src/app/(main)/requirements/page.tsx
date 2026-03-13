@@ -64,7 +64,7 @@ const fallbackRequirements = [
 const statusMap: Record<string, { label: string; cls: string }> = {
   draft: { label: '草稿', cls: 'pill-gray' },
   reviewed: { label: '已评审', cls: 'pill-green' },
-  diagnosed: { label: '已诊断', cls: 'pill-blue' },
+  diagnosed: { label: '已分析', cls: 'pill-blue' },
 };
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';

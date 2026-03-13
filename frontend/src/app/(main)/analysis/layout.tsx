@@ -15,7 +15,7 @@ const tabs = [
 		href: '/analysis/diagnosis',
 		label: 'AI 分析',
 		icon: HeartPulse,
-		description: '需求健康诊断与测试点生成',
+		description: '需求需求分析与测试点生成',
 	},
 	{
 		href: '/analysis/scene-map',

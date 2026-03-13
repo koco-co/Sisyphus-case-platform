@@ -411,7 +411,7 @@ function IterationsContent() {
         onClose={closeCreateDialog}
         onSubmit={handleCreate}
         title="新建迭代"
-        submitText="创建"
+        submitText="新建"
         loading={createMutation.isPending}
       >
         {renderFormFields()}

@@ -40,7 +40,7 @@ export default function DiagnosisPage() {
       {/* Header */}
       <div className="px-3.5 py-2.5 border-b border-border flex items-center gap-2 sticky top-0 bg-bg1 z-5">
         <Activity className="w-3.5 h-3.5 text-accent" />
-        <span className="text-[12px] font-semibold text-text2">需求健康诊断</span>
+        <span className="text-[12px] font-semibold text-text2">需求需求分析</span>
       </div>
 
       {/* Flow Steps */}
@@ -135,12 +135,12 @@ export default function DiagnosisPage() {
               {sse.isStreaming ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  诊断进行中...
+                  分析进行中...
                 </>
               ) : (
                 <>
                   <Play className="w-4 h-4" />
-                  开始诊断
+                  开始分析
                 </>
               )}
             </button>
@@ -180,7 +180,7 @@ export default function DiagnosisPage() {
             className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-accent text-white dark:text-black font-semibold text-[12.5px] hover:bg-accent2 transition-colors disabled:opacity-40"
           >
             <CheckCircle className="w-4 h-4" />
-            {report?.status === 'completed' ? '诊断已完成' : '完成诊断'}
+            {report?.status === 'completed' ? '分析已完成' : '完成分析'}
           </button>
         </div>
       )}

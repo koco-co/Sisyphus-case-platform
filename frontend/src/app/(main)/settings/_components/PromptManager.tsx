@@ -21,7 +21,7 @@ const modules = [
 	{
 		key: 'diagnosis',
 		label: '需求分析',
-		description: '需求健康诊断时的 AI 系统提示词',
+		description: '需求需求分析时的 AI 系统提示词',
 	},
 	{
 		key: 'scene_map',
@@ -36,7 +36,7 @@ const modules = [
 	{
 		key: 'diagnosis_followup',
 		label: '苏格拉底追问',
-		description: '诊断追问式对话时的 AI 系统提示词',
+		description: '追问式对话时的 AI 系统提示词',
 	},
 	{
 		key: 'diff_semantic',

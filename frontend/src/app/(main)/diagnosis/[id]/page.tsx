@@ -135,7 +135,7 @@ export default function DiagnosisPage() {
   return (
     <div className="p-6 h-[calc(100vh-0px)] flex flex-col">
       <div className="mb-4">
-        <h1 className="font-display font-bold text-[20px]">健康诊断</h1>
+        <h1 className="font-display font-bold text-[20px]">需求分析</h1>
         <div className="text-text3 text-[12px] mt-1">需求 ID: {id}</div>
       </div>
       <ProgressSteps steps={steps} />
@@ -151,7 +151,7 @@ export default function DiagnosisPage() {
               disabled={isStreaming}
               className="text-[11px] px-2.5 py-1 rounded-md bg-accent text-black font-medium disabled:opacity-50"
             >
-              {isStreaming ? '分析中...' : '开始诊断'}
+              {isStreaming ? '分析中...' : '开始分析'}
             </button>
           </div>
           {riskGroups.map((level) => {
@@ -189,7 +189,7 @@ export default function DiagnosisPage() {
             );
           })}
           {!report?.risks?.length && (
-            <div className="text-text3 text-[12px] text-center py-8">点击「开始诊断」分析需求</div>
+            <div className="text-text3 text-[12px] text-center py-8">点击「开始分析」分析需求</div>
           )}
         </div>
 
@@ -250,7 +250,7 @@ export default function DiagnosisPage() {
               ))}
             </div>
           ) : (
-            <div className="text-text3 text-[12px] text-center py-8">完成诊断后自动生成</div>
+            <div className="text-text3 text-[12px] text-center py-8">完成分析后自动生成</div>
           )}
         </div>
       </div>

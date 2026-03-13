@@ -128,7 +128,7 @@ export function DiagnosisChat({
         <div className="text-center">
           <Activity className="w-16 h-16 text-text3 opacity-20 mx-auto mb-4" />
           <p className="text-[16px] text-text3">请从左侧选择一个需求</p>
-          <p className="text-[13px] text-text3 opacity-70 mt-1">开始 AI 驱动的需求健康诊断</p>
+          <p className="text-[13px] text-text3 opacity-70 mt-1">开始 AI 驱动的需求需求分析</p>
         </div>
       </div>
     );
@@ -138,7 +138,7 @@ export function DiagnosisChat({
     <div className="flex flex-col h-full">
       {/* Diagnosis Dimensions */}
       <div className="px-4 py-3 border-b border-border flex-shrink-0">
-        <h4 className="text-[14px] font-semibold text-text mb-2.5">诊断维度 — {reqTitle}</h4>
+        <h4 className="text-[14px] font-semibold text-text mb-2.5">分析维度 — {reqTitle}</h4>
         <div className="grid grid-cols-3 gap-2">
           {diagnosisDimensions.map((dim) => {
             const Icon = dim.icon;
@@ -163,9 +163,9 @@ export function DiagnosisChat({
         {messages.length === 0 && !isStreaming && (
           <div className="text-center py-10">
             <Activity className="w-12 h-12 text-text3 opacity-30 mx-auto mb-3" />
-            <p className="text-[14px] text-text3">点击「开始诊断」或输入问题</p>
+            <p className="text-[14px] text-text3">点击「开始分析」或输入问题</p>
             <p className="text-[12px] text-text3 opacity-70 mt-1">
-              试试：&ldquo;请对这个需求进行全面的健康诊断&rdquo;
+              试试：&ldquo;请对这个需求进行全面的需求分析&rdquo;
             </p>
           </div>
         )}

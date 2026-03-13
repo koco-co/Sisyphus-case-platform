@@ -24,7 +24,7 @@ const PRIORITY_OPTIONS = ['P0', 'P1', 'P2', 'P3'];
 const STATUS_OPTIONS = [
   { value: 'draft', label: '草稿' },
   { value: 'confirmed', label: '已确认' },
-  { value: 'diagnosed', label: '已诊断' },
+  { value: 'diagnosed', label: '已分析' },
   { value: 'generating', label: '生成中' },
   { value: 'completed', label: '已完成' },
 ];

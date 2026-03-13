@@ -24,7 +24,7 @@ interface SearchResult {
 const typeConfig = {
   requirement: { label: '需求', icon: FileText, pill: 'pill-blue' },
   testcase: { label: '用例', icon: ClipboardList, pill: 'pill-green' },
-  diagnosis: { label: '诊断', icon: HeartPulse, pill: 'pill-amber' },
+  diagnosis: { label: '分析', icon: HeartPulse, pill: 'pill-amber' },
   template: { label: '模板', icon: LayoutTemplate, pill: 'pill-purple' },
   knowledge: { label: '知识库', icon: BookOpen, pill: 'pill-gray' },
 };
@@ -46,7 +46,7 @@ const mockResults: SearchResult[] = [
   },
   {
     id: '3',
-    title: '数据导入需求诊断',
+    title: '数据导入需求分析',
     type: 'diagnosis',
     description: '评分 82 · 2 个高风险项',
     url: '/diagnosis',
@@ -184,8 +184,8 @@ export function GlobalSearch() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="搜索需求、用例、诊断报告..."
-            aria-label="搜索需求、用例、诊断报告"
+            placeholder="搜索需求、用例、分析报告..."
+            aria-label="搜索需求、用例、分析报告"
             className="flex-1 bg-transparent text-text text-[14px] outline-none placeholder:text-text3"
           />
           {query && (

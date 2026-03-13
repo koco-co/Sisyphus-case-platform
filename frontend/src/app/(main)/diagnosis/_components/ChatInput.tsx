@@ -87,7 +87,7 @@ export function ChatInput({ onSend, isStreaming, disabled }: ChatInputProps) {
           value={text}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
-          placeholder="输入诊断问题，如：请对这个需求进行健康诊断..."
+          placeholder="输入分析问题，如：请对这个需求进行需求分析..."
           disabled={isStreaming || disabled}
           rows={1}
           className="flex-1 resize-none bg-bg2 border border-border rounded-lg px-3 py-2 text-[13px] text-text placeholder:text-text3 outline-none focus:border-accent transition-colors disabled:opacity-50"

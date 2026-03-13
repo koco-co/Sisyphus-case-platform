@@ -33,7 +33,7 @@ const TYPE_CONFIG: Record<
   failed_diagnosis: {
     icon: HeartPulse,
     pillClass: 'pill pill-red',
-    label: '诊断异常',
+    label: '分析异常',
   },
   low_coverage: {
     icon: Shield,

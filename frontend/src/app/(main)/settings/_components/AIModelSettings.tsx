@@ -61,7 +61,7 @@ const sliderParams: SliderParam[] = [
     initial: 4096,
     fmt: (v) => String(v),
     tooltip:
-      '单次生成的最大 token 数。用例生成建议 4096+，诊断对话 2048 即可。过大会增加响应时间和费用。',
+      '单次生成的最大 token 数。用例生成建议 4096+，分析对话 2048 即可。过大会增加响应时间和费用。',
   },
   {
     label: 'Top-P',

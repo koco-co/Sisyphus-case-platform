@@ -47,7 +47,7 @@ const typeConfig: Record<
   requirement: { label: '需求', icon: FileText, pill: 'pill-blue' },
   testcase: { label: '用例', icon: ClipboardList, pill: 'pill-green' },
   test_point: { label: '测试点', icon: GitBranch, pill: 'pill-amber' },
-  diagnosis: { label: '诊断', icon: HeartPulse, pill: 'pill-amber' },
+  diagnosis: { label: '分析', icon: HeartPulse, pill: 'pill-amber' },
   template: { label: '模板', icon: LayoutTemplate, pill: 'pill-purple' },
   knowledge: { label: '知识库', icon: BookOpen, pill: 'pill-gray' },
 };
@@ -57,7 +57,7 @@ const filterOptions: Array<{ value: FilterType; label: string }> = [
   { value: 'requirement', label: '需求' },
   { value: 'testcase', label: '用例' },
   { value: 'test_point', label: '测试点' },
-  { value: 'diagnosis', label: '诊断' },
+  { value: 'diagnosis', label: '分析' },
   { value: 'template', label: '模板' },
   { value: 'knowledge', label: '知识库' },
 ];
@@ -240,7 +240,7 @@ export default function SearchPage() {
           <Search className="w-12 h-12 text-text3 mx-auto mb-3 opacity-20" />
           <p className="text-[13px] text-text3">输入关键词开始搜索</p>
           <p className="text-[12px] text-text3/60 mt-1">
-            支持需求、测试点、用例、模板、知识文档与诊断结果
+            支持需求、测试点、用例、模板、知识文档与分析结果
           </p>
         </div>
       ) : loading ? (

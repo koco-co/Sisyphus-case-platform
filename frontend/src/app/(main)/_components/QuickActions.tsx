@@ -13,7 +13,7 @@ const actions = [
     bg: 'var(--accent-d)',
   },
   {
-    label: '开始诊断',
+    label: '开始分析',
     description: 'AI 健康检查，发现需求风险点',
     icon: HeartPulse,
     href: '/diagnosis',
