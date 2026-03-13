@@ -7,7 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0-rc] - 2026-03-13
+
 ### Added
+
+- **全面 UI 重构** — 移除 antd，统一使用 shadcn/ui + sy-* 设计 token
+- **导航重构** — 13 → 9 菜单项，新增「分析台」（含 4 子 Tab）和「工作台」合并页
+- **AI 模型配置增强** — ModelConfiguration CRUD，7 预设提供商（含 DeepSeek/月之暗面）
+- **Prompt 管理系统** — 6 模块 Prompt 编辑器 + 保存历史 + 版本回滚
+- **仪表盘质量分析** — 双 Tab（项目概览 + 质量分析），柱状图统计
+- **用例库导入/导出** — ImportDialog（5 步向导）+ ExportDialog（多格式多范围）
+- **知识库 4 分类** — 企业测试规范/业务领域知识/历史用例/技术参考
+- **模板库双 Tab** — 用例结构模板 + Prompt 模板
+- **回收站增强** — 到期倒计时颜色警告 + 清空回收站
+- **设置页审计日志** — 操作日志查看 Tab
+- **全局搜索增强** — Cmd+K 接入 searchApi，300ms 防抖
+- **Diff 双 Tab** — 文本对比 + 变更摘要分离展示
+- **新手引导系统** — 8 步流程引导模态框
+- **文档模板** — CSV 用例导入模板 + Markdown 需求模板
+- **共享组件** — FormDialog / FormField / TableSkeleton
+- **数据模型增强** — TestCaseFolder（3 级目录）/ RecycleItem / PromptHistory
+
+### Changed
+
+- **RAG 相似度阈值** — 默认 score_threshold 从 0.3 提升至 0.72
+- **文案标准化** — 「诊断」→「分析」全站替换，按钮文案「创建」→「新建」统一
+- **版本号** — v0.2 → v2.0
+- **错误处理** — 新增 getErrorMessage() 统一工具函数
+
+### Removed
+
+- AntdProvider 及所有 antd/@ant-design/icons 依赖
+- 冗余菜单项：迭代测试计划 / 协作功能 / 独立覆盖度入口 / 独立诊断入口
+
+---
+
+### Added (prior)
 
 - **M06 用例管理中心 — 目录树功能**：左侧 220px 固定目录树，支持层级展开/折叠；从 `module_path` 字段动态构建树；点击目录过滤右侧用例列表；特殊"未分类"节点显示 module_path 为空的用例
 - **M06 用例管理中心 — StatCard 全量统计**：从 `/api/testcases/stats` 获取全量数据，修复原先仅统计当前页20条的问题

@@ -1,7 +1,7 @@
 {
   "project": "Sisyphus-Y",
-  "version": "1.0.0-rc",
-  "last_updated": "2026-03-12T18:55:35Z",
+  "version": "2.0.0-rc",
+  "last_updated": "2026-03-13T23:30:00Z",
   "acceptance_criteria": {
     "all_tasks_passed": true,
     "real_data_loaded": true,
