@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 3 context gathered
-last_updated: "2026-03-15T14:36:37.825Z"
-last_activity: 2026-03-15 — Completed 01-02 M16 notification module decommission
+stopped_at: Phase 3 planned — 3 plans ready
+last_updated: "2026-03-15T15:32:28.094Z"
+last_activity: 2026-03-15 — Completed 03-02 AI Prompt quality improvement with Few-shot examples
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 10
-  completed_plans: 10
-  percent: 33
+  total_plans: 13
+  completed_plans: 11
+  percent: 60
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-15)
 
 **Core value:** 让测试工程师专注测试策略——平台生成用例草稿，人负责决策
-**Current focus:** Phase 1 - 清场
+**Current focus:** Phase 3 - AI 质量提升
 
 ## Current Position
 
-Phase: 1 of 5 (清场)
-Plan: 2 of TBD in current phase
+Phase: 3 of 5 (AI 质量提升)
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-03-15 — Completed 01-02 M16 notification module decommission
+Last activity: 2026-03-15 — Completed 03-02 AI Prompt 质量提升
 
-Progress: [███░░░░░░░] 33%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Progress: [███░░░░░░░] 33%
 | Phase 02-main-refactor P05 | 30 | 2 tasks | 3 files |
 | Phase 02-main-refactor P06 | 7 | 2 tasks | 5 files |
 | Phase 02-main-refactor P07 | 6 | 1 tasks | 1 files |
+| Phase 03-ai P02 | 35 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -92,6 +93,9 @@ Decisions logged in PROJECT.md Key Decisions table. Key ones affecting current w
 - [Phase 02-main-refactor]: AnalysisLeftPanel height: 100% (非 calc(100vh-49px)) — 由 page.tsx flex 容器决定高度，避免 AiConfigBanner 出现时高度溢出
 - [Phase 02-main-refactor]: workbench onAdd adapter constructs full Omit<TestPointItem,'id'> object — sm.addPoint takes structured payload not positional args
 - [Phase 02-main-refactor]: WRK-02: Removed duplicate header generate button in workbench Step1 — TestPointGroupList bottom bar is canonical generate action
+- [Phase 03-ai]: 5 个模块 Prompt 均使用四段式结构 + Few-shot 示例（2~3 正例 + 1 负例）
+- [Phase 03-ai]: SSE 换行渲染确认：AI 消息路径已使用 renderMarkdown，用户消息路径 whitespace-pre-wrap 足够
+- [Phase 03-ai]: GLM-5 配置验证通过，zhipu_model 默认值为 "glm-5"
 
 ### Pending Todos
 
@@ -106,6 +110,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T14:36:37.823Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-ai/03-CONTEXT.md
+Last session: 2026-03-15T16:30:00.000Z
+Stopped at: Completed 03-02 AI Prompt 质量提升
+Resume file: .planning/phases/03-ai/03-02-SUMMARY.md
