@@ -24,7 +24,12 @@
   3. 所有通知提示以 Toast + 进度条呈现，不存在通知中心/消息列表页面
   4. Cmd+K 唤起全局搜索，结果仅限用例和需求两类，按类型分组展示
   5. 设置页操作日志只读列表可正常加载最近 100 条，支持时间范围筛选
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — 裁剪 M09/M18 后端路由 + 删除前端 review 页面（MOD-01, MOD-02）
+- [ ] 01-02-PLAN.md — 简化 M16 通知：注销后端路由 + 删除通知中心组件和页面（MOD-03）
+- [ ] 01-03-PLAN.md — 裁剪全局搜索为2类 + 补完审计日志时间筛选（MOD-04, MOD-05）
 
 ### Phase 2: 主链路重构
 **Goal**: 分析台和工作台完成重构，测试工程师可无中断地完成「分析需求 → 确认测试点 → 生成用例」全流程
@@ -83,7 +88,7 @@ Phases execute in order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. 清场 | 0/TBD | Not started | - |
+| 1. 清场 | 0/3 | Not started | - |
 | 2. 主链路重构 | 0/TBD | Not started | - |
 | 3. AI 质量提升 | 0/TBD | Not started | - |
 | 4. 外围模块扩展 | 0/TBD | Not started | - |
