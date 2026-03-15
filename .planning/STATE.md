@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 ## Current Position
 
 Phase: 1 of 5 (清场)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-03-15 — Roadmap created, 68 requirements mapped to 5 phases
+Plan: 2 of TBD in current phase
+Status: In progress
+Last activity: 2026-03-15 — Completed 01-02 M16 notification module decommission
 
 Progress: [███░░░░░░░] 33%
 
@@ -63,6 +63,7 @@ Decisions logged in PROJECT.md Key Decisions table. Key ones affecting current w
 - [Roadmap]: Phase 4 外围扩展与 Phase 3 AI 质量提升可部分并行（依赖 Phase 2）
 - [Arch]: Celery worker 任务均为 stub，Phase 4 长任务（批量导入/向量化）需注意
 - [Phase 01-qingchang]: 仅移除路由注册保留模块文件和DB表，模块裁剪不等于代码删除
+- [Phase 01-qingchang P02]: M16 通知模块整体裁剪，sonner toast() 满足通知需求，无需专用通知中心组件
 
 ### Pending Todos
 
@@ -77,6 +78,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T09:54:19.334Z
-Stopped at: Completed 01-qingchang-01-PLAN.md
+Last session: 2026-03-15
+Stopped at: Completed 01-qingchang-02-PLAN.md
 Resume file: None
