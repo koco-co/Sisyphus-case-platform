@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
@@ -10,6 +10,19 @@ from app.modules.generation.service import GenerationService
 from app.modules.testcases.models import TestCase
 
 router = APIRouter(prefix="/generation", tags=["generation"])
+
+
+# ── RAG Preview (RAG-05) ─────────────────────────────────────────
+
+
+class RagPreviewResult(BaseModel):
+    title: str
+    content: str
+    score: float
+
+
+class RagPreviewResponse(BaseModel):
+    results: list[RagPreviewResult]
 
 
 class CreateSessionRequest(BaseModel):
@@ -154,3 +167,34 @@ async def generate_from_template(
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     return StreamingResponse(collector, media_type="text/event-stream")
+
+
+@router.get("/rag-preview", response_model=RagPreviewResponse)
+async def rag_preview(
+    query: str = Query(..., description="检索查询文本"),
+    product: str | None = Query(None, description="可选的产品名称过滤"),
+) -> RagPreviewResponse:
+    """检索相似历史用例，返回 top-5 结果（相似度 >= 0.72）。
+
+    供工作台 Step1 RAG 预览面板调用。
+    """
+    from app.engine.rag.retriever import retrieve_similar_cases
+
+    try:
+        results = await retrieve_similar_cases(
+            query,
+            top_k=5,
+            score_threshold=0.72,
+            product=product,
+        )
+        return RagPreviewResponse(results=[
+            RagPreviewResult(
+                title=r.metadata.get("title", ""),
+                content=r.content,
+                score=r.score,
+            )
+            for r in results
+        ])
+    except Exception:
+        # 任何异常（包括 Qdrant 连接失败）都返回空结果，保证 graceful degradation
+        return RagPreviewResponse(results=[])
