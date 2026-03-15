@@ -14,6 +14,14 @@ interface AuditEntry {
 	details?: string;
 }
 
+interface AuditLogResponse {
+	items: AuditEntry[];
+	total: number;
+	page: number;
+	page_size: number;
+	pages: number;
+}
+
 const actionLabels: Record<string, string> = {
 	create: '新建',
 	update: '更新',
@@ -41,11 +49,17 @@ export function AuditLogs() {
 	const [logs, setLogs] = useState<AuditEntry[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [search, setSearch] = useState('');
+	const [dateFrom, setDateFrom] = useState('');
+	const [dateTo, setDateTo] = useState('');
 
 	const loadLogs = useCallback(async () => {
 		setLoading(true);
 		try {
-			const data = await api.get<{ items: AuditEntry[] }>('/audit/logs?limit=100');
+			const params = new URLSearchParams();
+			params.set('page_size', '100');
+			if (dateFrom) params.set('date_from', new Date(dateFrom).toISOString());
+			if (dateTo) params.set('date_to', new Date(`${dateTo}T23:59:59`).toISOString());
+			const data = await api.get<AuditLogResponse>(`/audit?${params.toString()}`);
 			setLogs(data.items);
 		} catch {
 			// Fallback demo data
@@ -102,7 +116,7 @@ export function AuditLogs() {
 		} finally {
 			setLoading(false);
 		}
-	}, []);
+	}, [dateFrom, dateTo]);
 
 	useEffect(() => {
 		loadLogs();
@@ -126,15 +140,34 @@ export function AuditLogs() {
 				<span className="pill pill-gray text-[10px]">最近 100 条</span>
 			</div>
 
-			<div className="relative mb-4 max-w-xs">
-				<Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text3" />
-				<input
-					type="text"
-					value={search}
-					onChange={(e) => setSearch(e.target.value)}
-					placeholder="搜索操作人、对象..."
-					className="input w-full pl-8"
-				/>
+			<div className="flex flex-wrap items-center gap-3 mb-4">
+				<div className="relative max-w-xs">
+					<Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text3" />
+					<input
+						type="text"
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+						placeholder="搜索操作人、对象..."
+						className="input w-full pl-8"
+					/>
+				</div>
+				<div className="flex items-center gap-2">
+					<input
+						type="date"
+						value={dateFrom}
+						onChange={(e) => setDateFrom(e.target.value)}
+						className="input text-[12px] text-text2 placeholder:text-text3"
+						title="开始日期"
+					/>
+					<span className="text-text3 text-[12px]">—</span>
+					<input
+						type="date"
+						value={dateTo}
+						onChange={(e) => setDateTo(e.target.value)}
+						className="input text-[12px] text-text2 placeholder:text-text3"
+						title="结束日期"
+					/>
+				</div>
 			</div>
 
 			{loading ? (

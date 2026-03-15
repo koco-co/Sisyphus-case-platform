@@ -1,15 +1,6 @@
 'use client';
 
-import {
-  ArrowRight,
-  BookOpen,
-  ClipboardList,
-  FileText,
-  HeartPulse,
-  LayoutTemplate,
-  Search,
-  X,
-} from 'lucide-react';
+import { ArrowRight, ClipboardList, FileText, Search, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { searchApi } from '@/lib/api';
@@ -17,7 +8,7 @@ import { searchApi } from '@/lib/api';
 interface SearchResult {
   id: string;
   title: string;
-  type: 'requirement' | 'testcase' | 'diagnosis' | 'template' | 'knowledge';
+  type: 'requirement' | 'testcase';
   description: string;
   url: string;
 }
@@ -25,9 +16,6 @@ interface SearchResult {
 const typeConfig = {
   requirement: { label: '需求', icon: FileText, pill: 'pill-blue' },
   testcase: { label: '用例', icon: ClipboardList, pill: 'pill-green' },
-  diagnosis: { label: '分析', icon: HeartPulse, pill: 'pill-amber' },
-  template: { label: '模板', icon: LayoutTemplate, pill: 'pill-purple' },
-  knowledge: { label: '知识库', icon: BookOpen, pill: 'pill-gray' },
 };
 
 const mockResults: SearchResult[] = [
@@ -47,38 +35,17 @@ const mockResults: SearchResult[] = [
   },
   {
     id: '3',
-    title: '数据导入需求分析',
-    type: 'diagnosis',
-    description: '评分 82 · 2 个高风险项',
-    url: '/diagnosis',
-  },
-  {
-    id: '4',
-    title: '接口测试模板',
-    type: 'template',
-    description: 'API 接口标准测试模板',
-    url: '/templates',
-  },
-  {
-    id: '5',
     title: '支付流程异常处理',
     type: 'requirement',
     description: 'REQ-015 · 支付异常回滚',
     url: '/requirements',
   },
   {
-    id: '6',
+    id: '4',
     title: '批量导入-文件格式校验',
     type: 'testcase',
     description: 'TC-IMP-007 · P0 · 边界测试',
     url: '/testcases',
-  },
-  {
-    id: '7',
-    title: '测试规范文档',
-    type: 'knowledge',
-    description: '企业级测试规范 v2.1',
-    url: '/knowledge',
   },
 ];
 
@@ -102,9 +69,9 @@ export function GlobalSearch() {
     searchTimerRef.current = setTimeout(async () => {
       setSearching(true);
       try {
-        const data = await searchApi.search(query, undefined, 10);
+        const data = await searchApi.search(query, ['requirement', 'testcase'], 1, 10);
         type ValidType = SearchResult['type'];
-        const validTypes: ValidType[] = ['requirement', 'testcase', 'diagnosis', 'template', 'knowledge'];
+        const validTypes: ValidType[] = ['requirement', 'testcase'];
         setSearchResults(
           (data.items ?? []).map((item) => ({
             id: item.id,
