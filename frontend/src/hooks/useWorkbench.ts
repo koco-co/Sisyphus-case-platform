@@ -2,15 +2,13 @@
 
 import { useCallback } from 'react';
 import { useSSE } from '@/hooks/useSSE';
-import { api } from '@/lib/api';
+import { API_BASE, api } from '@/lib/api';
 import {
   type GenSession,
   useWorkspaceStore,
   type WorkbenchMessage,
   type WorkbenchTestCase,
 } from '@/stores/workspace-store';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export function useWorkbench() {
   const store = useWorkspaceStore();

@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { AiConfigBanner } from '@/components/ui/AiConfigBanner';
+import { useAiConfig } from '@/hooks/useAiConfig';
 import { useDiagnosis } from '@/hooks/useDiagnosis';
 import { useRequirementTree } from '@/hooks/useRequirementTree';
 import { diagnosisApi } from '@/lib/api';
@@ -54,6 +56,7 @@ function reportStatusToReqStatus(reportStatus: string | undefined): ReqStatus {
 
 export default function DiagnosisPage() {
   const tree = useRequirementTree();
+  const aiConfig = useAiConfig();
   const [activeTab, setActiveTab] = useState<ActiveTab>('detail');
   const [reqStatusMap, setReqStatusMap] = useState<Record<string, ReqStatus>>({});
 
@@ -106,6 +109,11 @@ export default function DiagnosisPage() {
   const hasUnhandledHighRisk = (report?.risks ?? []).some(
     (r) => r.severity === 'high' && (!r.status || r.status === 'open'),
   );
+  const hasConfiguredAiModel = Boolean(
+    aiConfig.effectiveConfig?.llm_model?.trim() ||
+      aiConfig.modelConfigs.some((model) => model.is_enabled && model.model_id),
+  );
+  const showAiConfigBanner = !aiConfig.loading && !hasConfiguredAiModel;
 
   // ── Left panel ─────────────────────────────────────────────────────────────
   const leftPanel = (
@@ -142,46 +150,58 @@ export default function DiagnosisPage() {
             </button>
 
             {tree.expandedProducts.has(product.id) &&
-              (tree.iterations[product.id] ?? []).map((iter) => (
-                <div key={iter.id} className="pl-4">
-                  <button
-                    type="button"
-                    onClick={() => tree.toggleIteration(product.id, iter.id)}
-                    className="w-full flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-bg2 transition-colors text-text3 text-[12px]"
-                  >
-                    {tree.expandedIterations.has(iter.id) ? (
-                      <ChevronDown className="w-3 h-3 flex-shrink-0" />
-                    ) : (
-                      <ChevronRight className="w-3 h-3 flex-shrink-0" />
-                    )}
-                    <IterationCw className="w-3 h-3 flex-shrink-0" />
-                    <span className="truncate flex-1 text-left">{iter.name}</span>
-                  </button>
+              (tree.iterationsLoading[product.id] ? (
+                <div className="pl-8 py-1 text-[11px] text-text3">迭代加载中...</div>
+              ) : (tree.iterations[product.id] ?? []).length === 0 ? (
+                <div className="pl-8 py-1 text-[11px] text-text3">当前产品暂无迭代</div>
+              ) : (
+                (tree.iterations[product.id] ?? []).map((iter) => (
+                  <div key={iter.id} className="pl-4">
+                    <button
+                      type="button"
+                      onClick={() => tree.toggleIteration(product.id, iter.id)}
+                      className="w-full flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-bg2 transition-colors text-text3 text-[12px]"
+                    >
+                      {tree.expandedIterations.has(iter.id) ? (
+                        <ChevronDown className="w-3 h-3 flex-shrink-0" />
+                      ) : (
+                        <ChevronRight className="w-3 h-3 flex-shrink-0" />
+                      )}
+                      <IterationCw className="w-3 h-3 flex-shrink-0" />
+                      <span className="truncate flex-1 text-left">{iter.name}</span>
+                    </button>
 
-                  {tree.expandedIterations.has(iter.id) &&
-                    (tree.requirements[iter.id] ?? []).map((req) => {
-                      const status = reqStatusMap[req.id] ?? 'unanalyzed';
-                      const isSelected = tree.selectedReqId === req.id;
-                      return (
-                        <button
-                          type="button"
-                          key={req.id}
-                          onClick={() => tree.selectRequirement(req)}
-                          className={`w-full flex items-center gap-1.5 px-2 py-1.5 ml-4 rounded-md text-[12px] transition-colors ${
-                            isSelected
-                              ? 'bg-accent/10 text-accent'
-                              : 'text-text3 hover:bg-bg2 hover:text-text2'
-                          }`}
-                        >
-                          <FileText className="w-3 h-3 flex-shrink-0" />
-                          <span className="truncate flex-1 text-left">
-                            {req.title || req.req_id}
-                          </span>
-                          {statusBadge(status)}
-                        </button>
-                      );
-                    })}
-                </div>
+                    {tree.expandedIterations.has(iter.id) &&
+                      (tree.requirementsLoading[iter.id] ? (
+                        <div className="pl-8 py-1 text-[11px] text-text3">需求加载中...</div>
+                      ) : (tree.requirements[iter.id] ?? []).length === 0 ? (
+                        <div className="pl-8 py-1 text-[11px] text-text3">当前迭代暂无需求</div>
+                      ) : (
+                        (tree.requirements[iter.id] ?? []).map((req) => {
+                          const status = reqStatusMap[req.id] ?? 'unanalyzed';
+                          const isSelected = tree.selectedReqId === req.id;
+                          return (
+                            <button
+                              type="button"
+                              key={req.id}
+                              onClick={() => tree.selectRequirement(req)}
+                              className={`w-full flex items-center gap-1.5 px-2 py-1.5 ml-4 rounded-md text-[12px] transition-colors ${
+                                isSelected
+                                  ? 'bg-accent/10 text-accent'
+                                  : 'text-text3 hover:bg-bg2 hover:text-text2'
+                              }`}
+                            >
+                              <FileText className="w-3 h-3 flex-shrink-0" />
+                              <span className="truncate flex-1 text-left">
+                                {req.title || req.req_id}
+                              </span>
+                              {statusBadge(status)}
+                            </button>
+                          );
+                        })
+                      ))}
+                  </div>
+                ))
               ))}
           </div>
         ))}
@@ -216,7 +236,7 @@ export default function DiagnosisPage() {
         {/* 进入工作台 button */}
         <div className="relative group flex-shrink-0">
           <Link
-            href="/workbench"
+            href={`/workbench?reqId=${tree.selectedReqId}`}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-colors ${
               hasUnhandledHighRisk
                 ? 'opacity-40 pointer-events-none bg-bg3 text-text3 border border-border cursor-not-allowed'
@@ -291,9 +311,12 @@ export default function DiagnosisPage() {
   );
 
   return (
-    <div className="flex overflow-hidden" style={{ height: 'calc(100vh - 49px)' }}>
-      {leftPanel}
-      {rightPanel}
+    <div className="flex h-full flex-col overflow-hidden">
+      {showAiConfigBanner && <AiConfigBanner />}
+      <div className="flex overflow-hidden" style={{ height: 'calc(100vh - 49px)' }}>
+        {leftPanel}
+        {rightPanel}
+      </div>
     </div>
   );
 }

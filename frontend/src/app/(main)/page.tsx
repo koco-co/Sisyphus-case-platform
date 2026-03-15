@@ -1,17 +1,9 @@
 'use client';
 
-import {
-  BarChart3,
-  FileText,
-  Layers,
-  Loader2,
-  RefreshCw,
-  Sparkles,
-  TrendingUp,
-} from 'lucide-react';
+import { BarChart3, FileText, Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { api } from '@/lib/api';
 import { useDashboard } from '@/hooks/useDashboard';
+import { api } from '@/lib/api';
 import ActivityTimeline from './_components/ActivityTimeline';
 import PendingItems from './_components/PendingItems';
 import QuickActions from './_components/QuickActions';
@@ -21,7 +13,7 @@ interface QualityStats {
   by_type: Record<string, number>;
   by_status: Record<string, number>;
   by_source: Record<string, number>;
-  avg_ai_score: number;
+  avg_ai_score: number | null;
   coverage_rate: number;
   total_cases: number;
 }
@@ -64,7 +56,43 @@ const typeLabels: Record<string, string> = {
   security: '安全',
 };
 
-function BarChart({ data, labels, colors }: {
+const iterationStatusLabels: Record<string, string> = {
+  active: '进行中',
+  completed: '已完成',
+  planned: '未开始',
+  draft: '草稿',
+};
+
+function formatCount(value: number) {
+  return value.toLocaleString('zh-CN');
+}
+
+function formatPercentage(value: number) {
+  return `${value.toFixed(1)}%`;
+}
+
+function getDeltaText(value: number, suffix = '', precision = 0) {
+  if (value === 0) {
+    return '较上一迭代 持平';
+  }
+
+  const absolute = Math.abs(value).toFixed(precision);
+  const normalized = precision === 0 ? absolute.replace(/\.0+$/, '') : absolute;
+  const sign = value > 0 ? '+' : '-';
+  return `较上一迭代 ${sign}${normalized}${suffix}`;
+}
+
+function getDeltaColor(value: number) {
+  if (value > 0) return 'var(--accent)';
+  if (value < 0) return 'var(--red)';
+  return 'var(--text3)';
+}
+
+function BarChart({
+  data,
+  labels,
+  colors,
+}: {
   data: Record<string, number>;
   labels?: Record<string, string>;
   colors?: Record<string, string>;
@@ -97,7 +125,8 @@ function BarChart({ data, labels, colors }: {
 /* ── Page ── */
 
 export default function DashboardPage() {
-  const { stats, pendingItems, activities, loading, refresh } = useDashboard();
+  const { stats, pendingItems, activities, loading, selectedIterationId, setIterationId, refresh } =
+    useDashboard();
   const [activeTab, setActiveTab] = useState<'overview' | 'quality'>('overview');
   const [quality, setQuality] = useState<QualityStats>(fallbackQuality);
   const [qualityLoading, setQualityLoading] = useState(false);
@@ -105,20 +134,30 @@ export default function DashboardPage() {
   const loadQuality = useCallback(async () => {
     setQualityLoading(true);
     try {
-      const data = await api.get<QualityStats>('/dashboard/quality');
+      const query = selectedIterationId ? `?iteration_id=${selectedIterationId}` : '';
+      const data = await api.get<QualityStats>(`/dashboard/quality${query}`);
       setQuality(data);
     } catch {
       setQuality(fallbackQuality);
     } finally {
       setQualityLoading(false);
     }
-  }, []);
+  }, [selectedIterationId]);
 
   useEffect(() => {
     if (activeTab === 'quality') {
       loadQuality();
     }
   }, [activeTab, loadQuality]);
+
+  const selectedIterationLabel =
+    stats.selected_iteration_product_name && stats.selected_iteration_name
+      ? `${stats.selected_iteration_product_name} · ${stats.selected_iteration_name}`
+      : '暂无可用迭代';
+  const selectedIterationStatus = stats.selected_iteration_status
+    ? (iterationStatusLabels[stats.selected_iteration_status] ?? stats.selected_iteration_status)
+    : '暂无状态';
+  const qualityScore = quality.avg_ai_score ?? 0;
 
   return (
     <div className="no-sidebar">
@@ -129,12 +168,36 @@ export default function DashboardPage() {
             <div className="page-watermark">SISYPHUS · DASHBOARD</div>
             <h1>仪表盘</h1>
             <div className="sub">
-              AI 驱动的测试用例生成平台 · {stats.product_count} 个产品 · {stats.iteration_count}{' '}
-              个活跃迭代
+              AI 驱动的测试用例生成平台 · 当前聚焦 {selectedIterationLabel} · {stats.product_count}{' '}
+              个产品 · {stats.iteration_count} 个活跃迭代
             </div>
           </div>
           <div className="spacer" />
           <div className="flex items-center gap-2">
+            <label
+              htmlFor="dashboard-iteration-selector"
+              className="flex items-center gap-2 rounded-lg bg-bg2 px-3 py-1.5 text-[12px] text-text2"
+            >
+              <span>迭代</span>
+              <select
+                id="dashboard-iteration-selector"
+                aria-label="选择迭代"
+                className="bg-transparent text-text outline-none"
+                value={selectedIterationId ?? ''}
+                onChange={(event) => setIterationId(event.target.value || null)}
+                disabled={stats.available_iterations.length === 0}
+              >
+                {stats.available_iterations.length === 0 ? (
+                  <option value="">暂无迭代数据</option>
+                ) : (
+                  stats.available_iterations.map((iteration) => (
+                    <option key={iteration.id} value={iteration.id}>
+                      {iteration.product_name} · {iteration.name}
+                    </option>
+                  ))
+                )}
+              </select>
+            </label>
             <div className="flex items-center bg-bg2 rounded-lg p-0.5">
               <button
                 type="button"
@@ -207,53 +270,69 @@ export default function DashboardPage() {
             {/* ── Stat cards ── */}
             <div className="grid-4" style={{ marginBottom: 24 }}>
               <div className="card" style={{ borderLeft: '3px solid var(--accent)' }}>
-                <div className="stat-val">{loading ? '—' : stats.product_count}</div>
-                <div className="stat-label">子产品数</div>
+                <div className="stat-val">
+                  {loading ? '—' : formatCount(stats.requirement_count)}
+                </div>
+                <div className="stat-label">需求总数</div>
                 <div
                   className="stat-delta"
-                  style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+                  style={{ color: getDeltaColor(stats.requirement_delta) }}
                 >
-                  <Layers size={12} /> {stats.iteration_count} 个迭代
+                  {stats.previous_iteration_name
+                    ? getDeltaText(stats.requirement_delta)
+                    : '首个迭代，无上一迭代'}
                 </div>
               </div>
               <div className="card" style={{ borderLeft: '3px solid var(--blue)' }}>
-                <div className="stat-val">{loading ? '—' : stats.requirement_count}</div>
-                <div className="stat-label">需求总数</div>
-                <div className="stat-delta" style={{ color: 'var(--blue)' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <FileText size={12} /> 进行中
-                  </span>
+                <div className="stat-val">{loading ? '—' : formatCount(stats.testcase_count)}</div>
+                <div className="stat-label">用例总数</div>
+                <div className="stat-delta" style={{ color: getDeltaColor(stats.testcase_delta) }}>
+                  {stats.previous_iteration_name
+                    ? getDeltaText(stats.testcase_delta)
+                    : '首个迭代，无上一迭代'}
                 </div>
               </div>
               <div className="card" style={{ borderLeft: '3px solid var(--purple)' }}>
-                <div className="stat-val">{loading ? '—' : stats.testcase_count}</div>
-                <div className="stat-label">用例总数</div>
-                <div className="stat-delta" style={{ color: 'var(--accent)' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <TrendingUp size={12} /> 本周 +{stats.weekly_cases}
-                  </span>
+                <div className="stat-val">
+                  {loading ? '—' : formatPercentage(stats.coverage_rate)}
+                </div>
+                <div className="stat-label">平均覆盖率</div>
+                <div className="stat-delta" style={{ color: getDeltaColor(stats.coverage_delta) }}>
+                  {stats.previous_iteration_name
+                    ? getDeltaText(stats.coverage_delta, '%', 1)
+                    : '首个迭代，无上一迭代'}
                 </div>
               </div>
               <div
                 className="card"
                 style={{
-                  borderLeft: `3px solid ${stats.coverage_rate >= 80 ? 'var(--accent)' : 'var(--amber)'}`,
+                  borderLeft: `3px solid ${stats.selected_iteration_status === 'active' ? 'var(--accent)' : 'var(--blue)'}`,
                 }}
               >
-                <div
-                  className="stat-val"
-                  style={{
-                    color: stats.coverage_rate >= 80 ? 'var(--accent)' : 'var(--amber)',
-                  }}
-                >
-                  {loading ? '—' : `${stats.coverage_rate}%`}
+                <div className="stat-val">
+                  {loading ? '—' : (stats.selected_iteration_name ?? '—')}
                 </div>
-                <div className="stat-label">平均覆盖率</div>
-                <div className="progress-bar" style={{ marginTop: 10 }}>
-                  <div
-                    className={`progress-fill${stats.coverage_rate < 80 ? ' amber' : ''}`}
-                    style={{ width: `${Math.min(stats.coverage_rate, 100)}%` }}
-                  />
+                <div className="stat-label">本迭代进度</div>
+                <div
+                  className="stat-delta"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                >
+                  <span
+                    style={{
+                      color:
+                        stats.selected_iteration_status === 'active'
+                          ? 'var(--accent)'
+                          : 'var(--blue)',
+                    }}
+                  >
+                    <FileText size={12} style={{ display: 'inline-block', marginRight: 4 }} />
+                    {selectedIterationStatus}
+                  </span>
+                  <span style={{ color: 'var(--text3)' }}>
+                    {stats.previous_iteration_name
+                      ? `对比 ${stats.previous_iteration_name}`
+                      : '首个迭代，无上一迭代'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -287,10 +366,10 @@ export default function DashboardPage() {
                     <div
                       className="stat-val"
                       style={{
-                        color: quality.avg_ai_score >= 80 ? 'var(--accent)' : 'var(--amber)',
+                        color: qualityScore >= 80 ? 'var(--accent)' : 'var(--amber)',
                       }}
                     >
-                      {quality.avg_ai_score.toFixed(1)}
+                      {qualityScore.toFixed(1)}
                     </div>
                     <div className="stat-label">AI 平均质量评分</div>
                   </div>

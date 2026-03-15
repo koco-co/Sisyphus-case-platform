@@ -15,6 +15,16 @@ const fallbackStats: DashboardStats = {
   coverage_rate: 94,
   weekly_cases: 847,
   pending_diagnosis: 18,
+  requirement_delta: 0,
+  testcase_delta: 0,
+  coverage_delta: 0,
+  selected_iteration_id: null,
+  selected_iteration_name: null,
+  selected_iteration_status: null,
+  selected_iteration_product_name: null,
+  previous_iteration_id: null,
+  previous_iteration_name: null,
+  available_iterations: [],
 };
 
 const fallbackPendingItems: PendingItem[] = [
@@ -129,15 +139,21 @@ const fallbackActivities: ActivityItem[] = [
 export function useDashboard() {
   const store = useDashboardStore();
   const [loading, setLoading] = useState(true);
+  const [iterationId, setIterationId] = useState<string | null>(null);
   const { stats, pendingItems, activities, setStats, setPendingItems, setActivities } = store;
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
+    const query = iterationId ? `?iteration_id=${iterationId}` : '';
     try {
       const [stats, pending, activities] = await Promise.allSettled([
-        api.get<DashboardStats>('/dashboard/stats'),
-        api.get<PendingItem[]>('/dashboard/pending-items'),
-        api.get<ActivityItem[]>('/dashboard/activities?limit=10'),
+        api.get<DashboardStats>(`/dashboard/stats${query}`),
+        api.get<PendingItem[]>(
+          `/dashboard/pending-items?limit=10${iterationId ? `&iteration_id=${iterationId}` : ''}`,
+        ),
+        api.get<ActivityItem[]>(
+          `/dashboard/activities?limit=10${iterationId ? `&iteration_id=${iterationId}` : ''}`,
+        ),
       ]);
 
       setStats(stats.status === 'fulfilled' ? stats.value : fallbackStats);
@@ -158,7 +174,7 @@ export function useDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [setActivities, setPendingItems, setStats]);
+  }, [iterationId, setActivities, setPendingItems, setStats]);
 
   useEffect(() => {
     fetchAll();
@@ -169,6 +185,8 @@ export function useDashboard() {
     pendingItems: pendingItems.length > 0 ? pendingItems : fallbackPendingItems,
     activities: activities.length > 0 ? activities : fallbackActivities,
     loading,
+    selectedIterationId: iterationId ?? stats?.selected_iteration_id ?? null,
+    setIterationId,
     refresh: fetchAll,
   };
 }

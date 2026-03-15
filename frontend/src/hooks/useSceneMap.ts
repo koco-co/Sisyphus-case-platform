@@ -1,13 +1,11 @@
 import { useCallback } from 'react';
-import { sceneMapApi } from '@/lib/api';
+import { API_BASE, sceneMapApi } from '@/lib/api';
 import {
   type TestPointItem,
   type TestPointSource,
   useSceneMapStore,
 } from '@/stores/scene-map-store';
 import { useSSE } from './useSSE';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 function normalizeSource(source: string): TestPointSource {
   if (['document', 'supplemented', 'missing', 'pending'].includes(source)) {

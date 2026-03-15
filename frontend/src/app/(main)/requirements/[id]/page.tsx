@@ -6,6 +6,11 @@ import { useParams } from 'next/navigation';
 import { useCallback, useRef, useState } from 'react';
 import { StatusPill } from '@/components/ui';
 import { useRequirement } from '@/hooks/useRequirement';
+import {
+  getAnalysisDiagnosisHref,
+  getAnalysisSceneMapHref,
+  getWorkbenchHref,
+} from '@/lib/analysisRoutes';
 import { EditorToolbar } from '../_components/EditorToolbar';
 import { FileUpload } from '../_components/FileUpload';
 import { FrontmatterPanel } from '../_components/FrontmatterPanel';
@@ -109,7 +114,7 @@ export default function RequirementDetailPage() {
               保存内容
             </button>
           )}
-          <Link href={`/diagnosis/${id}`}>
+          <Link href={getAnalysisDiagnosisHref(id)}>
             <button
               type="button"
               className="flex items-center gap-1.5 px-4 py-2 rounded-md text-[12.5px] font-semibold bg-accent text-black hover:bg-accent2 transition-colors"
@@ -161,7 +166,7 @@ export default function RequirementDetailPage() {
           <div className="bg-bg1 border border-border rounded-[10px] p-4">
             <div className="text-[12px] font-semibold text-text2 mb-3">快速操作</div>
             <div className="space-y-2">
-              <Link href={`/diagnosis/${id}`} className="block">
+              <Link href={getAnalysisDiagnosisHref(id)} className="block">
                 <button
                   type="button"
                   className="w-full flex items-center gap-2 text-left px-3 py-2 rounded-md text-[12px] bg-bg2 border border-border text-text2 hover:text-text hover:border-border2 transition-colors"
@@ -169,7 +174,7 @@ export default function RequirementDetailPage() {
                   <Stethoscope size={13} /> 需求分析
                 </button>
               </Link>
-              <Link href={`/scene-map/${id}`} className="block">
+              <Link href={getAnalysisSceneMapHref(id)} className="block">
                 <button
                   type="button"
                   className="w-full flex items-center gap-2 text-left px-3 py-2 rounded-md text-[12px] bg-bg2 border border-border text-text2 hover:text-text hover:border-border2 transition-colors"
@@ -177,7 +182,7 @@ export default function RequirementDetailPage() {
                   <TreePine size={13} /> 测试点确认
                 </button>
               </Link>
-              <Link href={`/workbench/${id}`} className="block">
+              <Link href={getWorkbenchHref(id)} className="block">
                 <button
                   type="button"
                   className="w-full flex items-center gap-2 text-left px-3 py-2 rounded-md text-[12px] bg-bg2 border border-border text-text2 hover:text-text hover:border-border2 transition-colors"

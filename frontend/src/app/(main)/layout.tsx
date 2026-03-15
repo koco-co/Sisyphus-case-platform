@@ -120,13 +120,13 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
         <div className="nav-actions">
           <SearchTrigger />
-          <OnboardingGuideButton />
           <ThemeToggle />
           <NotificationBell />
           <UserMenu />
         </div>
       </nav>
       {children}
+      <OnboardingGuideButton />
       <ProgressDashboard />
       <GlobalSearch />
     </>

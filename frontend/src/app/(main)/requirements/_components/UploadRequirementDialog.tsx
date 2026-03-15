@@ -2,8 +2,7 @@
 
 import { AlertTriangle, ArrowLeft, Download, Loader2, Plus, Trash2, Upload, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
+import { API_BASE } from '@/lib/api';
 
 interface ParsedItem {
   id: string;

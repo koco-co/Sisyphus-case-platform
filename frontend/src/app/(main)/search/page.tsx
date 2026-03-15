@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-
+import { getAnalysisDiagnosisHref, getAnalysisSceneMapHref } from '@/lib/analysisRoutes';
 import { ApiError, type SearchResultItem, searchApi } from '@/lib/api';
 
 type ResultType =
@@ -79,9 +79,9 @@ function getResultUrl(type: ResultType, id: string): string {
     case 'testcase':
       return '/testcases';
     case 'test_point':
-      return '/scene-map';
+      return getAnalysisSceneMapHref();
     case 'diagnosis':
-      return '/diagnosis';
+      return getAnalysisDiagnosisHref();
     case 'template':
       return '/templates';
     case 'knowledge':

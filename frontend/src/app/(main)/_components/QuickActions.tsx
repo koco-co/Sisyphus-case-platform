@@ -2,6 +2,7 @@
 
 import { ClipboardList, Download, FileText, HeartPulse, Wand2 } from 'lucide-react';
 import Link from 'next/link';
+import { getAnalysisHomeHref, getWorkbenchHref } from '@/lib/analysisRoutes';
 
 const actions = [
   {
@@ -16,7 +17,7 @@ const actions = [
     label: '开始分析',
     description: 'AI 健康检查，发现需求风险点',
     icon: HeartPulse,
-    href: '/diagnosis',
+    href: getAnalysisHomeHref(),
     color: 'var(--red)',
     bg: 'rgba(244, 63, 94, 0.08)',
   },
@@ -24,7 +25,7 @@ const actions = [
     label: '生成用例',
     description: '基于测试点自动生成功能用例',
     icon: Wand2,
-    href: '/workbench',
+    href: getWorkbenchHref(),
     color: 'var(--purple)',
     bg: 'rgba(168, 85, 247, 0.08)',
   },

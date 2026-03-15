@@ -5,8 +5,10 @@ export function useRequirementTree() {
   const [products, setProducts] = useState<Product[]>([]);
   const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
   const [iterations, setIterations] = useState<Record<string, Iteration[]>>({});
+  const [iterationsLoading, setIterationsLoading] = useState<Record<string, boolean>>({});
   const [expandedIterations, setExpandedIterations] = useState<Set<string>>(new Set());
   const [requirements, setRequirements] = useState<Record<string, Requirement[]>>({});
+  const [requirementsLoading, setRequirementsLoading] = useState<Record<string, boolean>>({});
   const [selectedReqId, setSelectedReqId] = useState<string | null>(null);
   const [selectedReqTitle, setSelectedReqTitle] = useState('');
 
@@ -26,12 +28,22 @@ export function useRequirementTree() {
         } else {
           next.add(productId);
           if (!iterations[productId]) {
+            setIterationsLoading((prev) => ({ ...prev, [productId]: true }));
             productsApi
               .listIterations(productId)
               .then((data) =>
                 setIterations((p) => ({ ...p, [productId]: Array.isArray(data) ? data : [] })),
               )
-              .catch(console.error);
+              .catch((error) => {
+                console.error(error);
+                setIterations((p) => ({ ...p, [productId]: [] }));
+              })
+              .finally(() =>
+                setIterationsLoading((prev) => ({
+                  ...prev,
+                  [productId]: false,
+                })),
+              );
           }
         }
         return next;
@@ -49,12 +61,22 @@ export function useRequirementTree() {
         } else {
           next.add(iterationId);
           if (!requirements[iterationId]) {
+            setRequirementsLoading((prev) => ({ ...prev, [iterationId]: true }));
             productsApi
               .listRequirements(productId, iterationId)
               .then((data) =>
                 setRequirements((p) => ({ ...p, [iterationId]: Array.isArray(data) ? data : [] })),
               )
-              .catch(console.error);
+              .catch((error) => {
+                console.error(error);
+                setRequirements((p) => ({ ...p, [iterationId]: [] }));
+              })
+              .finally(() =>
+                setRequirementsLoading((prev) => ({
+                  ...prev,
+                  [iterationId]: false,
+                })),
+              );
           }
         }
         return next;
@@ -72,8 +94,10 @@ export function useRequirementTree() {
     products,
     expandedProducts,
     iterations,
+    iterationsLoading,
     expandedIterations,
     requirements,
+    requirementsLoading,
     selectedReqId,
     selectedReqTitle,
     toggleProduct,

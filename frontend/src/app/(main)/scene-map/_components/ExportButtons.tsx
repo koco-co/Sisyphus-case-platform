@@ -2,8 +2,7 @@
 
 import { Braces, Download, FileText, Image, Loader2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+import { API_BASE } from '@/lib/api';
 
 interface ExportButtonsProps {
   requirementId: string | null;

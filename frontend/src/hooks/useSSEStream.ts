@@ -1,6 +1,5 @@
+import { API_BASE } from '@/lib/api';
 import { useStreamStore } from '@/stores/stream-store';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
 
 export function useSSEStream() {
   const { reset, appendThinking, appendContent, setDone } = useStreamStore();

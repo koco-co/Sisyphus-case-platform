@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
+  API_BASE,
   type ChatMessage,
   type DiagnosisReport,
   diagnosisApi,
@@ -8,8 +9,6 @@ import {
 } from '@/lib/api';
 import { useDiagnosisStore } from '@/stores/diagnosis-store';
 import { useSSE } from './useSSE';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export function useDiagnosis(reqId: string | null) {
   const sse = useSSE();

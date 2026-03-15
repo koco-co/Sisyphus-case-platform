@@ -8,6 +8,26 @@ export interface DashboardStats {
   coverage_rate: number;
   weekly_cases: number;
   pending_diagnosis: number;
+  requirement_delta: number;
+  testcase_delta: number;
+  coverage_delta: number;
+  selected_iteration_id: string | null;
+  selected_iteration_name: string | null;
+  selected_iteration_status: string | null;
+  selected_iteration_product_name: string | null;
+  previous_iteration_id: string | null;
+  previous_iteration_name: string | null;
+  available_iterations: DashboardIterationOption[];
+}
+
+export interface DashboardIterationOption {
+  id: string;
+  product_id: string;
+  product_name: string;
+  name: string;
+  status: string;
+  start_date: string | null;
+  end_date: string | null;
 }
 
 export interface PendingItem {

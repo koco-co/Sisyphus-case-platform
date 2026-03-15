@@ -3,6 +3,7 @@
 import { ChevronRight, ClipboardList, ExternalLink, Loader2, TreePine } from 'lucide-react';
 import Link from 'next/link';
 import { StatusPill } from '@/components/ui';
+import { getAnalysisSceneMapHref, getWorkbenchHref } from '@/lib/analysisRoutes';
 
 interface TestPointItem {
   id: string;
@@ -70,7 +71,7 @@ export function RelationPanel({
             </span>
           </div>
           <Link
-            href={`/scene-map/${requirementId}`}
+            href={getAnalysisSceneMapHref(requirementId)}
             className="flex items-center gap-1 text-[11px] text-accent hover:text-accent2 transition-colors"
           >
             查看场景地图 <ExternalLink size={11} />
@@ -84,7 +85,7 @@ export function RelationPanel({
             {testPoints.map((tp) => (
               <Link
                 key={tp.id}
-                href={`/scene-map/${requirementId}`}
+                href={getAnalysisSceneMapHref(requirementId)}
                 className="flex items-center gap-2 p-2 rounded-md hover:bg-bg2 transition-colors group"
               >
                 <div className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
@@ -114,7 +115,7 @@ export function RelationPanel({
             </span>
           </div>
           <Link
-            href={`/workbench/${requirementId}`}
+            href={getWorkbenchHref(requirementId)}
             className="flex items-center gap-1 text-[11px] text-accent hover:text-accent2 transition-colors"
           >
             生成工作台 <ExternalLink size={11} />

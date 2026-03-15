@@ -69,42 +69,54 @@ export function RequirementNav({
             </button>
 
             {tree.expandedProducts.has(product.id) &&
-              (tree.iterations[product.id] || []).map((iter) => (
-                <div key={iter.id} className="pl-4">
-                  <button
-                    type="button"
-                    onClick={() => tree.toggleIteration(product.id, iter.id)}
-                    className="w-full flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[12px] text-text2 hover:bg-bg2 transition-colors"
-                  >
-                    {tree.expandedIterations.has(iter.id) ? (
-                      <ChevronDown className="w-3 h-3 text-text3 shrink-0" />
-                    ) : (
-                      <ChevronRight className="w-3 h-3 text-text3 shrink-0" />
-                    )}
-                    <RefreshCw className="w-3 h-3 shrink-0" />
-                    <span className="truncate">{iter.name}</span>
-                  </button>
+              (tree.iterationsLoading[product.id] ? (
+                <div className="pl-8 py-1 text-[11px] text-text3">迭代加载中...</div>
+              ) : (tree.iterations[product.id] || []).length === 0 ? (
+                <div className="pl-8 py-1 text-[11px] text-text3">当前产品暂无迭代</div>
+              ) : (
+                (tree.iterations[product.id] || []).map((iter) => (
+                  <div key={iter.id} className="pl-4">
+                    <button
+                      type="button"
+                      onClick={() => tree.toggleIteration(product.id, iter.id)}
+                      className="w-full flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[12px] text-text2 hover:bg-bg2 transition-colors"
+                    >
+                      {tree.expandedIterations.has(iter.id) ? (
+                        <ChevronDown className="w-3 h-3 text-text3 shrink-0" />
+                      ) : (
+                        <ChevronRight className="w-3 h-3 text-text3 shrink-0" />
+                      )}
+                      <RefreshCw className="w-3 h-3 shrink-0" />
+                      <span className="truncate">{iter.name}</span>
+                    </button>
 
-                  {tree.expandedIterations.has(iter.id) &&
-                    (tree.requirements[iter.id] || []).map((req) => (
-                      <button
-                        type="button"
-                        key={req.id}
-                        onClick={() => onSelectRequirement(req)}
-                        className={`w-full flex items-center gap-1.5 pl-8 pr-2.5 py-1.5 rounded-md text-[12px] transition-colors ${
-                          selectedReqId === req.id
-                            ? 'bg-accent/10 text-accent'
-                            : 'text-text2 hover:bg-bg2'
-                        }`}
-                      >
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusDot(req.status ?? '')}`}
-                        />
-                        <FileText className="w-3 h-3 shrink-0" />
-                        <span className="truncate">{req.title || req.req_id}</span>
-                      </button>
-                    ))}
-                </div>
+                    {tree.expandedIterations.has(iter.id) &&
+                      (tree.requirementsLoading[iter.id] ? (
+                        <div className="pl-8 py-1 text-[11px] text-text3">需求加载中...</div>
+                      ) : (tree.requirements[iter.id] || []).length === 0 ? (
+                        <div className="pl-8 py-1 text-[11px] text-text3">当前迭代暂无需求</div>
+                      ) : (
+                        (tree.requirements[iter.id] || []).map((req) => (
+                          <button
+                            type="button"
+                            key={req.id}
+                            onClick={() => onSelectRequirement(req)}
+                            className={`w-full flex items-center gap-1.5 pl-8 pr-2.5 py-1.5 rounded-md text-[12px] transition-colors ${
+                              selectedReqId === req.id
+                                ? 'bg-accent/10 text-accent'
+                                : 'text-text2 hover:bg-bg2'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusDot(req.status ?? '')}`}
+                            />
+                            <FileText className="w-3 h-3 shrink-0" />
+                            <span className="truncate">{req.title || req.req_id}</span>
+                          </button>
+                        ))
+                      ))}
+                  </div>
+                ))
               ))}
           </div>
         ))}

@@ -6,7 +6,11 @@
 
 // ─── Base ────────────────────────────────────────────────────────────────────
 
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
+export function resolveApiBase(explicitBase?: string | null): string {
+  return explicitBase?.trim() ? explicitBase : '/api';
+}
+
+export const API_BASE = resolveApiBase(process.env.NEXT_PUBLIC_API_URL);
 
 export class ApiError extends Error {
   status: number;
@@ -251,6 +255,37 @@ export interface EffectiveAiConfig {
   vector_config?: Record<string, unknown> | null;
 }
 
+export interface ModelConfigRecord {
+  id: string;
+  name: string;
+  provider: string;
+  model_id: string;
+  base_url: string | null;
+  api_key_masked: string | null;
+  temperature: number;
+  max_tokens: number | null;
+  purpose_tags: string[];
+  is_enabled: boolean;
+  is_default: boolean;
+  extra_params: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ModelConfigPayload {
+  name: string;
+  provider: string;
+  model_id: string;
+  base_url?: string | null;
+  api_key?: string | null;
+  temperature?: number;
+  max_tokens?: number | null;
+  purpose_tags?: string[];
+  is_enabled?: boolean;
+  is_default?: boolean;
+  extra_params?: Record<string, unknown> | null;
+}
+
 // Templates
 export interface TemplateListItem {
   id: string;
@@ -328,6 +363,7 @@ export const productsApi = {
 };
 
 export const requirementsApi = {
+  get: (reqId: string) => api.get<RequirementDetail>(`/products/requirements/${reqId}`),
   update: (reqId: string, data: Partial<RequirementDetail>) =>
     api.put<RequirementDetail>(`/products/requirements/${reqId}`, data),
   delete: (reqId: string) => api.delete<void>(`/products/requirements/${reqId}`),
@@ -401,6 +437,11 @@ export const aiConfigApi = {
   create: (data: Partial<AiConfigRecord>) => api.post<AiConfigRecord>('/ai-config', data),
   update: (id: string, data: Partial<AiConfigRecord>) =>
     api.patch<AiConfigRecord>(`/ai-config/${id}`, data),
+  listModels: () => api.get<ModelConfigRecord[]>('/ai-config/models/list'),
+  createModel: (data: ModelConfigPayload) => api.post<ModelConfigRecord>('/ai-config/models', data),
+  updateModel: (id: string, data: Partial<ModelConfigPayload>) =>
+    api.patch<ModelConfigRecord>(`/ai-config/models/${id}`, data),
+  deleteModel: (id: string) => api.delete<void>(`/ai-config/models/${id}`),
 };
 
 export const templatesApi = {

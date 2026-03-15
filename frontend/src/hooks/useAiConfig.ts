@@ -4,6 +4,8 @@ import {
   aiConfigApi,
   type EffectiveAiConfig,
   getApiErrorMessage,
+  type ModelConfigPayload,
+  type ModelConfigRecord,
 } from '@/lib/api';
 
 function pickGlobalConfig(configs: AiConfigRecord[]) {
@@ -15,6 +17,7 @@ function pickGlobalConfig(configs: AiConfigRecord[]) {
 export function useAiConfig() {
   const [config, setConfig] = useState<AiConfigRecord | null>(null);
   const [effectiveConfig, setEffectiveConfig] = useState<EffectiveAiConfig | null>(null);
+  const [modelConfigs, setModelConfigs] = useState<ModelConfigRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,9 +26,14 @@ export function useAiConfig() {
     setLoading(true);
     setError(null);
     try {
-      const [configs, effective] = await Promise.all([aiConfigApi.list(), aiConfigApi.effective()]);
+      const [configs, effective, models] = await Promise.all([
+        aiConfigApi.list(),
+        aiConfigApi.effective(),
+        aiConfigApi.listModels(),
+      ]);
       setConfig(pickGlobalConfig(configs) ?? null);
       setEffectiveConfig(effective);
+      setModelConfigs(models);
     } catch (err) {
       setError(getApiErrorMessage(err, '加载 AI 配置失败'));
     } finally {
@@ -68,13 +76,71 @@ export function useAiConfig() {
     [config, refresh],
   );
 
+  const createModelConfig = useCallback(
+    async (payload: ModelConfigPayload) => {
+      setSaving(true);
+      setError(null);
+      try {
+        const created = await aiConfigApi.createModel(payload);
+        await refresh();
+        return created;
+      } catch (err) {
+        setError(getApiErrorMessage(err, '创建模型配置失败'));
+        return null;
+      } finally {
+        setSaving(false);
+      }
+    },
+    [refresh],
+  );
+
+  const updateModelConfig = useCallback(
+    async (id: string, payload: Partial<ModelConfigPayload>) => {
+      setSaving(true);
+      setError(null);
+      try {
+        const updated = await aiConfigApi.updateModel(id, payload);
+        await refresh();
+        return updated;
+      } catch (err) {
+        setError(getApiErrorMessage(err, '更新模型配置失败'));
+        return null;
+      } finally {
+        setSaving(false);
+      }
+    },
+    [refresh],
+  );
+
+  const deleteModelConfig = useCallback(
+    async (id: string) => {
+      setSaving(true);
+      setError(null);
+      try {
+        await aiConfigApi.deleteModel(id);
+        await refresh();
+        return true;
+      } catch (err) {
+        setError(getApiErrorMessage(err, '删除模型配置失败'));
+        return false;
+      } finally {
+        setSaving(false);
+      }
+    },
+    [refresh],
+  );
+
   return {
     config,
     effectiveConfig,
+    modelConfigs,
     loading,
     saving,
     error,
     refresh,
     saveGlobalConfig,
+    createModelConfig,
+    updateModelConfig,
+    deleteModelConfig,
   };
 }

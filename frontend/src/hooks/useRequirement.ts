@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
-import { type RequirementDetail, type RequirementVersion, requirementsApi } from '@/lib/api';
+import {
+  API_BASE,
+  type RequirementDetail,
+  type RequirementVersion,
+  requirementsApi,
+} from '@/lib/api';
 import { apiClient } from '@/lib/api-client';
 
 interface TestPointItem {
@@ -17,6 +22,22 @@ interface TestCaseItem {
   title: string;
   priority: string;
   status: string;
+}
+
+type RequirementTestCaseListResponse =
+  | TestCaseItem[]
+  | {
+      items?: TestCaseItem[];
+    };
+
+export function extractRequirementTestCases(
+  data: RequirementTestCaseListResponse | null | undefined,
+): TestCaseItem[] {
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  return Array.isArray(data?.items) ? data.items : [];
 }
 
 export function useRequirement(reqId: string | undefined) {
@@ -51,7 +72,7 @@ export function useRequirement(reqId: string | undefined) {
 
   const testCasesQuery = useQuery({
     queryKey: ['testcases-for-req', reqId],
-    queryFn: () => apiClient<TestCaseItem[]>(`/testcases?requirement_id=${reqId}`),
+    queryFn: () => apiClient<RequirementTestCaseListResponse>(`/testcases?requirement_id=${reqId}`),
     enabled: !!reqId,
     retry: false,
   });
@@ -108,7 +129,6 @@ export function useRequirement(reqId: string | undefined) {
         // For now, upload as requirement document attachment
         const fd = new FormData();
         fd.append('file', file);
-        const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api';
         await fetch(`${API_BASE}/products/requirements/${reqId}/attachments`, {
           method: 'POST',
           body: fd,
@@ -126,7 +146,7 @@ export function useRequirement(reqId: string | undefined) {
     versions: versionsQuery.data ?? [],
     versionsLoading: versionsQuery.isLoading,
     testPoints: sceneMapQuery.data?.test_points ?? [],
-    testCases: testCasesQuery.data ?? [],
+    testCases: extractRequirementTestCases(testCasesQuery.data),
     relationsLoading: sceneMapQuery.isLoading || testCasesQuery.isLoading,
     updateFrontmatter,
     updateContent,

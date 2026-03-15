@@ -1,7 +1,13 @@
 'use client';
 
 import { CircleHelp, X } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  getAnalysisDiagnosisHref,
+  getAnalysisSceneMapHref,
+  getWorkbenchHref,
+} from '@/lib/analysisRoutes';
 
 const STEPS = [
   {
@@ -14,25 +20,25 @@ const STEPS = [
     id: 'diagnosis',
     label: '需求分析',
     desc: '对需求进行 6 维度扫描（异常路径、边界值、权限、并发、状态机、跨模块），识别遗漏风险。',
-    href: '/diagnosis',
+    href: getAnalysisDiagnosisHref(),
   },
   {
     id: 'followup',
     label: '追问补充',
     desc: 'AI 对每个遗漏项进行苏格拉底式追问，每轮只问 1 个问题，最多 3 轮，自动补全需求盲区。',
-    href: '/diagnosis',
+    href: getAnalysisDiagnosisHref(),
   },
   {
     id: 'scenemap',
     label: '场景地图确认',
     desc: '基于分析结果生成测试点场景地图，按 5 种类型分组（正常/异常/边界/并发/权限），逐一确认。',
-    href: '/scene-map',
+    href: getAnalysisSceneMapHref(),
   },
   {
     id: 'generation',
     label: '用例生成',
     desc: '进入生成工作台，AI 基于确认的测试点自动生成结构化用例，支持 SSE 实时流式输出。',
-    href: '/workbench',
+    href: getWorkbenchHref(),
   },
   {
     id: 'management',
@@ -54,17 +60,38 @@ const STEPS = [
   },
 ];
 
+export const ONBOARDING_GUIDE_SEEN_KEY = 'sisyphus-y-onboarding-seen';
+
+export function shouldAutoOpenOnboarding(storage: Pick<Storage, 'getItem'>, pathname = '/') {
+  if (pathname !== '/') {
+    return false;
+  }
+  return storage.getItem(ONBOARDING_GUIDE_SEEN_KEY) !== '1';
+}
+
 export function OnboardingGuideButton() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (shouldAutoOpenOnboarding(window.localStorage, pathname ?? '/')) {
+      setOpen(true);
+      window.localStorage.setItem(ONBOARDING_GUIDE_SEEN_KEY, '1');
+    }
+  }, [pathname]);
 
   return (
     <>
       <button
         type="button"
-        className="theme-toggle"
+        className="fixed bottom-6 right-6 z-50 inline-flex h-11 w-11 items-center justify-center rounded-full border border-sy-border bg-sy-bg-1 text-sy-text shadow-lg shadow-black/20 transition-all hover:-translate-y-px hover:border-sy-border-2 hover:text-sy-accent"
         onClick={() => setOpen(true)}
-        aria-label="新手引导"
-        title="新手引导"
+        aria-label="帮助与引导"
+        title="帮助与引导"
       >
         <CircleHelp />
       </button>
