@@ -1,0 +1,897 @@
+{
+  "plan_id": "sisyphus-y-2026-03-major-refactor",
+  "project": "Sisyphus-Y",
+  "version": "2.0.0-rc",
+  "generated_at": "2026-03-14T12:25:42.180Z",
+  "generated_from": [
+    "sisyphus-y平台需求明确记录.md",
+    "README.md",
+    "CHANGELOG.md",
+    "CLAUDE.md",
+    "AGENTS.md",
+    "frontend/src/app/(main)/diagnosis/page.tsx",
+    "frontend/src/app/(main)/workbench/page.tsx",
+    "frontend/src/app/(main)/page.tsx",
+    "frontend/src/app/(main)/settings/_components/AIModelSettings.tsx",
+    "backend/app/modules/generation/service.py",
+    "backend/app/modules/scene_map/service.py",
+    "backend/app/modules/ai_config/router.py",
+    "progress.json",
+    "frontend/src/components/ui/ProgressDashboard.tsx",
+    "frontend/src/app/api/progress/route.ts",
+    "frontend/src/app/(main)/_components/QuickActions.tsx",
+    "frontend/src/app/(main)/_components/PendingItems.tsx",
+    "frontend/src/components/ui/OnboardingGuide.tsx",
+    "frontend/src/app/(main)/requirements/[id]/page.tsx",
+    "frontend/src/app/(main)/requirements/_components/RelationPanel.tsx",
+    "frontend/src/app/(main)/search/page.tsx",
+    "backend/app/modules/dashboard/service.py"
+  ],
+  "file_roles": {
+    "process.json": "本轮前瞻性开发迭代计划、依赖关系、执行状态与阶段验收口径。",
+    "progress.json": "功能验收/回归任务与证据记录，不承担前瞻性开发计划职责。"
+  },
+  "selected_strategy": {
+    "id": "option-b",
+    "title": "文档先行 + 以主链路为核心的增量重构",
+    "why": "代码库已经具备 Prompt 管理、glm-5、XMind 导入、目录树、RAG 0.72 等点状能力，最缺的是分析台与工作台的主链路收敛。与其重做全部模块，不如先统一文档和计划，再围绕主链路做最小但完整的闭环改造。"
+  },
+  "strategy_options": [
+    {
+      "id": "option-a",
+      "title": "只同步文档和计划，不执行代码改造",
+      "selected": false,
+      "pros": [
+        "风险最低",
+        "能快速统一认知"
+      ],
+      "cons": [
+        "无法解决工作台双步骤缺口",
+        "不满足用户要求的“按照计划执行”"
+      ]
+    },
+    {
+      "id": "option-b",
+      "title": "文档先行 + 以主链路为核心的增量重构",
+      "selected": true,
+      "pros": [
+        "能复用 scene-map 与 generation 现有能力",
+        "先解决用户最直接感知的分析台/工作台断层",
+        "避免把已经落地的点状能力重复重写"
+      ],
+      "cons": [
+        "需要同时调整前端页面组织与后端生成上下文",
+        "阶段间需要严格管理状态与回归验证"
+      ]
+    },
+    {
+      "id": "option-c",
+      "title": "一次性全量重写分析台、工作台、设置与仪表盘",
+      "selected": false,
+      "pros": [
+        "目标态最统一",
+        "理论上能最快消除历史包袱"
+      ],
+      "cons": [
+        "与当前代码复用面低，风险高",
+        "容易覆盖掉已经工作的能力",
+        "不适合当前脏工作区与分阶段验证节奏"
+      ]
+    }
+  ],
+  "known_current_state": {
+    "implemented": [
+      "9 个一级导航菜单与仪表盘双 Tab 已存在。",
+      "分析页已经具备需求详情 / AI 分析 / 覆盖追踪三 Tab 的页面组织。",
+      "Prompt 管理支持默认值、历史版本与回滚。",
+      "AI provider 列表已包含 glm-5，后端已有模型配置 CRUD 端点。",
+      "UDA 结构化解析、需求模板下载、XMind 导入、目录树与 RAG 0.72 已存在。",
+      "生成结果持久化已落地，SSE 完成后会自动入库。"
+    ],
+    "gaps": [
+      "AI 配置、Prompt、RAG 与历史用例质检闭环仍需在后续迭代继续逐条回归确认。",
+      "WebM 全链路录屏仍为人工验收项，progress.json 中 TASK-100 继续保持 manual_required。"
+    ]
+  },
+  "execution_rules": {
+    "update_order": [
+      "先更新需求文档/README/CHANGELOG/全局加载文档",
+      "再写 process.json 明确计划与依赖",
+      "再按 process.json 顺序执行代码改造",
+      "每完成一轮迭代都要回写 process.json 状态",
+      "最终用 progress.json 记录验收任务与证据"
+    ],
+    "status_flow": [
+      "pending",
+      "in_progress",
+      "done",
+      "blocked"
+    ],
+    "verification_commands": {
+      "frontend_lint": "cd frontend && bunx biome check .",
+      "frontend_typecheck": "cd frontend && bunx tsc --noEmit",
+      "frontend_build": "cd frontend && bun run build",
+      "backend_lint": "cd backend && uv run ruff check .",
+      "backend_typecheck": "cd backend && uv run pyright app",
+      "backend_generation_tests": "cd backend && uv run pytest tests/unit/test_generation/test_generation_service.py tests/unit/test_generation/test_generation_api.py -q",
+      "backend_scene_map_tests": "cd backend && uv run pytest tests/unit/test_scene_map/test_scene_map_api.py tests/unit/test_scene_map/test_generator.py -q",
+      "backend_ai_config_tests": "cd backend && uv run pytest tests/unit/test_ai_config/test_ai_config_service.py tests/unit/test_rag/test_retriever.py tests/unit/test_knowledge/test_knowledge_api.py -q"
+    },
+    "manual_checks": [
+      "分析台选择需求后，右侧三 Tab 切换不丢状态。",
+      "存在高风险遗漏项时，进入工作台按钮置灰并显示 hover 提示。",
+      "工作台 Step 1 至少勾选 1 个测试点才能进入 Step 2。",
+      "Step 2 生成完成后可返回 Step 1 补点并再次生成。",
+      "页面刷新后分析结果、测试点和生成用例可恢复。"
+    ],
+    "non_goals_this_cycle": [
+      "不恢复 M09 前端入口。",
+      "不恢复 M18 协作功能。",
+      "不在本轮引入前端 E2E 框架。",
+      "不把未来态功能写成已上线事实。"
+    ]
+  },
+  "acceptance_gates": {
+    "ui": [
+      "工作台必须有清晰的顶部步骤条，且当前步骤高亮。",
+      "新增实现不能继续扩散旧独立页面心智。",
+      "不新增新的“诊断”用户可见文案。"
+    ],
+    "functional": [
+      "新建需求 → 分析 → 确认测试点 → 生成用例 → 用例库查看 这一主链路零报错。",
+      "生成阶段默认只使用已确认测试点，不使用全部草稿点。",
+      "AI 生成结果刷新后可恢复。"
+    ],
+    "ai_quality": [
+      "RAG 默认 top-k 保持 5。",
+      "RAG 相关默认阈值收敛到 0.72。",
+      "生成用例仍需满足 reviewer 的可执行性要求。"
+    ],
+    "data": [
+      "历史用例不得跳过审查直接入向量库。",
+      "重建向量前需要可控地清理旧向量，避免重复召回。"
+    ],
+    "docs": [
+      "README、CLAUDE、AGENTS、CHANGELOG 与调研结论保持一致。",
+      "process.json 与 progress.json 的职责边界清晰可查。"
+    ]
+  },
+  "iterations": [
+    {
+      "id": "ITER-00",
+      "title": "文档对齐与计划落位",
+      "status": "done",
+      "depends_on": [],
+      "goal": "统一需求文档、README、CHANGELOG、CLAUDE、AGENTS 的改版基线，并创建 process.json。",
+      "tasks": [
+        {
+          "id": "ITER-00-T01",
+          "title": "结构化更新调研需求文档",
+          "status": "done",
+          "files": [
+            "sisyphus-y平台需求明确记录.md"
+          ],
+          "done_when": [
+            "文件顶部新增一页摘要、当前代码状态对照、推荐实施顺序。",
+            "明确 process.json 与 progress.json 的职责分离。"
+          ]
+        },
+        {
+          "id": "ITER-00-T02",
+          "title": "更新 README 的 2026-03 改版方向与模块状态",
+          "status": "done",
+          "files": [
+            "README.md"
+          ],
+          "done_when": [
+            "README 明确当前已落地能力与本轮改版重点。",
+            "M03/M04/M05 状态反映“收敛中/重构中”的现实。"
+          ]
+        },
+        {
+          "id": "ITER-00-T03",
+          "title": "更新全局加载文档",
+          "status": "done",
+          "files": [
+            "CLAUDE.md",
+            "AGENTS.md"
+          ],
+          "done_when": [
+            "新增“当前改版基线（2026-03）”章节。",
+            "明确分析域、工作台、process/progress 文件职责。"
+          ]
+        },
+        {
+          "id": "ITER-00-T04",
+          "title": "记录文档与执行基线到 CHANGELOG",
+          "status": "done",
+          "files": [
+            "CHANGELOG.md"
+          ],
+          "done_when": [
+            "Unreleased 中存在文档与执行基线对齐说明。"
+          ]
+        },
+        {
+          "id": "ITER-00-T05",
+          "title": "创建 process.json 并设置当前执行焦点",
+          "status": "done",
+          "files": [
+            "process.json"
+          ],
+          "done_when": [
+            "JSON 中包含策略、迭代、任务、依赖、验收口径与执行日志。",
+            "当前执行焦点设置为 ITER-01。"
+          ]
+        }
+      ],
+      "verification": {
+        "commands": [],
+        "manual": [
+          "检查文档顶部章节与 process/progress 说明存在。",
+          "检查 README 模块状态与改版方向一致。"
+        ]
+      }
+    },
+    {
+      "id": "ITER-01",
+      "title": "分析台到工作台主链路收敛",
+      "status": "done",
+      "depends_on": [
+        "ITER-00"
+      ],
+      "goal": "把工作台重构为同页双步骤流，并确保生成只使用已确认测试点。",
+      "tasks": [
+        {
+          "id": "ITER-01-T01",
+          "title": "复用 scene-map 能力实现 Workbench Step 1",
+          "status": "done",
+          "files": [
+            "frontend/src/app/(main)/workbench/page.tsx",
+            "frontend/src/hooks/useSceneMap.ts",
+            "frontend/src/app/(main)/scene-map/_components/TestPointList.tsx",
+            "frontend/src/stores/scene-map-store.ts"
+          ],
+          "done_when": [
+            "工作台左栏保留需求树，中心区域能展示测试点草稿并支持勾选/手动添加。",
+            "至少勾选 1 个测试点才允许开始生成。"
+          ]
+        },
+        {
+          "id": "ITER-01-T02",
+          "title": "将 Workbench Step 2 收敛为工作台默认生成视图",
+          "status": "done",
+          "files": [
+            "frontend/src/app/(main)/workbench/page.tsx",
+            "frontend/src/hooks/useWorkbench.ts",
+            "frontend/src/stores/workspace-store.ts",
+            "frontend/src/app/(main)/workbench/_components/GeneratedCases.tsx",
+            "frontend/src/app/(main)/workbench/_components/RequirementNav.tsx"
+          ],
+          "done_when": [
+            "顶部出现 Step 1 / Step 2 步骤条。",
+            "Step 2 复用现有 SSE、CaseCard 与已生成用例列表。",
+            "用户可从 Step 2 返回 Step 1 补充测试点后继续生成。"
+          ]
+        },
+        {
+          "id": "ITER-01-T03",
+          "title": "后端生成上下文仅注入 confirmed test points",
+          "status": "done",
+          "files": [
+            "backend/app/modules/generation/service.py",
+            "backend/tests/unit/test_generation/test_generation_service.py",
+            "backend/tests/unit/test_generation/test_generation_api.py"
+          ],
+          "done_when": [
+            "GenerationService 组装上下文时过滤未确认测试点。",
+            "至少新增一条针对 confirmed test points 的单元测试。"
+          ]
+        },
+        {
+          "id": "ITER-01-T04",
+          "title": "对齐分析台进入工作台的约束与状态承接",
+          "status": "done",
+          "files": [
+            "frontend/src/app/(main)/diagnosis/page.tsx",
+            "frontend/src/app/(main)/analysis/page.tsx",
+            "frontend/src/hooks/useDiagnosis.ts"
+          ],
+          "done_when": [
+            "高风险遗漏项未处理时，进入工作台按钮仍然被正确拦截。",
+            "从分析台进入工作台后，当前需求上下文被自动承接。"
+          ]
+        },
+        {
+          "id": "ITER-01-T05",
+          "title": "完成第一轮主链路验证与文档回写",
+          "status": "done",
+          "files": [
+            "CHANGELOG.md",
+            "process.json"
+          ],
+          "done_when": [
+            "相关前后端检查通过。",
+            "CHANGELOG 与 process.json 记录本轮主链路改造结果。"
+          ]
+        }
+      ],
+      "verification": {
+        "commands": [
+          "cd frontend && bunx biome check .",
+          "cd frontend && bunx tsc --noEmit",
+          "cd backend && uv run ruff check .",
+          "cd backend && uv run pyright app",
+          "cd backend && uv run pytest tests/unit/test_generation/test_generation_service.py tests/unit/test_generation/test_generation_api.py tests/unit/test_scene_map/test_scene_map_api.py -q"
+        ],
+        "manual": [
+          "分析台选中需求后，工作台能直接进入对应需求的 Step 1。",
+          "Step 1 勾选测试点后，Step 2 能正常生成并展示用例。",
+          "刷新页面后已确认测试点与已生成用例仍可恢复。"
+        ]
+      }
+    },
+    {
+      "id": "ITER-02",
+      "title": "AI 配置与 Prompt 管理收敛",
+      "status": "done",
+      "depends_on": [
+        "ITER-01"
+      ],
+      "goal": "让前端完整呈现后端已具备的模型列表与 Prompt 管理能力，并统一 glm-5 默认路径。",
+      "tasks": [
+        {
+          "id": "ITER-02-T01",
+          "title": "把 AI 模型配置前端切换到模型列表管理视图",
+          "status": "done",
+          "files": [
+            "frontend/src/app/(main)/settings/_components/AIModelSettings.tsx",
+            "frontend/src/hooks/useAiConfig.ts",
+            "frontend/src/lib/api.ts",
+            "backend/app/modules/ai_config/router.py",
+            "backend/app/modules/ai_config/service.py"
+          ],
+          "done_when": [
+            "前端能消费 /ai-config/models/list 与 CRUD 端点。",
+            "用户可以区分多个模型配置，而非只看到单一全局表单。"
+          ]
+        },
+        {
+          "id": "ITER-02-T02",
+          "title": "统一 glm-5、用途标签与测试连接体验",
+          "status": "done",
+          "files": [
+            "frontend/src/app/(main)/settings/_components/AIModelSettings.tsx",
+            "backend/app/modules/ai_config/router.py",
+            "backend/app/core/config.py"
+          ],
+          "done_when": [
+            "glm-5 仍作为智谱推荐模型。",
+            "测试连接与用途标签体验和 process 设计一致。"
+          ]
+        },
+        {
+          "id": "ITER-02-T03",
+          "title": "验证 Prompt 管理与有效配置读取链路",
+          "status": "done",
+          "files": [
+            "frontend/src/app/(main)/settings/_components/PromptManager.tsx",
+            "backend/tests/unit/test_ai_config/test_ai_config_service.py"
+          ],
+          "done_when": [
+            "Prompt 历史、默认值、回滚在新配置体验下仍可用。"
+          ]
+        }
+      ],
+      "verification": {
+        "commands": [
+          "cd frontend && bunx biome check .",
+          "cd frontend && bunx tsc --noEmit",
+          "cd backend && uv run ruff check .",
+          "cd backend && uv run pyright app",
+          "cd backend && uv run pytest tests/unit/test_ai_config/test_ai_config_service.py -q"
+        ],
+        "manual": [
+          "设置页中能清楚地区分模型列表管理与 Prompt 管理。",
+          "保存后刷新，配置仍保持。"
+        ]
+      }
+    },
+    {
+      "id": "ITER-03",
+      "title": "历史用例质检与 RAG 闭环",
+      "status": "done",
+      "depends_on": [
+        "ITER-01"
+      ],
+      "goal": "让历史用例进入向量库前必须经过审查，并统一检索阈值、向量重建与报告产出。",
+      "tasks": [
+        {
+          "id": "ITER-03-T01",
+          "title": "统一知识检索默认阈值到 0.72",
+          "status": "done",
+          "files": [
+            "backend/app/modules/knowledge/schemas.py",
+            "backend/app/modules/knowledge/service.py",
+            "backend/tests/unit/test_knowledge/test_knowledge_api.py",
+            "backend/tests/unit/test_rag/test_retriever.py"
+          ],
+          "done_when": [
+            "knowledge search 与 retriever 默认阈值一致。",
+            "测试覆盖默认值和显式传参场景。"
+          ]
+        },
+        {
+          "id": "ITER-03-T02",
+          "title": "定义并执行清洗后数据的 reviewer 审查批次",
+          "status": "done",
+          "files": [
+            "清洗后数据/",
+            "progress.json"
+          ],
+          "done_when": [
+            "对清洗后数据形成通过/润色/丢弃统计。",
+            "progress.json 写入对应验收项或执行证据。"
+          ]
+        },
+        {
+          "id": "ITER-03-T03",
+          "title": "串起重建向量前的清理与报告输出",
+          "status": "done",
+          "files": [
+            "backend/app/modules/knowledge/service.py",
+            "backend/app/engine/rag/retriever.py",
+            "backend/tests/unit/test_rag/test_retriever.py"
+          ],
+          "done_when": [
+            "存在可控的旧向量清理步骤。",
+            "重建后可输出数量与结果摘要。"
+          ]
+        }
+      ],
+      "verification": {
+        "commands": [
+          "cd backend && uv run ruff check .",
+          "cd backend && uv run pyright app",
+          "cd backend && uv run pytest tests/unit/test_rag/test_retriever.py tests/unit/test_knowledge/test_knowledge_api.py -q"
+        ],
+        "manual": [
+          "抽样生成时，notes/来源中能体现知识召回来源。",
+          "旧向量不会重复召回同一条历史用例的多版本内容。"
+        ]
+      }
+    },
+    {
+      "id": "ITER-04",
+      "title": "仪表盘与帮助引导收尾",
+      "status": "done",
+      "depends_on": [
+        "ITER-01",
+        "ITER-02"
+      ],
+      "goal": "补齐仪表盘迭代视角、帮助入口与首次引导，使主链路之外的体验闭环。",
+      "tasks": [
+        {
+          "id": "ITER-04-T01",
+          "title": "补齐仪表盘迭代选择与 delta 展示",
+          "status": "done",
+          "files": [
+            "frontend/src/app/(main)/page.tsx",
+            "frontend/src/hooks/useDashboard.ts",
+            "backend/app/modules/dashboard/router.py",
+            "backend/app/modules/dashboard/service.py"
+          ],
+          "done_when": [
+            "仪表盘右上角存在迭代选择器。",
+            "4 个统计卡片显示当前值与较上一迭代 delta。"
+          ]
+        },
+        {
+          "id": "ITER-04-T02",
+          "title": "把帮助入口收敛为首次引导 + 常驻帮助按钮",
+          "status": "done",
+          "files": [
+            "frontend/src/components/ui/OnboardingGuide.tsx",
+            "frontend/src/app/(main)/layout.tsx"
+          ],
+          "done_when": [
+            "首次登录可触发引导。",
+            "右下角帮助按钮始终可唤起帮助面板。"
+          ]
+        },
+        {
+          "id": "ITER-04-T03",
+          "title": "未配置 AI 模型时在分析台/工作台展示横幅",
+          "status": "done",
+          "files": [
+            "frontend/src/app/(main)/diagnosis/page.tsx",
+            "frontend/src/app/(main)/workbench/page.tsx",
+            "frontend/src/hooks/useAiConfig.ts"
+          ],
+          "done_when": [
+            "未配置 AI 模型时，分析台与工作台顶部出现可跳转配置页的固定横幅。"
+          ]
+        }
+      ],
+      "verification": {
+        "commands": [
+          "cd frontend && bunx biome check .",
+          "cd frontend && bunx tsc --noEmit",
+          "cd frontend && bun run build"
+        ],
+        "manual": [
+          "首次进入时引导不会打断主操作。",
+          "帮助按钮不会遮挡关键 CTA。"
+        ]
+      }
+    },
+    {
+      "id": "ITER-05",
+      "title": "验收、回归与证据沉淀",
+      "status": "done",
+      "depends_on": [
+        "ITER-01",
+        "ITER-02",
+        "ITER-03",
+        "ITER-04"
+      ],
+      "goal": "把本轮改版的验收项、证据与回归结果沉淀到 progress.json，并完成最终文档同步。",
+      "tasks": [
+        {
+          "id": "ITER-05-T01",
+          "title": "将功能验收任务写入 progress.json",
+          "status": "done",
+          "files": [
+            "progress.json"
+          ],
+          "done_when": [
+            "progress.json 中包含主链路、AI 质量、数据质量、导出与知识库相关验收项。"
+          ]
+        },
+        {
+          "id": "ITER-05-T02",
+          "title": "运行最终静态检查、类型检查与目标测试",
+          "status": "done",
+          "files": [],
+          "done_when": [
+            "前后端 lint/typecheck/目标测试全部通过。"
+          ]
+        },
+        {
+          "id": "ITER-05-T03",
+          "title": "回写 CHANGELOG 与文档最终状态",
+          "status": "done",
+          "files": [
+            "CHANGELOG.md",
+            "README.md",
+            "process.json"
+          ],
+          "done_when": [
+            "CHANGELOG 记录本轮实际完成项。",
+            "process.json 与 progress.json 状态同步。"
+          ]
+        }
+      ],
+      "verification": {
+        "commands": [
+          "cd frontend && bunx biome check . && bunx tsc --noEmit && bun run build",
+          "cd backend && uv run ruff check . && uv run pyright app && uv run pytest -q"
+        ],
+        "manual": [
+          "主链路录屏或人工验收记录齐全。",
+          "progress.json 与实际结果一致。"
+        ]
+      }
+    },
+    {
+      "id": "ITER-06",
+      "title": "按需求记录逐条回归与入口修正",
+      "status": "done",
+      "depends_on": [
+        "ITER-05"
+      ],
+      "goal": "对照 sisyphus-y平台需求明确记录.md 重建回归基线，并先修复 analysis 主入口与测试进度大盘内容失真。",
+      "tasks": [
+        {
+          "id": "ITER-06-T01",
+          "title": "将需求记录拆成可执行回归矩阵并同步到 process.json",
+          "status": "done",
+          "files": [
+            "sisyphus-y平台需求明确记录.md",
+            "process.json"
+          ],
+          "done_when": [
+            "process.json 中存在按 area 划分的 regression rebaseline 章节。",
+            "显式标注 satisfied / partial / gap 的当前判断依据。"
+          ]
+        },
+        {
+          "id": "ITER-06-T02",
+          "title": "统一 dashboard、帮助、详情、搜索到 /analysis 主入口",
+          "status": "done",
+          "files": [
+            "frontend/src/app/(main)/_components/QuickActions.tsx",
+            "backend/app/modules/dashboard/service.py",
+            "frontend/src/app/(main)/requirements/[id]/page.tsx",
+            "frontend/src/app/(main)/requirements/_components/RelationPanel.tsx",
+            "frontend/src/app/(main)/search/page.tsx",
+            "frontend/src/components/ui/OnboardingGuide.tsx"
+          ],
+          "done_when": [
+            "新的用户入口不再优先跳到 /diagnosis、/scene-map、/coverage。",
+            "浏览器从仪表盘、帮助面板、需求详情、搜索结果进入分析域时路径和心智一致。"
+          ]
+        },
+        {
+          "id": "ITER-06-T03",
+          "title": "修复测试进度大盘对当前 progress.json 的读取与展示",
+          "status": "done",
+          "files": [
+            "frontend/src/app/api/progress/route.ts",
+            "frontend/src/components/ui/ProgressDashboard.tsx",
+            "progress.json"
+          ],
+          "done_when": [
+            "浏览器打开进度大盘后不再只显示“其他 0%”。",
+            "phase / module / task 分组与当前 progress.json 可稳定映射。"
+          ]
+        },
+        {
+          "id": "ITER-06-T04",
+          "title": "执行浏览器逐条回归并回写证据",
+          "status": "done",
+          "files": [
+            "progress.json",
+            "process.json"
+          ],
+          "done_when": [
+            "至少完成 dashboard → analysis → workbench 的浏览器主链路验证。",
+            "进度大盘、帮助引导、需求详情、搜索结果的跳转都已在浏览器确认。",
+            "回归结果回写到 progress.json 或 process.json 的执行日志。"
+          ]
+        }
+      ],
+      "verification": {
+        "commands": [
+          "cd frontend && bunx biome check src/app/(main)/_components/QuickActions.tsx src/app/(main)/requirements/[id]/page.tsx src/app/(main)/requirements/_components/RelationPanel.tsx src/app/(main)/search/page.tsx src/components/ui/OnboardingGuide.tsx src/components/ui/ProgressDashboard.tsx src/app/api/progress/route.ts",
+          "cd frontend && bunx tsc --noEmit",
+          "cd backend && uv run ruff check app/modules/dashboard/service.py app/modules/dashboard/router.py app/modules/dashboard/schemas.py",
+          "cd backend && uv run pyright app/modules/dashboard"
+        ],
+        "manual": [
+          "点击首页“开始分析”进入 /analysis，而不是直接进入旧 /diagnosis。",
+          "点击浮动测试进度大盘后，侧边面板展示可读的阶段/模块/任务信息，而不是“其他 0%”。",
+          "从需求详情、帮助引导、搜索结果进入分析域时，页面路径和用户心智一致。"
+        ]
+      }
+    },
+    {
+      "id": "ITER-07",
+      "title": "分析台与工作台剩余差距收口",
+      "status": "done",
+      "depends_on": [
+        "ITER-06"
+      ],
+      "goal": "基于 ITER-06 的浏览器证据，补齐工作台 Step 1 / Step 2、分析域状态承接及文档同步的剩余差距。",
+      "tasks": [
+        {
+          "id": "ITER-07-T01",
+          "title": "收口工作台 Step 1 / Step 2 与回退补点体验",
+          "status": "done",
+          "files": [
+            "frontend/src/app/(main)/workbench/page.tsx",
+            "frontend/src/hooks/useWorkbench.ts",
+            "frontend/src/hooks/useSceneMap.ts"
+          ],
+          "done_when": [
+            "工作台顶部步骤条、Step 1 测试点确认、Step 2 生成用例体验与调研记录一致。",
+            "浏览器可确认从 Step 2 返回 Step 1 补点后继续追加生成。"
+          ]
+        },
+        {
+          "id": "ITER-07-T02",
+          "title": "确认分析域状态承接与高风险拦截",
+          "status": "done",
+          "files": [
+            "frontend/src/app/(main)/diagnosis/page.tsx",
+            "frontend/src/hooks/useDiagnosis.ts",
+            "frontend/src/app/(main)/analysis/layout.tsx"
+          ],
+          "done_when": [
+            "需求详情 / AI 分析 / 覆盖追踪切换不丢状态。",
+            "存在高风险遗漏项时，“进入工作台”仍保持正确置灰和提示。"
+          ]
+        },
+        {
+          "id": "ITER-07-T03",
+          "title": "补齐本轮文档与回归证据同步",
+          "status": "done",
+          "files": [
+            "process.json",
+            "progress.json",
+            "CHANGELOG.md"
+          ],
+          "done_when": [
+            "process.json / progress.json / CHANGELOG 与实际回归和修复结果一致。"
+          ]
+        }
+      ],
+      "verification": {
+        "commands": [
+          "cd frontend && bunx biome check . && bunx tsc --noEmit",
+          "cd backend && uv run ruff check . && uv run pyright app"
+        ],
+        "manual": [
+          "按需求记录逐条走完分析台 → 工作台的关键路径并截图/记录结果。",
+          "刷新页面后分析结果、测试点与生成用例仍能恢复。"
+        ]
+      }
+    }
+  ],
+  "current_execution_focus": {
+    "iteration_id": "ITER-07",
+    "task_id": "ITER-07-T03",
+    "reason": "ITER-07 已完成工作台 Step 1/Step 2、分析页状态承接回归、需求详情页修复与文档同步；本轮回归周期已闭环。"
+  },
+  "execution_log": [
+    {
+      "at": "2026-03-14T06:23:53.397Z",
+      "iteration_id": "ITER-00",
+      "status": "done",
+      "note": "已完成需求文档、README、CLAUDE、AGENTS、CHANGELOG 的第一轮基线对齐。"
+    },
+    {
+      "at": "2026-03-14T06:23:53.397Z",
+      "iteration_id": "ITER-01",
+      "status": "in_progress",
+      "note": "开始执行分析台 → 工作台主链路收敛，优先改造工作台双步骤流与 confirmed test point context。"
+    },
+    {
+      "at": "2026-03-14T06:45:13.203897Z",
+      "iteration_id": "ITER-01",
+      "status": "in_progress",
+      "note": "已完成 ITER-01-T01 / T02 / T03 / T05：工作台引入 Step 1/Step 2 切换视图、测试点草稿工具与至少勾选 1 个测试点后开始生成的门槛；后端 confirmed test point context 过滤完成，并已通过目标化前后端验证。"
+    },
+    {
+      "at": "2026-03-14T06:48:37.533815Z",
+      "iteration_id": "ITER-01",
+      "status": "done",
+      "note": "已完成 ITER-01-T04：分析台“进入工作台”链接带上 reqId，工作台支持从 reqId/req 查询参数自动承接当前需求；高风险遗漏项未处理时仍保持进入拦截。"
+    },
+    {
+      "at": "2026-03-14T06:48:37.533815Z",
+      "iteration_id": "ITER-02",
+      "status": "in_progress",
+      "note": "开始执行 ITER-02-T01，准备把 AI 模型配置前端从单一全局表单切换到模型列表管理视图。"
+    },
+    {
+      "at": "2026-03-14T07:02:03.024426Z",
+      "iteration_id": "ITER-02",
+      "status": "done",
+      "note": "已完成 ITER-02：设置页接入模型配置列表与 CRUD、保留 glm-5 为智谱推荐模型、补齐用途标签与模型级测试连接入口；Prompt reset/rollback 调用链已与后端接口对齐并通过前后端目标化验证。"
+    },
+    {
+      "at": "2026-03-14T07:02:03.024426Z",
+      "iteration_id": "ITER-03",
+      "status": "in_progress",
+      "note": "开始执行 ITER-03-T01，准备统一 knowledge search 与 retriever 默认阈值到 0.72。"
+    },
+    {
+      "at": "2026-03-14T07:12:19.347593Z",
+      "iteration_id": "ITER-03",
+      "status": "done",
+      "note": "已完成 ITER-03：统一 knowledge search 与 RAG retriever 默认阈值到 0.72；对清洗后历史用例执行 reviewer 批次并输出 CSV 汇总；知识库重建向量索引前会先清理旧 collection 并返回 deleted_points/docs_queued 摘要。"
+    },
+    {
+      "at": "2026-03-14T07:12:19.347593Z",
+      "iteration_id": "ITER-04",
+      "status": "in_progress",
+      "note": "开始执行 ITER-04-T03，准备在分析台与工作台为未配置有效 AI 模型的场景增加固定横幅提示。"
+    },
+    {
+      "at": "2026-03-14T07:18:05.390791Z",
+      "iteration_id": "ITER-04",
+      "status": "in_progress",
+      "note": "已完成 ITER-04-T03：分析台与工作台在无有效 AI 模型配置时展示固定横幅，并提供跳转设置页入口；下一步切到 ITER-04-T02 收敛帮助入口。"
+    },
+    {
+      "at": "2026-03-14T07:21:50.690039Z",
+      "iteration_id": "ITER-04",
+      "status": "in_progress",
+      "note": "已完成 ITER-04-T02 / T03：帮助入口收敛为首次自动引导 + 右下角常驻帮助按钮；分析台与工作台在无有效 AI 模型配置时展示固定横幅。当前剩余 ITER-04-T01。"
+    },
+    {
+      "at": "2026-03-14T07:41:30.093400Z",
+      "iteration_id": "ITER-04",
+      "status": "done",
+      "note": "已完成 ITER-04-T01：仪表盘新增迭代选择器，概览卡片展示较上一迭代的 delta，dashboard 相关 API 支持 iteration_id 范围过滤；同时修复 workbench 在 Next.js 16 生产构建下对 useSearchParams 的 Suspense 要求。"
+    },
+    {
+      "at": "2026-03-14T07:41:30.093400Z",
+      "iteration_id": "ITER-05",
+      "status": "done",
+      "note": "已完成 ITER-05：progress.json 增补本轮验收证据，README/CHANGELOG/process.json 同步到最终状态；前端目标测试、typegen、tsc、build 与后端目标 lint/type/test 全部通过。"
+    },
+    {
+      "at": "2026-03-14T12:25:42.180Z",
+      "iteration_id": "ITER-06",
+      "status": "pending",
+      "note": "已根据 sisyphus-y平台需求明确记录.md 新建 ITER-06 / ITER-07 计划：先修复测试进度大盘 schema 失配与 analysis 主入口错位，再做浏览器逐条回归与工作台剩余差距收口。"
+    },
+    {
+      "at": "2026-03-14T12:25:42.180Z",
+      "iteration_id": "ITER-06",
+      "status": "done",
+      "note": "已完成 ITER-06：process.json 新增 regression rebaseline 与 ITER-06/ITER-07 计划；首页、帮助引导、搜索、需求详情和 dashboard pending items 的主要入口收敛到 /analysis hub；测试进度大盘已适配当前 progress.json schema，并经浏览器确认不再显示“其他 0%”。"
+    },
+    {
+      "at": "2026-03-14T13:35:11Z",
+      "iteration_id": "ITER-07",
+      "status": "done",
+      "note": "已完成 ITER-07：浏览器确认工作台 Step 1/Step 2 可往返、分析台输入跨 tab 保持、需求详情页 action link 指向新的 analysis/workbench 路径；同时修复 requirements/:id 因分页用例响应透传导致的运行时错误。"
+    }
+  ],
+  "regression_rebaseline": {
+    "source": "sisyphus-y平台需求明确记录.md",
+    "planned_at": "2026-03-14T12:25:42.180Z",
+    "intent": "按需求记录逐条重建回归基线，并优先修复 analysis 主入口错位与进度大盘内容失真问题。",
+    "assumptions": [
+      "process.json 继续负责前瞻性开发计划，progress.json 继续负责验收与回归证据。",
+      "浮动测试进度大盘继续展示 progress.json，但 /api/progress 与前端展示需要适配当前 schema。",
+      "旧 /diagnosis、/scene-map、/coverage 路由保留兼容，但所有新的用户入口应优先收敛到 /analysis。"
+    ],
+    "areas": [
+      {
+        "id": "analysis-entry",
+        "title": "分析域主入口与术语收敛",
+        "status": "done",
+        "requirements": [
+          "分析域以 /analysis 为主入口。",
+          "AI 分析 / 场景地图 / 覆盖追踪的用户跳转入口不继续扩散旧独立页面。",
+          "页面和流程文案优先使用“分析”而不是“诊断”。"
+        ],
+        "confirmed_gaps": [
+          "首页、帮助引导、搜索、pending items 与需求详情入口已统一收敛到 /analysis hub，并已在浏览器确认跳转路径。"
+        ]
+      },
+      {
+        "id": "workbench-flow",
+        "title": "工作台 Step 1 / Step 2 主链路",
+        "status": "done",
+        "requirements": [
+          "Step 1 确认测试点与 Step 2 生成用例必须同页切换。",
+          "至少勾选 1 个测试点后才能开始生成。",
+          "Step 2 完成后能回到 Step 1 补点继续生成。"
+        ],
+        "confirmed_gaps": [
+          "浏览器已确认 Step 1 至少勾选 1 个测试点后才能开始生成，进入 Step 2 后可返回 Step 1 补点继续生成。",
+          "分析台 AI 分析输入在「AI 分析 / 覆盖追踪」tab 间切换后保持原值，状态承接符合需求记录。"
+        ]
+      },
+      {
+        "id": "progress-dashboard",
+        "title": "测试进度大盘",
+        "status": "done",
+        "requirements": [
+          "浮动进度大盘应打开可读、可分组、可追踪的真实进度内容。",
+          "展示逻辑必须和 progress.json 当前结构一致。"
+        ],
+        "confirmed_gaps": [
+          "当前进度大盘已适配现行 progress.json schema，后续只需继续维护任务分类的可读性。"
+        ]
+      },
+      {
+        "id": "ai-config-rag",
+        "title": "AI 配置、Prompt、RAG 与历史用例质检",
+        "status": "partial",
+        "requirements": [
+          "Prompt 管理、模型配置与生效路径需要继续和调研记录一致。",
+          "历史用例必须经审查后再进入向量库，阈值保持 0.72，top-k 保持 5。"
+        ],
+        "confirmed_gaps": [
+          "本轮先做逐条回归确认与证据补全，必要时再补第二轮收口。"
+        ]
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 {
   "project": "Sisyphus-Y",
   "version": "2.0.0-rc",
-  "last_updated": "2026-03-13T23:30:00Z",
+  "last_updated": "2026-03-14T13:35:11Z",
   "acceptance_criteria": {
     "all_tasks_passed": true,
     "real_data_loaded": true,
@@ -9,14 +9,14 @@
     "accepted": false
   },
   "stats": {
-    "total": 57,
-    "passed": 56,
+    "total": 58,
+    "passed": 57,
     "failed": 0,
     "pending": 0,
     "blocked": 0,
     "manual_required": 1
   },
-  "iteration": 9,
+  "iteration": 10,
   "tasks": [
     {
       "id": "TASK-001",
@@ -784,11 +784,11 @@
       ],
       "exception_cases": [],
       "status": "passed",
-      "evidence": "Regression verified in iteration 9",
+      "evidence": "2026-03-14 浏览器回归：工作台顶部稳定显示 Step 1 / Step 2；未勾选测试点时「开始生成」置灰，勾选后可进入 Step 2，并可从 Step 2 返回 Step 1 继续补点。",
       "bug_description": "",
       "fix_commit": "",
-      "tested_at": null,
-      "passed_at": "2026-03-12T18:46:15Z"
+      "tested_at": "2026-03-14T13:35:11Z",
+      "passed_at": "2026-03-14T13:35:11Z"
     },
     {
       "id": "TASK-060",
@@ -1174,11 +1174,11 @@
         }
       ],
       "status": "passed",
-      "evidence": "29 AI cases: title format [module-feature-scenario], active voice steps, specific expectations. No vague results found.",
+      "evidence": "历史清洗用例 reviewer 批次已执行：扫描 清洗后数据 下 7497 条用例，通过 992 条，润色 6163 条，丢弃 342 条；主要问题为 F05(5433)、W07(4473)、F08(342)。详见 清洗后数据/review_batches/iter03_t02_case_review_summary.csv 与 清洗后数据/review_batches/iter03_t02_batch_summary.csv。⚠️ 未提供 PRD/原型，F07（按钮/页面是否存在）未做核实。",
       "bug_description": "",
       "fix_commit": "",
-      "tested_at": null,
-      "passed_at": "2026-03-12T18:54:08Z"
+      "tested_at": "2026-03-14T07:09:06.094956Z",
+      "passed_at": "2026-03-14T07:09:06.094956Z"
     },
     {
       "id": "TASK-081",
@@ -1306,6 +1306,30 @@
       "fix_commit": "",
       "tested_at": null,
       "passed_at": "2026-03-12T18:55:35Z"
+    },
+    {
+      "id": "TASK-092",
+      "category": "验收",
+      "title": "仪表盘迭代视角与主链路构建回归",
+      "steps": [
+        "验证仪表盘右上角存在迭代选择器并可切换当前迭代范围",
+        "检查概览卡片显示当前值与较上一迭代 delta",
+        "运行主链路相关前端测试、typecheck 与生产构建",
+        "运行 dashboard / ai_config / knowledge / rag / generation 的目标后端检查与测试"
+      ],
+      "expected": [
+        "仪表盘支持按迭代查看概览与质量分析数据",
+        "首页概览卡片显示需求总数、用例总数、平均覆盖率的 delta，以及当前迭代进度",
+        "workbench 页面生产构建无 useSearchParams 相关 prerender 错误",
+        "本轮改动涉及的前后端目标验证全部通过"
+      ],
+      "exception_cases": [],
+      "status": "passed",
+      "evidence": "2026-03-14 回归补充：17 个前端目标测试（progress route / analysis routes / quick actions / diagnosis / workbench / useRequirement）全部通过，Biome + tsc 通过；浏览器确认首页入口进入 /analysis、进度大盘不再显示“其他 0%”、分析台 AI 输入跨 tab 保持、需求详情页修复后可正常渲染且 action link 指向 /analysis/* 与 /workbench?reqId=...。",
+      "bug_description": "",
+      "fix_commit": "",
+      "tested_at": "2026-03-14T13:35:11Z",
+      "passed_at": "2026-03-14T13:35:11Z"
     },
     {
       "id": "TASK-100",
