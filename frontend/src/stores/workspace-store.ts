@@ -62,6 +62,12 @@ interface WorkspaceState {
 
   testCases: WorkbenchTestCase[];
   setTestCases: (cases: WorkbenchTestCase[]) => void;
+  appendTestCases: (cases: WorkbenchTestCase[]) => void;
+
+  appendedTestPointIds: Set<string>;
+  lastGeneratedPointIds: Set<string>;
+  setAppendedPointIds: (ids: Set<string>) => void;
+  setLastGeneratedPointIds: (ids: Set<string>) => void;
 
   contextItems: ContextItem[];
   addContextItem: (item: ContextItem) => void;
@@ -100,6 +106,12 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
 
   testCases: [],
   setTestCases: (cases) => set({ testCases: cases }),
+  appendTestCases: (cases) => set((s) => ({ testCases: [...s.testCases, ...cases] })),
+
+  appendedTestPointIds: new Set(),
+  lastGeneratedPointIds: new Set(),
+  setAppendedPointIds: (ids) => set({ appendedTestPointIds: ids }),
+  setLastGeneratedPointIds: (ids) => set({ lastGeneratedPointIds: ids }),
 
   contextItems: [],
   addContextItem: (item) =>

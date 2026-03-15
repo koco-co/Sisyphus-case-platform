@@ -3,9 +3,9 @@
 import { Activity } from 'lucide-react';
 import { useCallback } from 'react';
 import { useDiagnosis } from '@/hooks/useDiagnosis';
-import { CoverageMatrix } from '../../diagnosis/_components/CoverageMatrix';
 import { RequirementDetailTab } from '../../diagnosis/_components/RequirementDetailTab';
 import { AnalysisTab } from './AnalysisTab';
+import CoverageTab from './CoverageTab';
 
 interface AnalysisRightPanelProps {
   selectedReqId: string | null;
@@ -63,7 +63,7 @@ function RightPanelContent({
         </div>
 
         <div className={`absolute inset-0 ${activeTab === 'coverage' ? '' : 'hidden'}`}>
-          <CoverageMatrix reqId={selectedReqId} />
+          <CoverageTab requirementId={selectedReqId} visible={activeTab === 'coverage'} />
         </div>
       </div>
     </div>

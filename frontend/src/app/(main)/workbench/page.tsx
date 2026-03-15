@@ -18,6 +18,7 @@ import { GeneratedCases } from './_components/GeneratedCases';
 import { ModeSelector } from './_components/ModeSelector';
 import { QuickCommands } from './_components/QuickCommands';
 import { RequirementNav } from './_components/RequirementNav';
+import WorkbenchStepBar from './_components/WorkbenchStepBar';
 import { getWorkbenchRequirementId } from './query';
 
 const SUB_NAV_HEIGHT = 41;
@@ -289,39 +290,14 @@ function WorkbenchPageContent() {
   return (
     <div className="flex h-full flex-col">
       {showAiConfigBanner && <AiConfigBanner />}
-      <div className="border-b border-border bg-bg1 px-4 py-3">
-        <div className="flex items-center gap-2 text-[12px] font-medium text-text2">
-          <button
-            type="button"
-            onClick={() => {
-              if (hasSelectedRequirement) setViewStep(1);
-            }}
-            disabled={!hasSelectedRequirement}
-            className={`rounded-full border px-3 py-1 transition-colors ${
-              currentStep === 1
-                ? 'border-accent/25 bg-accent/10 text-accent'
-                : 'border-transparent bg-bg2 text-text2'
-            } disabled:cursor-not-allowed disabled:opacity-60`}
-          >
-            Step 1 确认测试点
-          </button>
-          <span className="text-text3">→</span>
-          <button
-            type="button"
-            onClick={() => {
-              if (wb.activeSessionId) setViewStep(2);
-            }}
-            disabled={!wb.activeSessionId}
-            className={`rounded-full border px-3 py-1 transition-colors ${
-              currentStep === 2
-                ? 'border-accent/25 bg-accent/10 text-accent'
-                : 'border-transparent bg-bg2 text-text2'
-            } disabled:cursor-not-allowed disabled:opacity-60`}
-          >
-            Step 2 生成用例
-          </button>
-        </div>
-      </div>
+      <WorkbenchStepBar
+        currentStep={currentStep}
+        onStepClick={(step) => {
+          if (step === 1 && hasSelectedRequirement) setViewStep(1);
+          if (step === 2 && wb.activeSessionId) setViewStep(2);
+        }}
+        step2Completed={Boolean(wb.activeSessionId)}
+      />
       <div className="min-h-0 flex-1">
         <ThreeColLayout
           left={leftPanel}
