@@ -389,7 +389,7 @@ export function AnalysisTab({ requirementId, visible }: AnalysisTabProps) {
                           : 'text-sy-danger'
                     }`}
                   >
-                    健康分 {report.overall_score}
+                    分析分 {report.overall_score}
                   </span>
                 )}
               </div>

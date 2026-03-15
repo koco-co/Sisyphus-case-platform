@@ -394,7 +394,7 @@ export function AIModelSettings() {
               <div>
                 <p className="text-[13px] font-semibold text-sy-text">模型配置列表</p>
                 <p className="mt-1 text-[11px] text-sy-text-3">
-                  区分诊断、生成等不同用途的 LLM 配置。
+                  区分分析、生成等不同用途的 LLM 配置。
                 </p>
               </div>
               <button
@@ -467,7 +467,7 @@ export function AIModelSettings() {
                 <div className="rounded-xl border border-dashed border-sy-border-2 bg-sy-bg-2 px-3 py-6 text-center">
                   <p className="text-[12px] font-medium text-sy-text-2">还没有模型配置</p>
                   <p className="mt-1 text-[11px] text-sy-text-3">
-                    先创建诊断模型和用例生成模型，再逐步切换设置页使用方式。
+                    先创建分析模型和用例生成模型，再逐步切换设置页使用方式。
                   </p>
                 </div>
               )}
@@ -507,7 +507,7 @@ export function AIModelSettings() {
                   value={draft.name}
                   onChange={(event) => setDraft((prev) => ({ ...prev, name: event.target.value }))}
                   className="w-full rounded-md border border-sy-border bg-sy-bg-2 px-3 py-2 text-[12.5px] text-sy-text outline-none transition-colors focus:border-sy-accent/50"
-                  placeholder="例如：诊断主模型"
+                  placeholder="例如：分析主模型"
                 />
               </div>
 
