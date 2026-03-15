@@ -1,6 +1,6 @@
 'use client';
 
-import { Activity } from 'lucide-react';
+import { MousePointerClick } from 'lucide-react';
 import { useCallback } from 'react';
 import { useDiagnosis } from '@/hooks/useDiagnosis';
 import { RequirementDetailTab } from '../../diagnosis/_components/RequirementDetailTab';
@@ -79,8 +79,8 @@ export function AnalysisRightPanel({
     return (
       <div className="flex-1 flex items-center justify-center bg-sy-bg">
         <div className="text-center">
-          <Activity className="w-16 h-16 text-sy-text-3 opacity-15 mx-auto mb-4" />
-          <p className="text-[15px] text-sy-text-3">从左侧选择需求开始分析</p>
+          <MousePointerClick className="w-12 h-12 text-sy-text-3 opacity-30 mx-auto mb-3" />
+          <p className="text-[13px] text-sy-text-3">请从左侧列表选择一条需求</p>
         </div>
       </div>
     );

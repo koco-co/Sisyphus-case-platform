@@ -1,6 +1,7 @@
 'use client';
 
-import { ChevronDown, ChevronRight, Loader2, Search } from 'lucide-react';
+import { ChevronDown, ChevronRight, FileText, Loader2, Search } from 'lucide-react';
+import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useRequirementTree } from '@/hooks/useRequirementTree';
@@ -83,7 +84,7 @@ export function AnalysisLeftPanel({ selectedReqId, onSelectRequirement }: Analys
   return (
     <div
       className="relative flex-shrink-0 flex flex-col bg-sy-bg-1 border-r border-sy-border overflow-hidden"
-      style={{ width: panelWidth, height: 'calc(100vh - 49px)' }}
+      style={{ width: panelWidth, height: '100%' }}
     >
       {/* Search header */}
       <div className="flex-shrink-0 px-3 py-2.5 border-b border-sy-border">
@@ -102,8 +103,16 @@ export function AnalysisLeftPanel({ selectedReqId, onSelectRequirement }: Analys
       {/* Tree list */}
       <div className="flex-1 overflow-y-auto">
         {products.length === 0 ? (
-          <div className="flex items-center justify-center h-20">
-            <span className="text-[12px] text-sy-text-3">暂无产品数据</span>
+          <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+            <FileText className="w-12 h-12 text-sy-text-3 opacity-30 mb-3" />
+            <p className="text-[12px] text-sy-text-3 mb-1">暂无需求</p>
+            <p className="text-[11px] text-sy-text-3 opacity-70 mb-3">请先在需求管理中添加需求</p>
+            <Link
+              href="/requirements"
+              className="inline-flex items-center px-3 py-1.5 rounded-md text-[11.5px] font-medium bg-sy-accent/10 border border-sy-accent/30 text-sy-accent hover:bg-sy-accent/20 transition-colors"
+            >
+              前往添加
+            </Link>
           </div>
         ) : (
           products.map((product) => {
