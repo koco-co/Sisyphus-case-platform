@@ -12,10 +12,10 @@ import {
   ShieldAlert,
   Sparkles,
 } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { API_BASE } from '@/lib/api';
+import { useCallback, useRef, useState } from 'react';
 import { useDiagnosis } from '@/hooks/useDiagnosis';
+import { API_BASE } from '@/lib/api';
 import { ChatInput } from '../../diagnosis/_components/ChatInput';
 import { DiagnosisChat } from '../../diagnosis/_components/DiagnosisChat';
 
@@ -170,16 +170,18 @@ export function AnalysisTab({ requirementId, visible }: AnalysisTabProps) {
 
   const risks = report?.risks ?? [];
 
-  const hasUnhandledHighRisk = risks.some(
-    (r) => {
-      const level = (r as { level?: string; severity?: string }).level ?? (r as { level?: string; severity?: string }).severity;
-      const confirmed = (r as { confirmed?: boolean }).confirmed || localConfirmed.has(r.id);
-      return level === 'high' && !confirmed;
-    },
-  );
+  const hasUnhandledHighRisk = risks.some((r) => {
+    const level =
+      (r as { level?: string; severity?: string }).level ??
+      (r as { level?: string; severity?: string }).severity;
+    const confirmed = (r as { confirmed?: boolean }).confirmed || localConfirmed.has(r.id);
+    return level === 'high' && !confirmed;
+  });
 
   const unhandledCount = risks.filter((r) => {
-    const level = (r as { level?: string; severity?: string }).level ?? (r as { level?: string; severity?: string }).severity;
+    const level =
+      (r as { level?: string; severity?: string }).level ??
+      (r as { level?: string; severity?: string }).severity;
     const confirmed = (r as { confirmed?: boolean }).confirmed || localConfirmed.has(r.id);
     return level === 'high' && !confirmed;
   }).length;
@@ -198,9 +200,7 @@ export function AnalysisTab({ requirementId, visible }: AnalysisTabProps) {
       const onMove = (moveEvent: MouseEvent) => {
         const delta = moveEvent.clientY - startY;
         const containerHeight = container.getBoundingClientRect().height;
-        setSplitRatio(
-          Math.min(0.7, Math.max(0.3, startRatio + delta / containerHeight)),
-        );
+        setSplitRatio(Math.min(0.7, Math.max(0.3, startRatio + delta / containerHeight)));
       };
       const onUp = () => {
         document.removeEventListener('mousemove', onMove);
@@ -328,22 +328,55 @@ export function AnalysisTab({ requirementId, visible }: AnalysisTabProps) {
               {/* Summary bar */}
               <div className="flex items-center gap-3 px-0.5 mb-2">
                 <span className="text-[11px] text-sy-text-3">扫描结果</span>
-                {risks.filter((r) => ((r as { level?: string; severity?: string }).level ?? (r as { level?: string; severity?: string }).severity) === 'high').length > 0 && (
+                {risks.filter(
+                  (r) =>
+                    ((r as { level?: string; severity?: string }).level ??
+                      (r as { level?: string; severity?: string }).severity) === 'high',
+                ).length > 0 && (
                   <span className="flex items-center gap-1 text-[11px] text-sy-danger font-mono">
                     <ShieldAlert className="w-3 h-3" />
-                    {risks.filter((r) => ((r as { level?: string; severity?: string }).level ?? (r as { level?: string; severity?: string }).severity) === 'high').length} 高
+                    {
+                      risks.filter(
+                        (r) =>
+                          ((r as { level?: string; severity?: string }).level ??
+                            (r as { level?: string; severity?: string }).severity) === 'high',
+                      ).length
+                    }{' '}
+                    高
                   </span>
                 )}
-                {risks.filter((r) => ((r as { level?: string; severity?: string }).level ?? (r as { level?: string; severity?: string }).severity) === 'medium').length > 0 && (
+                {risks.filter(
+                  (r) =>
+                    ((r as { level?: string; severity?: string }).level ??
+                      (r as { level?: string; severity?: string }).severity) === 'medium',
+                ).length > 0 && (
                   <span className="flex items-center gap-1 text-[11px] text-sy-warn font-mono">
                     <AlertTriangle className="w-3 h-3" />
-                    {risks.filter((r) => ((r as { level?: string; severity?: string }).level ?? (r as { level?: string; severity?: string }).severity) === 'medium').length} 中
+                    {
+                      risks.filter(
+                        (r) =>
+                          ((r as { level?: string; severity?: string }).level ??
+                            (r as { level?: string; severity?: string }).severity) === 'medium',
+                      ).length
+                    }{' '}
+                    中
                   </span>
                 )}
-                {risks.filter((r) => ((r as { level?: string; severity?: string }).level ?? (r as { level?: string; severity?: string }).severity) === 'low').length > 0 && (
+                {risks.filter(
+                  (r) =>
+                    ((r as { level?: string; severity?: string }).level ??
+                      (r as { level?: string; severity?: string }).severity) === 'low',
+                ).length > 0 && (
                   <span className="flex items-center gap-1 text-[11px] text-sy-info font-mono">
                     <Info className="w-3 h-3" />
-                    {risks.filter((r) => ((r as { level?: string; severity?: string }).level ?? (r as { level?: string; severity?: string }).severity) === 'low').length} 低
+                    {
+                      risks.filter(
+                        (r) =>
+                          ((r as { level?: string; severity?: string }).level ??
+                            (r as { level?: string; severity?: string }).severity) === 'low',
+                      ).length
+                    }{' '}
+                    低
                   </span>
                 )}
                 {report?.overall_score != null && (
@@ -378,12 +411,12 @@ export function AnalysisTab({ requirementId, visible }: AnalysisTabProps) {
       </div>
 
       {/* ─── Split Divider ─── */}
-      <div
-        className="h-1 flex-shrink-0 cursor-row-resize bg-sy-border hover:bg-sy-accent transition-colors group relative"
+      <button
+        type="button"
+        aria-label="拖拽调整分区高度"
+        className="h-1 w-full flex-shrink-0 cursor-row-resize bg-sy-border hover:bg-sy-accent transition-colors relative border-none p-0 outline-none focus-visible:bg-sy-accent"
         onMouseDown={handleSplitDrag}
-      >
-        <div className="absolute inset-x-0 -top-1 -bottom-1" />
-      </div>
+      />
 
       {/* ─── Lower: Socratic Dialogue ─── */}
       <div className="flex flex-col overflow-hidden flex-1">

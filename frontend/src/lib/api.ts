@@ -136,11 +136,14 @@ export interface DiagnosisReport {
 export interface DiagnosisRisk {
   id: string;
   category: string;
-  severity: string;
+  severity: string; // legacy frontend field name (maps to backend 'level')
+  level?: string; // backend field name (preferred)
   description: string;
   suggestion?: string;
   status?: string; // 'open' | 'acknowledged' | 'accepted' | 'ignored'
+  risk_status?: string;
   title?: string;
+  confirmed?: boolean; // Plan 01 added field
 }
 
 export interface ChatMessage {

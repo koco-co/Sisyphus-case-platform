@@ -51,7 +51,9 @@ const severityConfig: Record<
 
 function RiskItem({ risk }: { risk: DiagnosisRisk }) {
   const [expanded, setExpanded] = useState(false);
-  const config = severityConfig[risk.severity] ?? severityConfig.low;
+  // backend returns 'level'; frontend legacy used 'severity' — support both
+  const effectiveLevel = risk.level ?? risk.severity;
+  const config = severityConfig[effectiveLevel] ?? severityConfig.low;
   const Icon = config.icon;
 
   return (
@@ -114,9 +116,10 @@ export function ScanResultsList({ report, loading }: ScanResultsListProps) {
   }
 
   const risks = report?.risks ?? [];
-  const highRisks = risks.filter((r) => r.severity === 'high');
-  const mediumRisks = risks.filter((r) => r.severity === 'medium');
-  const lowRisks = risks.filter((r) => r.severity === 'low');
+  const getLevel = (r: DiagnosisRisk) => r.level ?? r.severity;
+  const highRisks = risks.filter((r) => getLevel(r) === 'high');
+  const mediumRisks = risks.filter((r) => getLevel(r) === 'medium');
+  const lowRisks = risks.filter((r) => getLevel(r) === 'low');
 
   if (risks.length === 0) {
     return (
