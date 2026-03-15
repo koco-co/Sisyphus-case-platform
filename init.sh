@@ -218,6 +218,25 @@ else
   success ".env already exists"
 fi
 
+# ─── Run command with timeout (portable, no GNU timeout) ──────────────────────
+run_with_timeout() {
+  local timeout_sec=$1
+  shift
+  "$@" & local pid=$!
+  local i=0
+  while kill -0 "$pid" 2>/dev/null && [ $i -lt "$timeout_sec" ]; do
+    sleep 1
+    i=$((i + 1))
+  done
+  if kill -0 "$pid" 2>/dev/null; then
+    kill "$pid" 2>/dev/null
+    wait "$pid" 2>/dev/null
+    return 124
+  fi
+  wait "$pid"
+  return $?
+}
+
 # ─── Section 4: Install dependencies ──────────────────────────────────────────
 section "4. Installing dependencies"
 
@@ -226,7 +245,16 @@ info "Installing backend dependencies (uv sync)..."
 success "Backend dependencies installed"
 
 info "Installing frontend dependencies (bun install)..."
-(cd "$PROJECT_DIR/frontend" && bun install)
+BUN_INSTALL_OK=0
+if [ -n "${BUN_REGISTRY:-}" ]; then
+  (cd "$PROJECT_DIR/frontend" && bun config set registry "$BUN_REGISTRY" && bun install) && BUN_INSTALL_OK=1
+else
+  (cd "$PROJECT_DIR/frontend" && run_with_timeout 120 bun install) && BUN_INSTALL_OK=1
+fi
+if [ "$BUN_INSTALL_OK" -eq 0 ]; then
+  warn "bun install timed out or failed — retrying with npmmirror registry..."
+  (cd "$PROJECT_DIR/frontend" && bun config set registry https://registry.npmmirror.com && bun install) || error "Frontend install failed. Run: cd frontend && bun install"
+fi
 success "Frontend dependencies installed"
 
 # ─── Section 5: Start Docker infrastructure ───────────────────────────────────
