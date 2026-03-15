@@ -35,10 +35,6 @@ mock.module('@/components/ui/GlobalSearch', () => ({
   SearchTrigger: () => <button type="button">SearchTrigger</button>,
 }));
 
-mock.module('@/components/ui/NotificationBell', () => ({
-  NotificationBell: () => <div>NotificationBell</div>,
-}));
-
 mock.module('@/components/ui/ProgressDashboard', () => ({
   default: () => <div>ProgressDashboard</div>,
 }));

@@ -29,7 +29,6 @@ _MODULE_NAMES = [
     "export",
     "execution",
     "analytics",
-    "notification",
     "search",
     "dashboard",
     "audit",
