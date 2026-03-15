@@ -29,6 +29,7 @@ export interface WorkbenchTestCase {
   status: string;
   precondition?: string;
   source: string;
+  test_point_id?: string;
   steps: { no: number; action: string; expected_result: string }[];
   ai_score?: number;
 }
